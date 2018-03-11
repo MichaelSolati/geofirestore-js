@@ -1,16 +1,16 @@
 import * as chai from 'chai';
 
-import { GeoFire } from '../../src/firebase';
-import { GeoFireQuery } from '../../src/firebase/query';
+import { GeoFirestore } from '../src/geofirestore';
+import { GeoFirestoreQuery } from '../src/query';
 import {
-  afterEachHelper, beforeEachHelper, Checklist, failTestOnCaughtError, geoFire, geoFireRef, getFirebaseData, geoFireQueries,
+  afterEachHelper, beforeEachHelper, Checklist, failTestOnCaughtError, geoFirestore, geoFirestoreRef, getFirestoreData, geoFirestoreQueries,
   invalidFirebaseRefs, invalidKeys, invalidLocations, invalidQueryCriterias, validKeys, validLocations, validQueryCriterias
-} from '../common';
+} from './common';
 
 const expect = chai.expect;
 
-describe('GeoFire Tests:', () => {
-  // Reset the Firebase before each test
+describe('GeoFirestore Tests:', () => {
+  // Reset the Firestore before each test
   beforeEach((done) => {
     beforeEachHelper(done);
   });
@@ -20,21 +20,21 @@ describe('GeoFire Tests:', () => {
   });
 
   describe('Constructor:', () => {
-    it('Constructor throws errors given invalid Firebase references', () => {
+    it('Constructor throws errors given invalid Firestore Collection references', () => {
       invalidFirebaseRefs.forEach((invalidFirebaseRef) => {
         // @ts-ignore
-        expect(() => new GeoFire(invalidFirebaseRef)).to.throw(null, 'firebaseRef must be an instance of Firebase');
+        expect(() => new GeoFirestore(invalidFirebaseRef)).to.throw(null, 'collectionRef must be an instance of a Firestore Collection');
       });
     });
 
-    it('Constructor does not throw errors given valid Firebase references', () => {
-      expect(() => new GeoFire(geoFireRef)).not.to.throw();
+    it('Constructor does not throw errors given valid Firestore Collection references', () => {
+      expect(() => new GeoFirestore(geoFirestoreRef)).not.to.throw();
     });
   });
 
   describe('ref():', () => {
-    it('ref() returns the Firebase reference used to create a GeoFire instance', () => {
-      expect(geoFire.ref()).to.deep.equal(geoFireRef);
+    it('ref() returns the Firestore Collection reference used to create a GeoFire instance', () => {
+      expect(geoFirestore.ref()).to.deep.equal(geoFirestoreRef);
     });
   });
 
@@ -43,7 +43,7 @@ describe('GeoFire Tests:', () => {
 
       const cl = new Checklist(['p1'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
       });
     });
@@ -51,49 +51,51 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when adding new locations', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', [50, 50]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', [-90, -90]);
       }).then(() => {
         cl.x('p3');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p4');
-      }).catch(failTestOnCaughtError);
+      }).catch((error) => {
+        failTestOnCaughtError(error)
+      });
     });
 
     it('set() handles decimal latitudes and longitudes', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFire.set('loc1', [0.254, 0]).then(() => {
+      geoFirestore.set('loc1', [0.254, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [50, 50.293403]);
+        return geoFirestore.set('loc2', [50, 50.293403]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc3', [-82.614, -90.938]);
+        return geoFirestore.set('loc3', [-82.614, -90.938]);
       }).then(() => {
         cl.x('p3');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 'ebpcrypzxv', 'l': { '0': 0.254, '1': 0 }, 'g': 'ebpcrypzxv' },
-          'loc2': { '.priority': 'v0gu2qnx15', 'l': { '0': 50, '1': 50.293403 }, 'g': 'v0gu2qnx15' },
-          'loc3': { '.priority': '1cr648sfx4', 'l': { '0': -82.614, '1': -90.938 }, 'g': '1cr648sfx4' }
+          'loc1': { '.priority': 'ebpcrypzxv', 'l': [0.254, 0], 'g': 'ebpcrypzxv' },
+          'loc2': { '.priority': 'v0gu2qnx15', 'l': [50, 50.293403], 'g': 'v0gu2qnx15' },
+          'loc3': { '.priority': '1cr648sfx4', 'l': [-82.614, -90.938], 'g': '1cr648sfx4' }
         });
 
         cl.x('p4');
@@ -103,27 +105,27 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', [50, 50]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', [-90, -90]);
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.set('loc1', [2, 3]);
+        return geoFirestore.set('loc1', [2, 3]);
       }).then(() => {
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p5');
@@ -133,27 +135,27 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key to the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', [50, 50]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', [-90, -90]);
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.set('loc1', [0, 0]);
+        return geoFirestore.set('loc1', [0, 0]);
       }).then(() => {
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p5');
@@ -163,23 +165,23 @@ describe('GeoFire Tests:', () => {
     it('set() handles multiple keys at the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [0, 0]);
+        return geoFirestore.set('loc2', [0, 0]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc3', [0, 0]);
+        return geoFirestore.set('loc3', [0, 0]);
       }).then(() => {
         cl.x('p3');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p4');
@@ -189,53 +191,53 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase after complex operations', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11'], expect, done);
 
-      geoFire.set('loc:1', [0, 0]).then(() => {
+      geoFirestore.set('loc:1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', [50, 50]);
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set('loc%!A72f()3', [-90, -90]);
+        return geoFirestore.set('loc%!A72f()3', [-90, -90]);
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.remove('loc2');
+        return geoFirestore.remove('loc2');
       }).then(() => {
         cl.x('p4');
 
-        return geoFire.set('loc2', [0.2358, -72.621]);
+        return geoFirestore.set('loc2', [0.2358, -72.621]);
       }).then(() => {
         cl.x('p5');
 
-        return geoFire.set('loc4', [87.6, -130]);
+        return geoFirestore.set('loc4', [87.6, -130]);
       }).then(() => {
         cl.x('p6');
 
-        return geoFire.set('loc5', [5, 55.555]);
+        return geoFirestore.set('loc5', [5, 55.555]);
       }).then(() => {
         cl.x('p7');
 
-        return geoFire.set('loc5', null);
+        return geoFirestore.set('loc5', null);
       }).then(() => {
         cl.x('p8');
 
-        return geoFire.set('loc:1', [87.6, -130]);
+        return geoFirestore.set('loc:1', [87.6, -130]);
       }).then(() => {
         cl.x('p9');
 
-        return geoFire.set('loc6', [-72.258, 0.953215]);
+        return geoFirestore.set('loc6', [-72.258, 0.953215]);
       }).then(() => {
         cl.x('p10');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc:1': { '.priority': 'cped3g0fur', 'l': { '0': 87.6, '1': -130 }, 'g': 'cped3g0fur' },
-          'loc2': { '.priority': 'd2h376zj8h', 'l': { '0': 0.2358, '1': -72.621 }, 'g': 'd2h376zj8h' },
-          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' },
-          'loc4': { '.priority': 'cped3g0fur', 'l': { '0': 87.6, '1': -130 }, 'g': 'cped3g0fur' },
-          'loc6': { '.priority': 'h50svty4es', 'l': { '0': -72.258, '1': 0.953215 }, 'g': 'h50svty4es' }
+          'loc:1': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
+          'loc2': { '.priority': 'd2h376zj8h', 'l': [0.2358, -72.621], 'g': 'd2h376zj8h' },
+          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' },
+          'loc4': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
+          'loc6': { '.priority': 'h50svty4es', 'l': [-72.258, 0.953215], 'g': 'h50svty4es' }
         });
 
         cl.x('p11');
@@ -245,7 +247,7 @@ describe('GeoFire Tests:', () => {
     it('set() does not throw errors given valid keys', () => {
       validKeys.forEach((validKey) => {
         expect(() => {
-          geoFire.set(validKey, [0, 0]);
+          geoFirestore.set(validKey, [0, 0]);
         }).not.to.throw();
       });
     });
@@ -253,27 +255,27 @@ describe('GeoFire Tests:', () => {
     it('set() throws errors given invalid keys', () => {
       invalidKeys.forEach((invalidKey) => {
         expect(() => {
-          geoFire.set(invalidKey, [0, 0]);
+          geoFirestore.set(invalidKey, [0, 0]);
         }).to.throw();
       });
     });
 
     it('set() does not throw errors given valid locations', () => {
-      validLocations.forEach((validLocation, i) => {
+      validLocations.forEach((validLocation) => {
         expect(() => {
-          geoFire.set('loc', validLocation);
+          geoFirestore.set('loc', validLocation);
         }).not.to.throw();
       });
     });
 
     it('set() throws errors given invalid locations', () => {
-      invalidLocations.forEach((invalidLocation, i) => {
+      invalidLocations.forEach((invalidLocation) => {
         // Setting location to null is valid since it will remove the key
         if (invalidLocation !== null) {
           expect(() => {
             // @ts-ignore
-            geoFire.set('loc', invalidLocation);
-          }).to.throw();
+            geoFirestore.set('loc', invalidLocation);
+          }).to.throw(Error, /Invalid GeoFire location/);
         }
       });
     });
@@ -284,7 +286,7 @@ describe('GeoFire Tests:', () => {
 
       const cl = new Checklist(['p1'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0]
       }).then(() => {
         cl.x('p1');
@@ -294,19 +296,19 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when adding new locations', (done) => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [50, 50],
         'loc3': [-90, -90]
       }).then(() => {
         cl.x('p1');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p2');
@@ -316,19 +318,19 @@ describe('GeoFire Tests:', () => {
     it('set() handles decimal latitudes and longitudes', (done) => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0.254, 0],
         'loc2': [50, 50.293403],
         'loc3': [-82.614, -90.938]
       }).then(() => {
         cl.x('p1');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 'ebpcrypzxv', 'l': { '0': 0.254, '1': 0 }, 'g': 'ebpcrypzxv' },
-          'loc2': { '.priority': 'v0gu2qnx15', 'l': { '0': 50, '1': 50.293403 }, 'g': 'v0gu2qnx15' },
-          'loc3': { '.priority': '1cr648sfx4', 'l': { '0': -82.614, '1': -90.938 }, 'g': '1cr648sfx4' }
+          'loc1': { '.priority': 'ebpcrypzxv', 'l': [0.254, 0], 'g': 'ebpcrypzxv' },
+          'loc2': { '.priority': 'v0gu2qnx15', 'l': [50, 50.293403], 'g': 'v0gu2qnx15' },
+          'loc3': { '.priority': '1cr648sfx4', 'l': [-82.614, -90.938], 'g': '1cr648sfx4' }
         });
 
         cl.x('p2');
@@ -338,25 +340,25 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [50, 50],
         'loc3': [-90, -90]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc1': [2, 3]
         });
       }).then(() => {
         cl.x('p2');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p3');
@@ -366,25 +368,25 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key to the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [50, 50],
         'loc3': [-90, -90]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc1': [0, 0]
         });
       }).then(() => {
         cl.x('p2');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': { '0': 50, '1': 50 }, 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p3');
@@ -394,19 +396,19 @@ describe('GeoFire Tests:', () => {
     it('set() handles multiple keys at the same location', (done) => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [0, 0],
         'loc3': [0, 0]
       }).then(() => {
         cl.x('p1');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc2': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
+          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p2');
@@ -416,18 +418,18 @@ describe('GeoFire Tests:', () => {
     it('set() updates Firebase after complex operations', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc:1': [0, 0],
         'loc2': [50, 50],
         'loc%!A72f()3': [-90, -90]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.remove('loc2');
+        return geoFirestore.remove('loc2');
       }).then(() => {
         cl.x('p2');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc2': [0.2358, -72.621],
           'loc4': [87.6, -130],
           'loc5': [5, 55.555]
@@ -435,27 +437,27 @@ describe('GeoFire Tests:', () => {
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc5': null
         });
       }).then(() => {
         cl.x('p4');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc:1': [87.6, -130],
           'loc6': [-72.258, 0.953215]
         });
       }).then(() => {
         cl.x('p5');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc:1': { '.priority': 'cped3g0fur', 'l': { '0': 87.6, '1': -130 }, 'g': 'cped3g0fur' },
-          'loc2': { '.priority': 'd2h376zj8h', 'l': { '0': 0.2358, '1': -72.621 }, 'g': 'd2h376zj8h' },
-          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' },
-          'loc4': { '.priority': 'cped3g0fur', 'l': { '0': 87.6, '1': -130 }, 'g': 'cped3g0fur' },
-          'loc6': { '.priority': 'h50svty4es', 'l': { '0': -72.258, '1': 0.953215 }, 'g': 'h50svty4es' }
+          'loc:1': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
+          'loc2': { '.priority': 'd2h376zj8h', 'l': [0.2358, -72.621], 'g': 'd2h376zj8h' },
+          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' },
+          'loc4': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
+          'loc6': { '.priority': 'h50svty4es', 'l': [-72.258, 0.953215], 'g': 'h50svty4es' }
         });
 
         cl.x('p6');
@@ -467,7 +469,7 @@ describe('GeoFire Tests:', () => {
         expect(() => {
           const locations = {};
           locations[validKey] = [0, 0];
-          geoFire.set(locations);
+          geoFirestore.set(locations);
         }).not.to.throw();
       });
     });
@@ -479,7 +481,7 @@ describe('GeoFire Tests:', () => {
             const locations = {};
             // @ts-ignore
             locations[invalidKey] = [0, 0];
-            geoFire.set(locations);
+            geoFirestore.set(locations);
           }).to.throw();
         }
       });
@@ -487,16 +489,16 @@ describe('GeoFire Tests:', () => {
 
     it('set() throws errors given a location argument in combination with an object', () => {
       expect(() => {
-        geoFire.set({
+        geoFirestore.set({
           'loc': [0, 0]
         }, [0, 0]);
       }).to.throw();
     });
 
     it('set() does not throw errors given valid locations', () => {
-      validLocations.forEach((validLocation, i) => {
+      validLocations.forEach((validLocation) => {
         expect(() => {
-          geoFire.set({
+          geoFirestore.set({
             'loc': validLocation
           });
         }).not.to.throw();
@@ -504,14 +506,14 @@ describe('GeoFire Tests:', () => {
     });
 
     it('set() throws errors given invalid locations', () => {
-      invalidLocations.forEach((invalidLocation, i) => {
+      invalidLocations.forEach((invalidLocation) => {
         // Setting location to null is valid since it will remove the key
         if (invalidLocation !== null) {
           expect(() => {
-            geoFire.set({
+            geoFirestore.set({
               'loc': invalidLocation
             });
-          }).to.throw();
+          }).to.throw(Error, /Invalid GeoFire location/);
         }
       });
     });
@@ -521,7 +523,7 @@ describe('GeoFire Tests:', () => {
     it('get() returns a promise', (done) => {
       const cl = new Checklist(['p1'], expect, done);
 
-      geoFire.get('loc1').then(() => {
+      geoFirestore.get('loc1').then((ref) => {
         cl.x('p1');
       });
     });
@@ -529,7 +531,7 @@ describe('GeoFire Tests:', () => {
     it('get() returns null for non-existent keys', (done) => {
       const cl = new Checklist(['p1'], expect, done);
 
-      geoFire.get('loc1').then((location) => {
+      geoFirestore.get('loc1').then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p1');
@@ -539,24 +541,24 @@ describe('GeoFire Tests:', () => {
     it('get() retrieves locations given existing keys', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [50, 50],
         'loc3': [-90, -90]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
         cl.x('p2');
 
-        return geoFire.get('loc2');
+        return geoFirestore.get('loc2');
       }).then((location) => {
         expect(location).to.deep.equal([50, 50]);
         cl.x('p3');
 
-        return geoFire.get('loc3');
+        return geoFirestore.get('loc3');
       }).then((location) => {
         expect(location).to.deep.equal([-90, -90]);
         cl.x('p4');
@@ -565,14 +567,14 @@ describe('GeoFire Tests:', () => {
 
     it('get() does not throw errors given valid keys', () => {
       validKeys.forEach((validKey) => {
-        expect(() => geoFire.get(validKey)).not.to.throw();
+        expect(() => geoFirestore.get(validKey)).not.to.throw();
       });
     });
 
     it('get() throws errors given invalid keys', () => {
       invalidKeys.forEach((invalidKey) => {
         // @ts-ignore
-        expect(() => geoFire.get(invalidKey)).to.throw();
+        expect(() => geoFirestore.get(invalidKey)).to.throw();
       });
     });
   });
@@ -581,32 +583,32 @@ describe('GeoFire Tests:', () => {
     it('set() removes existing location given null', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [2, 3]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.set('loc1', null);
+        return geoFirestore.set('loc1', null);
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' }
+          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' }
         });
 
         cl.x('p5');
@@ -616,29 +618,29 @@ describe('GeoFire Tests:', () => {
     it('set() does nothing given a non-existent location and null', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.set('loc2', null);
+        return geoFirestore.set('loc2', null);
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.get('loc2');
+        return geoFirestore.get('loc2');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p5');
@@ -648,36 +650,36 @@ describe('GeoFire Tests:', () => {
     it('set() removes existing location given null', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [2, 3]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.set({
+        return geoFirestore.set({
           'loc1': null,
           'loc3': [-90, -90]
         });
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': { '0': -90, '1': -90 }, 'g': '1bpbpbpbpb' }
+          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
+          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
         });
 
         cl.x('p5');
@@ -687,28 +689,28 @@ describe('GeoFire Tests:', () => {
     it('set() does nothing given a non-existent location and null', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': null
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.get('loc2');
+        return geoFirestore.get('loc2');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p3');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p4');
@@ -718,32 +720,32 @@ describe('GeoFire Tests:', () => {
     it('remove() removes existing location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc:^%*1': [0, 0],
         'loc2': [2, 3]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc:^%*1');
+        return geoFirestore.get('loc:^%*1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.remove('loc:^%*1');
+        return geoFirestore.remove('loc:^%*1');
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.get('loc:^%*1');
+        return geoFirestore.get('loc:^%*1');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' }
+          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' }
         });
 
         cl.x('p5');
@@ -753,29 +755,29 @@ describe('GeoFire Tests:', () => {
     it('remove() does nothing given a non-existent location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFire.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', [0, 0]).then(() => {
         cl.x('p1');
 
-        return geoFire.get('loc1');
+        return geoFirestore.get('loc1');
       }).then((location) => {
         expect(location).to.deep.equal([0, 0]);
 
         cl.x('p2');
 
-        return geoFire.remove('loc2');
+        return geoFirestore.remove('loc2');
       }).then(() => {
         cl.x('p3');
 
-        return geoFire.get('loc2');
+        return geoFirestore.get('loc2');
       }).then((location) => {
         expect(location).to.equal(null);
 
         cl.x('p4');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p5');
@@ -785,22 +787,22 @@ describe('GeoFire Tests:', () => {
     it('remove() only removes one key if multiple keys are at the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
-      geoFire.set({
+      geoFirestore.set({
         'loc1': [0, 0],
         'loc2': [2, 3],
         'loc3': [0, 0]
       }).then(() => {
         cl.x('p1');
 
-        return geoFire.remove('loc1');
+        return geoFirestore.remove('loc1');
       }).then(() => {
         cl.x('p2');
 
-        return getFirebaseData();
+        return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': { '0': 2, '1': 3 }, 'g': 's065kk0dc5' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': { '0': 0, '1': 0 }, 'g': '7zzzzzzzzz' }
+          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
+          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
         });
 
         cl.x('p3');
@@ -809,29 +811,29 @@ describe('GeoFire Tests:', () => {
 
     it('remove() does not throw errors given valid keys', () => {
       validKeys.forEach((validKey) => {
-        expect(() => geoFire.remove(validKey)).not.to.throw();
+        expect(() => geoFirestore.remove(validKey)).not.to.throw();
       });
     });
 
     it('remove() throws errors given invalid keys', () => {
       invalidKeys.forEach((invalidKey) => {
         // @ts-ignore
-        expect(() => geoFire.remove(invalidKey)).to.throw();
+        expect(() => geoFirestore.remove(invalidKey)).to.throw();
       });
     });
   });
 
   describe('query():', () => {
     it('query() returns GeoFireQuery instance', () => {
-      geoFireQueries.push(geoFire.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
 
-      expect(geoFireQueries[0] instanceof GeoFireQuery).to.be.ok;
+      expect(geoFirestoreQueries[0] instanceof GeoFirestoreQuery).to.be.ok;
     });
 
     it('query() does not throw errors given valid query criteria', () => {
       validQueryCriterias.forEach((validQueryCriteria) => {
         if (typeof validQueryCriteria.center !== 'undefined' && typeof validQueryCriteria.radius !== 'undefined') {
-          expect(() => geoFire.query(validQueryCriteria)).not.to.throw();
+          expect(() => geoFirestore.query(validQueryCriteria)).not.to.throw();
         }
       });
     });
@@ -839,7 +841,7 @@ describe('GeoFire Tests:', () => {
     it('query() throws errors given invalid query criteria', () => {
       invalidQueryCriterias.forEach((invalidQueryCriteria) => {
         // @ts-ignore
-        expect(() => geoFire.query(invalidQueryCriteria)).to.throw();
+        expect(() => geoFirestore.query(invalidQueryCriteria)).to.throw();
       });
     });
   });

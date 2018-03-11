@@ -13,9 +13,9 @@
 import * as firebase from 'firebase';
 
 import { GeoFirestoreQuery } from './query';
-import { decodeGeoFireObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey } from '../tools/utils';
+import { decodeGeoFireObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey } from './utils';
 
-import { QueryCriteria, GeoFireObj } from '../interfaces';
+import { QueryCriteria, GeoFireObj } from './interfaces';
 
 /**
  * Creates a GeoFirestore instance.

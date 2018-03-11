@@ -1,14 +1,14 @@
 import * as chai from 'chai';
 
-import { GeoFire } from '../../src/firebase';
+import { GeoFirestore } from '../src/geofirestore';
 import {
   boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, g_GEOHASH_PRECISION,
   metersToLongitudeDegrees, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude
-} from '../../src/tools/utils';
+} from '../src/utils';
 import {
   invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
   validGeohashes, validKeys, validLocations, validQueryCriterias
-} from '../common';
+} from './common';
 
 const expect = chai.expect;
 
@@ -115,30 +115,30 @@ describe('geoFireUtils Tests:', () => {
     });
 
     it('dist() calculates the distance between locations', () => {
-      expect(GeoFire.distance([90, 180], [90, 180])).to.be.closeTo(0, 0);
-      expect(GeoFire.distance([-90, -180], [90, 180])).to.be.closeTo(20015, 1);
-      expect(GeoFire.distance([-90, -180], [-90, 180])).to.be.closeTo(0, 1);
-      expect(GeoFire.distance([-90, -180], [90, -180])).to.be.closeTo(20015, 1);
-      expect(GeoFire.distance([37.7853074, -122.4054274], [78.216667, 15.55])).to.be.closeTo(6818, 1);
-      expect(GeoFire.distance([38.98719, -77.250783], [29.3760648, 47.9818853])).to.be.closeTo(10531, 1);
-      expect(GeoFire.distance([38.98719, -77.250783], [-54.933333, -67.616667])).to.be.closeTo(10484, 1);
-      expect(GeoFire.distance([29.3760648, 47.9818853], [-54.933333, -67.616667])).to.be.closeTo(14250, 1);
-      expect(GeoFire.distance([-54.933333, -67.616667], [-54, -67])).to.be.closeTo(111, 1);
+      expect(GeoFirestore.distance([90, 180], [90, 180])).to.be.closeTo(0, 0);
+      expect(GeoFirestore.distance([-90, -180], [90, 180])).to.be.closeTo(20015, 1);
+      expect(GeoFirestore.distance([-90, -180], [-90, 180])).to.be.closeTo(0, 1);
+      expect(GeoFirestore.distance([-90, -180], [90, -180])).to.be.closeTo(20015, 1);
+      expect(GeoFirestore.distance([37.7853074, -122.4054274], [78.216667, 15.55])).to.be.closeTo(6818, 1);
+      expect(GeoFirestore.distance([38.98719, -77.250783], [29.3760648, 47.9818853])).to.be.closeTo(10531, 1);
+      expect(GeoFirestore.distance([38.98719, -77.250783], [-54.933333, -67.616667])).to.be.closeTo(10484, 1);
+      expect(GeoFirestore.distance([29.3760648, 47.9818853], [-54.933333, -67.616667])).to.be.closeTo(14250, 1);
+      expect(GeoFirestore.distance([-54.933333, -67.616667], [-54, -67])).to.be.closeTo(111, 1);
     });
 
     it('dist() does not throw errors given valid locations', () => {
       validLocations.forEach((validLocation, i) => {
-        expect(() => GeoFire.distance(validLocation, [0, 0])).not.to.throw();
-        expect(() => GeoFire.distance([0, 0], validLocation)).not.to.throw();
+        expect(() => GeoFirestore.distance(validLocation, [0, 0])).not.to.throw();
+        expect(() => GeoFirestore.distance([0, 0], validLocation)).not.to.throw();
       });
     });
 
     it('dist() throws errors given invalid locations', () => {
       invalidLocations.forEach((invalidLocation, i) => {
         // @ts-ignore
-        expect(() => GeoFire.distance(invalidLocation, [0, 0])).to.throw();
+        expect(() => GeoFirestore.distance(invalidLocation, [0, 0])).to.throw();
         // @ts-ignore
-        expect(() => GeoFire.distance([0, 0], invalidLocation)).to.throw();
+        expect(() => GeoFirestore.distance([0, 0], invalidLocation)).to.throw();
       });
     });
   });
@@ -286,7 +286,7 @@ describe('geoFireUtils Tests:', () => {
         for (let j = 0; j < 1000; j++) {
           const pointLat = Math.max(-89.9, Math.min(89.9, centerLat + Math.random() * degreeRadius));
           const pointLong = wrapLongitude(centerLong + Math.random() * degreeRadius);
-          if (GeoFire.distance([centerLat, centerLong], [pointLat, pointLong]) < radius / 1000) {
+          if (GeoFirestore.distance([centerLat, centerLong], [pointLat, pointLong]) < radius / 1000) {
             expect(inQuery(queries, encodeGeohash([pointLat, pointLong]))).to.be.true;
           }
         }

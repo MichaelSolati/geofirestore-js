@@ -1,19 +1,19 @@
 import * as chai from 'chai';
 
 import {
-  afterEachHelperFirestore, beforeEachHelperFirestore, Checklist, failTestOnCaughtError, geoFirestore, geoFirestoreQueries, invalidQueryCriterias, validQueryCriterias, wait
-} from '../common';
+  afterEachHelper, beforeEachHelper, Checklist, failTestOnCaughtError, geoFirestore, geoFirestoreQueries, invalidQueryCriterias, validQueryCriterias, wait
+} from './common';
 
 const expect = chai.expect;
 
 describe('GeoFirestoreQuery Tests:', () => {
   // Reset the Firestore before each test
   beforeEach((done) => {
-    beforeEachHelperFirestore(done);
+    beforeEachHelper(done);
   });
 
   afterEach((done) => {
-    afterEachHelperFirestore(done);
+    afterEachHelper(done);
   });
 
   describe('Constructor:', () => {

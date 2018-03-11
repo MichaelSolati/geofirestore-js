@@ -2,9 +2,8 @@ import * as chai from 'chai';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 
-import { GeoFire, GeoFirestore } from '../src';
-import { GeoFireQuery } from '../src/firebase/query';
-import { GeoFirestoreQuery } from '../src/firestore/query';
+import { GeoFirestore } from '../src';
+import { GeoFirestoreQuery } from '../src/query';
 
 /*************/
 /*  GLOBALS  */
@@ -22,21 +21,15 @@ export const validQueryCriterias = [{ center: [0, 0], radius: 1000 }, { center: 
 export const invalidQueryCriterias = [{}, { random: 100 }, { center: [91, 2], radius: 1000, random: 'a' }, { center: [91, 2], radius: 1000 }, { center: [1, -181], radius: 1000 }, { center: ['a', 2], radius: 1000 }, { center: [1, [1, 2]], radius: 1000 }, { center: [0, 0], radius: -1 }, { center: [null, 2], radius: 1000 }, { center: [1, undefined], radius: 1000 }, { center: [NaN, 0], radius: 1000 }, { center: [1, 2], radius: -10 }, { center: [1, 2], radius: 'text' }, { center: [1, 2], radius: [1, 2] }, { center: [1, 2], radius: null }, true, false, undefined, NaN, [], 'a', 1];
 
 // Create global constiables to hold the Firebase and GeoFire constiables
-export let geoFireRef: firebase.database.Reference,
-  geoFire: GeoFire,
-  geoFireQueries: GeoFireQuery[] = [];
 export let geoFirestoreRef: firebase.firestore.CollectionReference,
   geoFirestore: GeoFirestore,
   geoFirestoreQueries: GeoFirestoreQuery[] = [];
 
 // Initialize Firebase
 const config = {
-  apiKey: 'AIzaSyDfEvcG1WHlI8o_KKK2yQcTHkz63_8nZK8',
-  databaseURL: 'https://geofi-5653f.firebaseio.com',
-  projectId: 'geofi-5653f'
-  // apiKey: 'AIzaSyC5IcRccDo289TTRa3Y7qJIu8YPz3EnKAI',
-  // databaseURL: 'https://geofire-9d0de.firebaseio.com',
-  // projectId: 'geofire-9d0de'
+  apiKey: 'AIzaSyDFnedGL4qr_jenIpWYpbvot8s7Vuay_88',
+  databaseURL: 'https://geofirestore.firebaseio.com',
+  projectId: 'geofirestore',
 };
 firebase.initializeApp(config);
 
@@ -45,18 +38,6 @@ firebase.initializeApp(config);
 /**********************/
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done) {
-  // Create a new Firebase database ref at a random node
-  geoFireRef = firebase.database().ref().push();
-  // Create a new GeoFire instance
-  geoFire = new GeoFire(geoFireRef);
-
-  // Reset the GeoFireQueries
-  geoFireQueries = [];
-
-  done();
-}
-
-export function beforeEachHelperFirestore(done) {
   // Create a new Firebase database ref at a random node
   geoFirestoreRef = firebase.firestore().collection('geofire');
   // Create a new GeoFire instance
@@ -70,18 +51,6 @@ export function beforeEachHelperFirestore(done) {
 
 /* Helper functions which runs after each Jasmine test has completed */
 export function afterEachHelper(done) {
-  // Cancel each outstanding GeoFireQuery
-  geoFireQueries.forEach((geoFireQuery) => {
-    geoFireQuery.cancel();
-  });
-
-  geoFireRef.remove().then(() => {
-    // Wait for 50 milliseconds after each test to give enough time for old query events to expire
-    return wait(50);
-  }).then(done);
-}
-
-export function afterEachHelperFirestore(done) {
   // Cancel each outstanding GeoFirestoreQuery
   geoFirestoreQueries.forEach((geoFirestoreQuery) => {
     geoFirestoreQuery.cancel();
@@ -105,13 +74,6 @@ export function generateRandomString() {
 
   return text;
 }
-
-/* Returns the current data in the Firebase */
-export function getFirebaseData() {
-  return geoFireRef.once('value').then((dataSnapshot: firebase.database.DataSnapshot) => {
-    return dataSnapshot.exportVal();
-  });
-};
 
 /* Returns the current data in the Firestore */
 export function getFirestoreData() {
