@@ -12,5 +12,6 @@ deploy:
   - provider: npm
     email: $EMAIL_ADDRESS
     api_key: $NPM_API
+    skip_cleanup: true
     on:
       branch: master
