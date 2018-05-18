@@ -6,7 +6,9 @@
    - [`new GeoFirestore(collectionRef)`](#new-geofirestorecollectionref)
    - [`ref()`](#geofirestoreref)
    - [`get(key)`](#geofirestoregetkey)
+   - [`getWithData(key)`](#geofirestoregetwithdatakey)
    - [`set(keyOrLocations[, location])`](#geofirestoresetkeyorlocations-location)
+   - [`setWithData(keyOrLocations[, location])`](#geofirestoresetwithdatakeyorlocations-location)
    - [`remove(key)`](#geofirestoreremovekey)
    - [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
  * [`GeoFirestoreQuery`](#geofirestorequery)
@@ -74,6 +76,25 @@ geoFirestore.get('some_key').then((location) => {
 });
 ```
 
+### GeoFirestore.getWithData(key)
+
+Fetches the location with data stored for `key`.
+
+Returns a promise fulfilled with `{ key, location, data }` corresponding to the provided `key`. If `key` does not exist, the returned promise is fulfilled with `null`.
+
+```JavaScript
+geoFirestore.getWithData('some_key').then(({ key, location, data }) => {
+  if (location === null) {
+    console.log('Provided key is not in GeoFirestore');
+  }
+  else {
+    console.log('Provided key has a location of ' + location);
+  }
+}, (error) => {
+  console.log('Error: ' + error);
+});
+```
+
 ### GeoFirestore.set(keyOrLocations[, location])
 
 Adds the specified key - location pair(s) to this `GeoFirestore`. If the provided `keyOrLocations` argument is a string, the single `location` will be added. The `keyOrLocations` argument can also be an object containing a mapping between keys and locations allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
@@ -96,6 +117,35 @@ geoFirestore.set('some_key', [37.79, -122.41]).then(() => {
 geoFirestore.set({
   'some_key': [37.79, -122.41],
   'another_key': [36.98, -122.56]
+}).then(() => {
+  console.log('Provided keys have been added to GeoFirestore');
+}, (error) => {
+  console.log('Error: ' + error);
+});
+```
+
+### GeoFirestore.setWithData(keyOrLocations[, location][, data])
+
+Adds the specified key - obj pair(s) to this `GeoFirestore`. If the provided `keyOrLocations` argument is a string, the single `location` and `data` will be added. The `keyOrLocations` argument can also be an object containing a mapping between keys and locations allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
+
+If any of the provided keys already exist in this `GeoFirestore`, they will be overwritten with the new location and data values. Locations must have the form `{ location: [latitude, longitude], data: {} }`.
+
+Returns a promise which is fulfilled when the new location has been synchronized with the Firebase servers.
+
+Keys must be strings and [valid Firstore id](https://firebase.google.com/docs/database/web/structure-data).
+
+```JavaScript
+geoFirestore.setWithData('some_key', [37.79, -122.41], { name: 'Joe Blow' }).then(() => {
+  console.log('Provided key has been added to GeoFirestore');
+}, (error) => {
+  console.log('Error: ' + error);
+});
+```
+
+```JavaScript
+geoFirestore.set({
+  'some_key': { location: [37.79, -122.41], data: { name: 'Joe Blow' }},
+  'another_key': { location: [36.98, -122.56], data: { name: 'Blow Joe' }}
 }).then(() => {
   console.log('Provided keys have been added to GeoFirestore');
 }, (error) => {
@@ -198,11 +248,12 @@ radius = geoQuery.radius();  // radius === 7
 
 ### GeoFirestoreQuery.on(eventType, callback)
 
-Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
+Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed four parameters:
 
 1. the location's key
 2. the location's [latitude, longitude] pair
 3. the distance, in kilometers, from the location to this query's center
+4. the data, if attached to the location
 
 `ready` fires once when this query's initial state has been loaded from the server. The `ready` event will fire after all other events associated with the loaded data have been triggered. `ready` will fire again once each time `updateCriteria()` is called, after all new data is loaded and all other new events have been fired.
 
@@ -219,15 +270,15 @@ const onReadyRegistration = geoQuery.on('ready', () => {
   console.log('GeoFirestoreQuery has loaded and fired all other events for initial data');
 });
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, data) {
   console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, data) {
   console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
 });
 
-const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, location, distance) {
+const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, location, distance, data) {
   console.log(key + ' moved within query to ' + location + ' (' + distance + ' km from center)');
 });
 ```
@@ -240,11 +291,11 @@ Terminates this query so that it no longer sends location updates. All callbacks
 // This example stops listening for all key events in the query once the
 // first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, data) {
   console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, data) {
   console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
 
   // Cancel all of the query's callbacks
@@ -266,11 +317,11 @@ Cancels this callback registration so that it no longer fires its callback. This
 // This example stops listening for new keys entering the query once the
 // first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, data) {
   console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, data) {
   console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
 
   // Cancel the 'key_entered' callback
