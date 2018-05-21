@@ -317,11 +317,11 @@ Cancels this callback registration so that it no longer fires its callback. This
 // This example stops listening for new keys entering the query once the
 // first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, data) {
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, document) {
   console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, data) {
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, document) {
   console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
 
   // Cancel the 'key_entered' callback
