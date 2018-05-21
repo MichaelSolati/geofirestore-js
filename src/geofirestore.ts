@@ -54,13 +54,13 @@ export class GeoFirestore {
   };
 
   /**
-   * Returns a promise fulfilled with the key, location, and data stored in the GeoFire index
+   * Returns a promise fulfilled with the key, location, and document stored in the GeoFire index
    * corresponding to the provided key.
    *
    * If the provided key does not exist in the index, the returned promise is fulfilled with null.
    *
    * @param key The key of the geofire object to retrieve
-   * @return A promise that is fulfilled with an object of {key, location, data}
+   * @return A promise that is fulfilled with an object of {key, location, document}
    */
   public getWithDocument(key: string): Promise<any> {
     validateKey(key);    

@@ -440,7 +440,7 @@ export function decodeGeoFireObject(geoFireObj: GeoFireObj): number[] {
  * Decodes a GeoFire snapshot value to get the optionally stored document object
  *
  * @param geoFireObj The GeoFire snapshot value
- * @returns The optionally stored data object, if it exists
+ * @returns The optionally stored document object, if it exists
  */
 export function decodeGeoFireDocumentObject(geoFireObj): any {
   if (geoFireObj && 'd' in geoFireObj) {
