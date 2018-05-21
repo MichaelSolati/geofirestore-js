@@ -413,13 +413,13 @@ export function encodeGeoFireObject(location: number[], geohash: string): GeoFir
  *
  * @param location The location as [latitude, longitude] pair.
  * @param geohash The geohash of the location.
- * @param data The optional data to include on the index (keep this small)
+ * @param document The optional document to include on the index (keep this small)
  * @returns The location encoded as GeoFire object.
  */
-export function encodeGeoFireDataObject(location: number[], geohash: string, data = null): GeoFireObj {
+export function encodeGeoFireDocumentObject(location: number[], geohash: string, document = null): GeoFireObj {
   validateLocation(location);
   validateGeohash(geohash);
-  return { '.priority': geohash, 'g': geohash, 'l': location, 'd': data };
+  return { '.priority': geohash, 'g': geohash, 'l': location, 'd': document };
 }
 
 /**
@@ -437,12 +437,12 @@ export function decodeGeoFireObject(geoFireObj: GeoFireObj): number[] {
 }
 
 /**
- * Decodes a GeoFire snapshot value to get the optionally stored data object
+ * Decodes a GeoFire snapshot value to get the optionally stored document object
  *
  * @param geoFireObj The GeoFire snapshot value
  * @returns The optionally stored data object, if it exists
  */
-export function decodeGeoFireDataObject(geoFireObj): any {
+export function decodeGeoFireDocumentObject(geoFireObj): any {
   if (geoFireObj && 'd' in geoFireObj) {
     return geoFireObj.d;
   }

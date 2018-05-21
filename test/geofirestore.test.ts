@@ -76,10 +76,10 @@ describe('GeoFirestore Tests:', () => {
       });
     });
 
-    it('setWithData() updates Firebase when adding new locations with data', (done) => {
+    it('setWithDocument() updates Firebase when adding new locations with a document', (done) => {
       var cl = new Checklist(['p1','p2'], expect, done);
 
-      geoFirestore.setWithData('loc1', [0, 0], { name: 'Test 1' }).then(() => {
+      geoFirestore.setWithDocument('loc1', [0, 0], { name: 'Test 1' }).then(() => {
         cl.x('p1');
 
         return getFirestoreData();
@@ -581,29 +581,29 @@ describe('GeoFirestore Tests:', () => {
       }).catch(failTestOnCaughtError);
     });
 
-    it('getWithData() retrieves locations and data given existing keys', (done) => {
+    it('getWithDocument() retrieves locations and document given existing keys', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFirestore.setWithData({
-        'loc1': { location: [0, 0], data: { name: 'Name 1' }},
-        'loc2': { location: [50, 50], data: { name: 'Name 2' }},
-        'loc3': { location: [-90, -90], data: { name: 'Name 3' }}
+      geoFirestore.setWithDocument({
+        'loc1': { location: [0, 0], document: { name: 'Name 1' }},
+        'loc2': { location: [50, 50], document: { name: 'Name 2' }},
+        'loc3': { location: [-90, -90], document: { name: 'Name 3' }}
       }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.getWithData('loc1');
+        return geoFirestore.getWithDocument('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc1', location: [0, 0], data: { name: 'Name 1' }});
+        expect(location).to.deep.equal({ key: 'loc1', location: [0, 0], document: { name: 'Name 1' }});
         cl.x('p2');
 
-        return geoFirestore.getWithData('loc2');
+        return geoFirestore.getWithDocument('loc2');
       }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc2', location: [50, 50], data: { name: 'Name 2' }});
+        expect(location).to.deep.equal({ key: 'loc2', location: [50, 50], document: { name: 'Name 2' }});
         cl.x('p3');
 
-        return geoFirestore.getWithData('loc3');
+        return geoFirestore.getWithDocument('loc3');
       }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc3', location: [-90, -90], data: { name: 'Name 3' }});
+        expect(location).to.deep.equal({ key: 'loc3', location: [-90, -90], document: { name: 'Name 3' }});
         cl.x('p4');
       }).catch(failTestOnCaughtError);
     });

@@ -13,7 +13,7 @@
 import * as firebase from 'firebase';
 
 import { GeoFirestoreQuery } from './query';
-import { decodeGeoFireObject, decodeGeoFireDataObject, degreesToRadians, encodeGeoFireObject, encodeGeoFireDataObject, encodeGeohash, validateLocation, validateKey } from './utils';
+import { decodeGeoFireObject, decodeGeoFireDocumentObject, degreesToRadians, encodeGeoFireObject, encodeGeoFireDocumentObject, encodeGeohash, validateLocation, validateKey } from './utils';
 
 import { QueryCriteria, GeoFireObj } from './interfaces';
 
@@ -62,7 +62,7 @@ export class GeoFirestore {
    * @param key The key of the geofire object to retrieve
    * @return A promise that is fulfilled with an object of {key, location, data}
    */
-  public getWithData(key: string): Promise<any> {
+  public getWithDocument(key: string): Promise<any> {
     validateKey(key);    
     return this._collectionRef.doc(key).get().then((documentSnapshot: firebase.firestore.DocumentSnapshot) => {
       if (!documentSnapshot.exists) {
@@ -72,7 +72,7 @@ export class GeoFirestore {
         return { 
           key: key, 
           location: decodeGeoFireObject(snapshotVal), 
-          data: decodeGeoFireDataObject(snapshotVal)
+          document: decodeGeoFireDocumentObject(snapshotVal)
         }
       }
     });    
@@ -107,10 +107,10 @@ export class GeoFirestore {
    * @param keyOrLocations The key representing the location to add or a mapping of key - location pairs which
    * represent the locations to add.
    * @param location The [latitude, longitude] pair to add.
-   * @param data Additional metadata to add to location.
+   * @param document Document to add to location.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  public setWithData(keyOrLocations: string | any, location?: number[], data?: any): Promise<void> {
+  public setWithDocument(keyOrLocations: string | any, location?: number[], document?: any): Promise<void> {
     if (typeof keyOrLocations === 'string' && keyOrLocations.length !== 0) {
       validateKey(keyOrLocations);
       if (location === null) {
@@ -119,7 +119,7 @@ export class GeoFirestore {
       } else {
         validateLocation(location);
         const geohash: string = encodeGeohash(location);
-        return this._collectionRef.doc(keyOrLocations).set(encodeGeoFireDataObject(location, geohash, data));
+        return this._collectionRef.doc(keyOrLocations).set(encodeGeoFireDocumentObject(location, geohash, document));
       }
     } else if (typeof keyOrLocations === 'object') {
       if (typeof location !== 'undefined') {
@@ -134,13 +134,13 @@ export class GeoFirestore {
       validateKey(key);
       const ref = this._collectionRef.doc(key);
       const location: number[] = keyOrLocations[key].location;
-      const data: any = keyOrLocations[key].data;
+      const document: any = keyOrLocations[key].document;
       if (location === null) {
         batch.delete(ref);
       } else {
         validateLocation(location);
         const geohash: string = encodeGeohash(location);
-        batch.set(ref, encodeGeoFireDataObject(location, geohash, data), { merge: true });
+        batch.set(ref, encodeGeoFireDocumentObject(location, geohash, document), { merge: true });
       }
     });
     return batch.commit();

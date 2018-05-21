@@ -2,7 +2,7 @@ import * as firebase from 'firebase';
 
 import { GeoFirestore } from './';
 import { GeoCallbackRegistration } from './callbackRegistration';
-import { decodeGeoFireObject, decodeGeoFireDataObject, encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
+import { decodeGeoFireObject, decodeGeoFireDocumentObject, encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
 
 import { QueryCriteria, GeoFireObj, GeoFirestoreQueryState } from './interfaces';
 
@@ -142,7 +142,7 @@ export class GeoFirestoreQuery {
       keys.forEach((key: string) => {
         const locationDict = this._locationsTracked[key];
         if (typeof locationDict !== 'undefined' && locationDict.isInQuery) {
-          callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
+          callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.document);
         }
       });
     }
@@ -198,9 +198,9 @@ export class GeoFirestoreQuery {
       // If the location just left the query, fire the 'key_exited' callbacks
       // Else if the location just entered the query, fire the 'key_entered' callbacks
       if (wasAlreadyInQuery && !locationDict.isInQuery) {
-        this._fireCallbacksForKey('key_exited', key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
+        this._fireCallbacksForKey('key_exited', key, locationDict.location, locationDict.distanceFromCenter, locationDict.document);
       } else if (!wasAlreadyInQuery && locationDict.isInQuery) {
-        this._fireCallbacksForKey('key_entered', key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
+        this._fireCallbacksForKey('key_entered', key, locationDict.location, locationDict.distanceFromCenter, locationDict.document);
       }
     }
 
@@ -233,7 +233,7 @@ export class GeoFirestoreQuery {
    */
   private _childAddedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data = <GeoFireObj>locationDataSnapshot.data();
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data));
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data), decodeGeoFireDocumentObject(data));
   }
 
   /**
@@ -243,7 +243,7 @@ export class GeoFirestoreQuery {
    */
   private _childChangedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data = <GeoFireObj>locationDataSnapshot.data();
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data), decodeGeoFireDataObject(data));
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data), decodeGeoFireDocumentObject(data));
   }
 
   /**
@@ -311,14 +311,14 @@ export class GeoFirestoreQuery {
    * @param key The key of the location for which to fire the callbacks.
    * @param location The location as [latitude, longitude] pair
    * @param distanceFromCenter The distance from the center or null.
-   * @param data The optionally stored data object on the index
+   * @param document The optionally stored document on the index
    */
-  private _fireCallbacksForKey(eventType: string, key: string, location?: number[], distanceFromCenter?: number, data = null): void {
+  private _fireCallbacksForKey(eventType: string, key: string, location?: number[], distanceFromCenter?: number, document = null): void {
     this._callbacks[eventType].forEach((callback) => {
       if (typeof location === 'undefined' || location === null) {
         callback(key, null, null, null);
       } else {
-        callback(key, location, distanceFromCenter, data);
+        callback(key, location, distanceFromCenter, document);
       }
     });
   }
@@ -504,9 +504,9 @@ export class GeoFirestoreQuery {
    *
    * @param key The key of the GeoFirestore location.
    * @param location The location as [latitude, longitude] pair.
-   * @param data The optional data to store with the location
+   * @param document The optional document to store with the location
    */
-  private _updateLocation(key: string, location?: number[], data = null): void {
+  private _updateLocation(key: string, location?: number[], document = null): void {
     validateLocation(location);
     // Get the key and location
     let distanceFromCenter: number, isInQuery;
@@ -520,7 +520,7 @@ export class GeoFirestoreQuery {
     // Add this location to the locations queried dictionary even if it is not within this query
     this._locationsTracked[key] = {
       location: location,
-      data: data,
+      document: document,
       distanceFromCenter: distanceFromCenter,
       isInQuery: isInQuery,
       geohash: encodeGeohash(location)
@@ -528,11 +528,11 @@ export class GeoFirestoreQuery {
 
     // Fire the 'key_entered' event if the provided key has entered this query
     if (isInQuery && !wasInQuery) {
-      this._fireCallbacksForKey('key_entered', key, location, distanceFromCenter, data);
+      this._fireCallbacksForKey('key_entered', key, location, distanceFromCenter, document);
     } else if (isInQuery && oldLocation !== null && (location[0] !== oldLocation[0] || location[1] !== oldLocation[1])) {
-      this._fireCallbacksForKey('key_moved', key, location, distanceFromCenter, data);
+      this._fireCallbacksForKey('key_moved', key, location, distanceFromCenter, document);
     } else if (!isInQuery && wasInQuery) {
-      this._fireCallbacksForKey('key_exited', key, location, distanceFromCenter, data);
+      this._fireCallbacksForKey('key_exited', key, location, distanceFromCenter, document);
     }
   }
 }
