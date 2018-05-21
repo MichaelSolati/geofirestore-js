@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 
-import { GeoFireObj } from './interfaces';
+import { GeoFirestoreObj } from './interfaces';
 
 // Default geohash length
 export const g_GEOHASH_PRECISION: number = 10;
@@ -38,11 +38,12 @@ Math.log2 = Math.log2 || function (x) {
 };
 
 /**
- * Validates the inputted key and throws an error if it is invalid.
+ * Validates the inputted key and throws an error, or returns boolean, if it is invalid.
  *
  * @param key The key to be verified.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateKey(key: string): void {
+export function validateKey(key: string, flag: boolean = false): boolean {
   let error: string;
 
   if (typeof key !== 'string') {
@@ -58,26 +59,29 @@ export function validateKey(key: string): void {
     error = 'key cannot contain any of the following characters: . # $ ] [ /';
   }
 
-  if (typeof error !== 'undefined') {
+  if (typeof error !== 'undefined' && !flag) {
     throw new Error('Invalid GeoFire key \'' + key + '\': ' + error);
+  } else {
+    return !error;
   }
 };
 
 /**
- * Validates the inputted location and throws an error if it is invalid.
+ * Validates the inputted location and throws an error, or returns boolean, if it is invalid.
  *
- * @param location The [latitude, longitude] pair to be verified.
+ * @param location The Firestore GeoPoint to be verified.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: number[]): void {
+export function validateLocation(location: firebase.firestore.GeoPoint, flag: boolean = false): boolean {
   let error: string;
 
-  if (!Array.isArray(location)) {
-    error = 'location must be an array';
-  } else if (location.length !== 2) {
-    error = 'expected array of length 2, got length ' + location.length;
+  if (!('latitude' in location)) {
+    error = 'latitude must exist on GeoPoint';
+  } else if (!('longitude' in location)) {
+    error = 'longitude must exist on GeoPoint';
   } else {
-    const latitude = location[0];
-    const longitude = location[1];
+    const latitude = location.latitude;
+    const longitude = location.longitude;
 
     if (typeof latitude !== 'number' || isNaN(latitude)) {
       error = 'latitude must be a number';
@@ -90,17 +94,20 @@ export function validateLocation(location: number[]): void {
     }
   }
 
-  if (typeof error !== 'undefined') {
+  if (typeof error !== 'undefined' && !flag) {
     throw new Error('Invalid GeoFire location \'' + location + '\': ' + error);
+  } else {
+    return !error;
   }
 };
 
 /**
- * Validates the inputted geohash and throws an error if it is invalid.
+ * Validates the inputted geohash and throws an error, or returns boolean, if it is invalid.
  *
  * @param geohash The geohash to be validated.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateGeohash(geohash: string): void {
+export function validateGeohash(geohash: string, flag: boolean = false): boolean {
   let error;
 
   if (typeof geohash !== 'string') {
@@ -115,8 +122,33 @@ export function validateGeohash(geohash: string): void {
     }
   }
 
-  if (typeof error !== 'undefined') {
+  if (typeof error !== 'undefined' && !flag) {
     throw new Error('Invalid GeoFire geohash \'' + geohash + '\': ' + error);
+  } else {
+    return !error;
+  }
+};
+
+/**
+ * Validates the inputted GeoFirestore object and throws an error, or returns boolean, if it is invalid.
+ *
+ * @param geoFirestoreObj The GeoFirestore object to be validated.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
+ */
+export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag: boolean = false): boolean {
+  let error: string;
+
+  error = (validateGeohash(geoFirestoreObj.geohash, true)) ? 'invalid geohash on object' : null;
+  error = (validateLocation(geoFirestoreObj.location, true)) ? 'invalid location on object' : error;
+
+  if (!geoFirestoreObj || !('document' in geoFirestoreObj) || typeof geoFirestoreObj.document !== 'object') {
+    error = 'no valid document found';
+  }
+
+  if (typeof error !== 'undefined' && !flag) {
+    throw new Error('Invalid GeoFirestore object: ' + error);
+  } else {
+    return !error;
   }
 };
 
@@ -402,23 +434,23 @@ export function geohashQueries(center: number[], radius: number): string[][] {
  * @param geohash The geohash of the location.
  * @returns The location encoded as GeoFire object.
  */
-export function encodeGeoFireObject(location: number[], geohash: string): GeoFireObj {
+export function encodeGeoFireObject(location: number[], geohash: string): GeoFirestoreObj {
   validateLocation(location);
   validateGeohash(geohash);
   return { '.priority': geohash, 'g': geohash, 'l': location };
 }
 
 /**
- * Decodes the location given as GeoFire object. Returns null if decoding fails.
+ * Decodes the document given as GeoFirestore object. Returns null if decoding fails.
  *
- * @param geoFireObj The location encoded as GeoFire object.
- * @returns The location as [latitude, longitude] pair or null if decoding fails.
+ * @param geoFirestoreObj The document encoded as GeoFirestore object.
+ * @returns The Firestore document or null if decoding fails.
  */
-export function decodeGeoFireObject(geoFireObj: GeoFireObj): number[] {
-  if (geoFireObj && 'l' in geoFireObj && Array.isArray(geoFireObj.l) && geoFireObj.l.length === 2) {
-    return geoFireObj.l;
+export function decodeGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj): any {
+  if (validateGeoFirestoreObject(geoFirestoreObj, true)) {
+    return geoFirestoreObj.document;
   } else {
-    throw new Error('Unexpected location object encountered: ' + JSON.stringify(geoFireObj));
+    throw new Error('Unexpected location object encountered: ' + JSON.stringify(geoFirestoreObj));
   }
 }
 

@@ -2,7 +2,7 @@ import * as firebase from 'firebase';
 
 import { GeoFirestore } from './';
 import { GeoCallbackRegistration } from './callbackRegistration';
-import { decodeGeoFireObject, encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
+import { decodeGeoFirestoreObject, encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
 
 import { QueryCriteria, GeoFireObj, GeoFirestoreQueryState } from './interfaces';
 
@@ -233,7 +233,7 @@ export class GeoFirestoreQuery {
    */
   private _childAddedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data = <GeoFireObj>locationDataSnapshot.data();
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data));
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFirestoreObject(data));
   }
 
   /**
@@ -243,7 +243,7 @@ export class GeoFirestoreQuery {
    */
   private _childChangedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data = <GeoFireObj>locationDataSnapshot.data();
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFireObject(data));
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFirestoreObject(data));
   }
 
   /**
@@ -256,7 +256,7 @@ export class GeoFirestoreQuery {
     if (key in this._locationsTracked) {
       this._collectionRef.doc(key).get().then((snapshot: firebase.firestore.DocumentSnapshot) => {
         const data = (!snapshot.exists) ? null : <GeoFireObj>snapshot.data();
-        const location: number[] = (!snapshot.exists) ? null : decodeGeoFireObject(data);
+        const location: number[] = (!snapshot.exists) ? null : decodeGeoFirestoreObject(data);
         const geohash: string = (location !== null) ? encodeGeohash(location) : null;
         // Only notify observers if key is not part of any other geohash query or this actually might not be
         // a key exited event, but a key moved or entered event. These events will be triggered by updates

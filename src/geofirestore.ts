@@ -13,9 +13,9 @@
 import * as firebase from 'firebase';
 
 import { GeoFirestoreQuery } from './query';
-import { decodeGeoFireObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey } from './utils';
+import { decodeGeoFirestoreObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey } from './utils';
 
-import { QueryCriteria, GeoFireObj } from './interfaces';
+import { QueryCriteria, GeoFirestoreObj } from './interfaces';
 
 /**
  * Creates a GeoFirestore instance.
@@ -34,12 +34,12 @@ export class GeoFirestore {
   /*  PUBLIC METHODS  */
   /********************/
   /**
-   * Returns a promise fulfilled with the location corresponding to the provided key.
+   * Returns a promise fulfilled with the document corresponding to the provided key.
    *
    * If the provided key does not exist, the returned promise is fulfilled with null.
    *
    * @param key The key of the location to retrieve.
-   * @returns A promise that is fulfilled with the location of the given key.
+   * @returns A promise that is fulfilled with the document of the given key.
    */
   public get(key: string): Promise<number[]> {
     validateKey(key);
@@ -47,8 +47,8 @@ export class GeoFirestore {
       if (!documentSnapshot.exists) {
         return null;
       } else {
-        const snapshotVal = <GeoFireObj>documentSnapshot.data();
-        return decodeGeoFireObject(snapshotVal);
+        const snapshotVal: GeoFirestoreObj = <GeoFirestoreObj>documentSnapshot.data();
+        return decodeGeoFirestoreObject(snapshotVal);
       }
     });
   };
