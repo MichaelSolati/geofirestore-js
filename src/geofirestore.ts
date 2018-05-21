@@ -38,12 +38,12 @@ export class GeoFirestore {
    *
    * If the provided key does not exist, the returned promise is fulfilled with null.
    *
-   * @param key The key of the location to retrieve.
+   * @param $key The key of the location to retrieve.
    * @returns A promise that is fulfilled with the document of the given key.
    */
-  public get(key: string): Promise<number[]> {
-    validateKey(key);
-    return this._collectionRef.doc(key).get().then((documentSnapshot: firebase.firestore.DocumentSnapshot) => {
+  public get($key: string): Promise<number[]> {
+    validateKey($key);
+    return this._collectionRef.doc($key).get().then((documentSnapshot: firebase.firestore.DocumentSnapshot) => {
       if (!documentSnapshot.exists) {
         return null;
       } else {
@@ -67,11 +67,11 @@ export class GeoFirestore {
    *
    * If the provided key is not in this GeoFirestore, the promise will still successfully resolve.
    *
-   * @param key The key of the location to remove.
+   * @param $key The key of the location to remove.
    * @returns A promise that is fulfilled after the inputted key is removed.
    */
-  public remove(key: string): Promise<void> {
-    return this.set(key, null);
+  public remove($key: string): Promise<void> {
+    return this._collectionRef.doc($key).delete();
   };
 
   /**
