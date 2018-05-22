@@ -13,7 +13,7 @@
 import * as firebase from 'firebase';
 
 import { GeoFirestoreQuery } from './query';
-import { decodeGeoFireObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey } from './utils';
+import { decodeGeoFireObject, decodeGeoFireDocumentObject, degreesToRadians, encodeGeoFireObject, encodeGeoFireDocumentObject, encodeGeohash, validateLocation, validateKey } from './utils';
 
 import { QueryCriteria, GeoFireObj } from './interfaces';
 
@@ -54,6 +54,31 @@ export class GeoFirestore {
   };
 
   /**
+   * Returns a promise fulfilled with the key, location, and document stored in the GeoFire index
+   * corresponding to the provided key.
+   *
+   * If the provided key does not exist in the index, the returned promise is fulfilled with null.
+   *
+   * @param key The key of the geofire object to retrieve
+   * @return A promise that is fulfilled with an object of {key, location, document}
+   */
+  public getWithDocument(key: string): Promise<any> {
+    validateKey(key);    
+    return this._collectionRef.doc(key).get().then((documentSnapshot: firebase.firestore.DocumentSnapshot) => {
+      if (!documentSnapshot.exists) {
+        return null;
+      } else {
+        const snapshotVal = <GeoFireObj>documentSnapshot.data();
+        return { 
+          key: key, 
+          location: decodeGeoFireObject(snapshotVal), 
+          document: decodeGeoFireDocumentObject(snapshotVal)
+        }
+      }
+    });    
+  };
+
+  /**
    * Returns the Firestore Collection used to create this GeoFirestore instance.
    *
    * @returns The Firestore Collection used to create this GeoFirestore instance.
@@ -72,6 +97,53 @@ export class GeoFirestore {
    */
   public remove(key: string): Promise<void> {
     return this.set(key, null);
+  };
+
+  /**
+   * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
+   *
+   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
+   *
+   * @param keyOrLocations The key representing the location to add or a mapping of key - location pairs which
+   * represent the locations to add.
+   * @param location The [latitude, longitude] pair to add.
+   * @param document Document to add to location.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+  public setWithDocument(keyOrLocations: string | any, location?: number[], document?: any): Promise<void> {
+    if (typeof keyOrLocations === 'string' && keyOrLocations.length !== 0) {
+      validateKey(keyOrLocations);
+      if (location === null) {
+        // Setting location to null is valid since it will remove the key
+        return this._collectionRef.doc(keyOrLocations).delete();
+      } else {
+        validateLocation(location);
+        const geohash: string = encodeGeohash(location);
+        return this._collectionRef.doc(keyOrLocations).set(encodeGeoFireDocumentObject(location, geohash, document));
+      }
+    } else if (typeof keyOrLocations === 'object') {
+      if (typeof location !== 'undefined') {
+        throw new Error('The location argument should not be used if you pass an object to set().');
+      }
+    } else {
+      throw new Error('keyOrLocations must be a string or a mapping of key - location pairs.');
+    }
+
+    const batch: firebase.firestore.WriteBatch = this._collectionRef.firestore.batch();
+    Object.keys(keyOrLocations).forEach((key) => {
+      validateKey(key);
+      const ref = this._collectionRef.doc(key);
+      const location: number[] = keyOrLocations[key].location;
+      const document: any = keyOrLocations[key].document;
+      if (location === null) {
+        batch.delete(ref);
+      } else {
+        validateLocation(location);
+        const geohash: string = encodeGeohash(location);
+        batch.set(ref, encodeGeoFireDocumentObject(location, geohash, document), { merge: true });
+      }
+    });
+    return batch.commit();
   };
 
   /**
