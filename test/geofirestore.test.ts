@@ -76,6 +76,22 @@ describe('GeoFirestore Tests:', () => {
       });
     });
 
+    it('setWithDocument() updates Firebase when adding new locations with a document', (done) => {
+      var cl = new Checklist(['p1','p2'], expect, done);
+
+      geoFirestore.setWithDocument('loc1', [0, 0], { name: 'Test 1' }).then(() => {
+        cl.x('p1');
+
+        return getFirestoreData();
+      }).then((firebaseData) => {
+        expect(firebaseData).to.deep.equal({
+          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz', 'd': { name: 'Test 1' } },
+        });
+
+        cl.x('p2');
+      }).catch(failTestOnCaughtError);
+    });
+
     it('set() handles decimal latitudes and longitudes', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
@@ -561,6 +577,33 @@ describe('GeoFirestore Tests:', () => {
         return geoFirestore.get('loc3');
       }).then((location) => {
         expect(location).to.deep.equal([-90, -90]);
+        cl.x('p4');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('getWithDocument() retrieves locations and document given existing keys', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
+
+      geoFirestore.setWithDocument({
+        'loc1': { location: [0, 0], document: { name: 'Name 1' }},
+        'loc2': { location: [50, 50], document: { name: 'Name 2' }},
+        'loc3': { location: [-90, -90], document: { name: 'Name 3' }}
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.getWithDocument('loc1');
+      }).then((location) => {
+        expect(location).to.deep.equal({ key: 'loc1', location: [0, 0], document: { name: 'Name 1' }});
+        cl.x('p2');
+
+        return geoFirestore.getWithDocument('loc2');
+      }).then((location) => {
+        expect(location).to.deep.equal({ key: 'loc2', location: [50, 50], document: { name: 'Name 2' }});
+        cl.x('p3');
+
+        return geoFirestore.getWithDocument('loc3');
+      }).then((location) => {
+        expect(location).to.deep.equal({ key: 'loc3', location: [-90, -90], document: { name: 'Name 3' }});
         cl.x('p4');
       }).catch(failTestOnCaughtError);
     });
