@@ -1,3 +1,9 @@
+#### 1.1.1 (2018-05-24)
+
+##### Bug Fixes
+
+* **scripts:**  remove postinstall script ([d2712d36](https://github.com/MichaelSolati/geofirestore/commit/d2712d36e8edd067540d5e0fdc7948c93ccf6a7c))
+
 ### 1.1.0 (2018-05-24)
 
 ##### Build System / Dependencies
