@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/MichaelSolati/geofirestore/issues"
   },
+  "readme": "README.md",
   "license": "MIT",
   "keywords": [
     "geoquery",
@@ -37,6 +38,7 @@
     "@types/node": "^9.4.6",
     "chai": "^4.1.2",
     "firebase": "4.x.x",
+    "generate-changelog": "^1.7.1",
     "jsdom": "^11.6.2",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.0.4",
@@ -46,6 +48,10 @@
   },
   "scripts": {
     "build": "rm -rf ./dist && tsc",
-    "test": "mocha"
+    "test": "mocha",
+    "postinstall": "npm run build",
+    "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
+    "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
+    "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch"
   }
 }
