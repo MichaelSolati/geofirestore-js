@@ -49,7 +49,6 @@
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "test": "mocha",
-    "postinstall": "npm run build",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch"
