@@ -1,7 +1,7 @@
-import { firestore } from 'firebase/app';
+import * as firebase from 'firebase';
 
 export interface GeoFirestoreObj {
   g: string;
-  l: firestore.GeoPoint;
+  l: firebase.firestore.GeoPoint;
   d: any;
 }
