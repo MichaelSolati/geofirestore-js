@@ -1,10 +1,10 @@
-import * as firebase from 'firebase';
+import { firestore } from 'firebase/app';
 
 import { GeoFirestore } from './';
 import { GeoCallbackRegistration } from './callbackRegistration';
 import { decodeGeoFirestoreObject, encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
 
-import { QueryCriteria, GeoFireObj, GeoFirestoreQueryState } from './interfaces';
+import { QueryCriteria, GeoFirestoreObj, GeoFirestoreQueryState } from './interfaces';
 
 /**
  * Creates a GeoFirestoreQuery instance.
@@ -14,7 +14,7 @@ export class GeoFirestoreQuery {
   private _callbacks: any = { ready: [], key_entered: [], key_exited: [], key_moved: [] };
   // Variable to track when the query is cancelled
   private _cancelled: boolean = false;
-  private _center: number[];
+  private _center: firestore.GeoPoint;
   // A dictionary of geohash queries which currently have an active callbacks
   private _currentGeohashesQueried: any = {};
   // A dictionary of locations that a currently active in the queries
@@ -36,7 +36,7 @@ export class GeoFirestoreQuery {
    * @param _collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    * @param _queryCriteria The criteria which specifies the query's center and radius.
    */
-  constructor(private _collectionRef: firebase.firestore.CollectionReference, private _queryCriteria: QueryCriteria) {
+  constructor(private _collectionRef: firestore.CollectionReference, private _queryCriteria: QueryCriteria) {
     // Firebase reference of the GeoFirestore which created this query
     if (Object.prototype.toString.call(this._collectionRef) !== '[object Object]') {
       throw new Error('firebaseRef must be an instance of Firestore');
@@ -89,9 +89,9 @@ export class GeoFirestoreQuery {
   /**
    * Returns the location signifying the center of this query.
    *
-   * @returns The [latitude, longitude] pair signifying the center of this query.
+   * @returns The GeoPoint signifying the center of this query.
    */
-  public center(): number[] {
+  public center(): firestore.GeoPoint {
     return this._center;
   };
 
@@ -231,8 +231,8 @@ export class GeoFirestoreQuery {
    *
    * @param locationDataSnapshot A snapshot of the data stored for this location.
    */
-  private _childAddedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
-    const data = <GeoFireObj>locationDataSnapshot.data();
+  private _childAddedCallback(locationDataSnapshot: firestore.DocumentSnapshot): void {
+    const data = <GeoFirestoreObj>locationDataSnapshot.data();
     this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFirestoreObject(data));
   }
 
@@ -241,8 +241,8 @@ export class GeoFirestoreQuery {
    *
    * @param locationDataSnapshot A snapshot of the data stored for this location.
    */
-  private _childChangedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
-    const data = <GeoFireObj>locationDataSnapshot.data();
+  private _childChangedCallback(locationDataSnapshot: firestore.DocumentSnapshot): void {
+    const data = <GeoFirestoreObj>locationDataSnapshot.data();
     this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), decodeGeoFirestoreObject(data));
   }
 
@@ -251,12 +251,12 @@ export class GeoFirestoreQuery {
    *
    * @param locationDataSnapshot A snapshot of the data stored for this location.
    */
-  private _childRemovedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
+  private _childRemovedCallback(locationDataSnapshot: firestore.DocumentSnapshot): void {
     const key: string = geoFirestoreGetKey(locationDataSnapshot);
     if (key in this._locationsTracked) {
-      this._collectionRef.doc(key).get().then((snapshot: firebase.firestore.DocumentSnapshot) => {
-        const data = (!snapshot.exists) ? null : <GeoFireObj>snapshot.data();
-        const location: number[] = (!snapshot.exists) ? null : decodeGeoFirestoreObject(data);
+      this._collectionRef.doc(key).get().then((snapshot: firestore.DocumentSnapshot) => {
+        const data = (!snapshot.exists) ? null : <GeoFirestoreObj>snapshot.data();
+        const location: firestore.GeoPoint = (!snapshot.exists && data.l && validateLocation(data.l)) ? null : data.l;
         const geohash: string = (location !== null) ? encodeGeohash(location) : null;
         // Only notify observers if key is not part of any other geohash query or this actually might not be
         // a key exited event, but a key moved or entered event. These events will be triggered by updates
@@ -309,10 +309,10 @@ export class GeoFirestoreQuery {
    *
    * @param eventType The event type whose callbacks to fire. One of 'key_entered', 'key_exited', or 'key_moved'.
    * @param key The key of the location for which to fire the callbacks.
-   * @param location The location as [latitude, longitude] pair
+   * @param location The location as a Firestore GeoPoint.
    * @param distanceFromCenter The distance from the center or null.
    */
-  private _fireCallbacksForKey(eventType: string, key: string, location?: number[], distanceFromCenter?: number): void {
+  private _fireCallbacksForKey(eventType: string, key: string, location?: firestore.GeoPoint, distanceFromCenter?: number): void {
     this._callbacks[eventType].forEach((callback) => {
       if (typeof location === 'undefined' || location === null) {
         callback(key, null, null);
@@ -411,11 +411,11 @@ export class GeoFirestoreQuery {
       const query: string[] = this._stringToQuery(toQueryStr);
 
       // Create the Firebase query
-      const firestoreQuery: firebase.firestore.Query = this._collectionRef.orderBy('g').startAt(query[0]).endAt(query[1]);
+      const firestoreQuery: firestore.Query = this._collectionRef.orderBy('g').startAt(query[0]).endAt(query[1]);
 
       // For every new matching geohash, determine if we should fire the 'key_entered' event
-      const childCallback = firestoreQuery.onSnapshot((snapshot: firebase.firestore.QuerySnapshot) => {
-        snapshot.docChanges.forEach((change: firebase.firestore.DocumentChange) => {
+      const childCallback = firestoreQuery.onSnapshot((snapshot: firestore.QuerySnapshot) => {
+        snapshot.docChanges.forEach((change: firestore.DocumentChange) => {
           if (change.type === 'added') {
             this._childAddedCallback(change.doc);
           }
@@ -469,9 +469,9 @@ export class GeoFirestoreQuery {
    * Removes the location from the local state and fires any events if necessary.
    *
    * @param key The key to be removed.
-   * @param currentLocation The current location as [latitude, longitude] pair or null if removed.
+   * @param currentLocation The current location as firestore GeoPoint or null if removed.
    */
-  private _removeLocation(key: string, currentLocation?: number[]): void {
+  private _removeLocation(key: string, currentLocation?: firestore.GeoPoint): void {
     const locationDict = this._locationsTracked[key];
     delete this._locationsTracked[key];
     if (typeof locationDict !== 'undefined' && locationDict.isInQuery) {
@@ -502,9 +502,9 @@ export class GeoFirestoreQuery {
    * any necessary cleanup.
    *
    * @param key The key of the GeoFirestore location.
-   * @param location The location as [latitude, longitude] pair.
+   * @param location The location as a Firestore GeoPoint.
    */
-  private _updateLocation(key: string, location?: number[]): void {
+  private _updateLocation(key: string, location?: firestore.GeoPoint): void {
     validateLocation(location);
     // Get the key and location
     let distanceFromCenter: number, isInQuery;

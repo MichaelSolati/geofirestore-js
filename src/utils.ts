@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import { firestore } from 'firebase/app';
 
 import { GeoFirestoreObj } from './interfaces';
 
@@ -72,7 +72,7 @@ export function validateKey(key: string, flag: boolean = false): boolean {
  * @param location The Firestore GeoPoint to be verified.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: firebase.firestore.GeoPoint, flag: boolean = false): boolean {
+export function validateLocation(location: firestore.GeoPoint, flag: boolean = false): boolean {
   let error: string;
 
   if (!('latitude' in location)) {
@@ -138,10 +138,10 @@ export function validateGeohash(geohash: string, flag: boolean = false): boolean
 export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag: boolean = false): boolean {
   let error: string;
 
-  error = (validateGeohash(geoFirestoreObj.geohash, true)) ? 'invalid geohash on object' : null;
-  error = (validateLocation(geoFirestoreObj.location, true)) ? 'invalid location on object' : error;
+  error = (validateGeohash(geoFirestoreObj.g, true)) ? 'invalid geohash on object' : null;
+  error = (validateLocation(geoFirestoreObj.l, true)) ? 'invalid location on object' : error;
 
-  if (!geoFirestoreObj || !('document' in geoFirestoreObj) || typeof geoFirestoreObj.document !== 'object') {
+  if (!geoFirestoreObj || !('d' in geoFirestoreObj) || typeof geoFirestoreObj.d !== 'object') {
     error = 'no valid document found';
   }
 
@@ -205,15 +205,14 @@ export function degreesToRadians(degrees: number): number {
 };
 
 /**
- * Generates a geohash of the specified precision/string length from the  [latitude, longitude]
- * pair, specified as an array.
+ * Generates a geohash of the specified precision/string length from the inputted GeoPoint.
  *
- * @param location The [latitude, longitude] pair to encode into a geohash.
+ * @param location The GeoPoint to encode into a geohash.
  * @param precision The length of the geohash to create. If no precision is specified, the
  * global default is used.
  * @returns The geohash of the inputted location.
  */
-export function encodeGeohash(location: number[], precision: number = g_GEOHASH_PRECISION): string {
+export function encodeGeohash(location: firestore.GeoPoint, precision: number = g_GEOHASH_PRECISION): string {
   validateLocation(location);
   if (typeof precision !== 'undefined') {
     if (typeof precision !== 'number' || isNaN(precision)) {
@@ -241,7 +240,7 @@ export function encodeGeohash(location: number[], precision: number = g_GEOHASH_
   let even: number | boolean = 1;
 
   while (hash.length < precision) {
-    const val = even ? location[1] : location[0];
+    const val = even ? location.longitude : location.latitude;
     const range = even ? longitudeRange : latitudeRange;
     const mid = (range.min + range.max) / 2;
 
@@ -332,11 +331,11 @@ export function wrapLongitude(longitude: number): number {
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a
  * given size at the given coordinate.
  *
- * @param coordinate The coordinate as a [latitude, longitude] pair.
+ * @param coordinate The coordinate as a Firestore GeoPoint.
  * @param size The size of the bounding box.
  * @returns The number of bits necessary for the geohash.
  */
-export function boundingBoxBits(coordinate: number[], size: number): number {
+export function boundingBoxBits(coordinate: firestore.GeoPoint, size: number): number {
   const latDeltaDegrees = size / g_METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, coordinate[0] + latDeltaDegrees);
   const latitudeSouth = Math.max(-90, coordinate[0] - latDeltaDegrees);
@@ -351,27 +350,27 @@ export function boundingBoxBits(coordinate: number[], size: number): number {
  * geohash of these nine coordinates, truncated to a precision of at most radius, are guaranteed
  * to be prefixes of any geohash that lies within the circle.
  *
- * @param center The center given as [latitude, longitude].
+ * @param center The center given as Firestore GeoPoint.
  * @param radius The radius of the circle.
  * @returns The eight bounding box points.
  */
-export function boundingBoxCoordinates(center: number[], radius: number): number[][] {
+export function boundingBoxCoordinates(center: firestore.GeoPoint, radius: number): firestore.GeoPoint[] {
   const latDegrees = radius / g_METERS_PER_DEGREE_LATITUDE;
-  const latitudeNorth = Math.min(90, center[0] + latDegrees);
-  const latitudeSouth = Math.max(-90, center[0] - latDegrees);
+  const latitudeNorth = Math.min(90, center.latitude + latDegrees);
+  const latitudeSouth = Math.max(-90, center.latitude - latDegrees);
   const longDegsNorth = metersToLongitudeDegrees(radius, latitudeNorth);
   const longDegsSouth = metersToLongitudeDegrees(radius, latitudeSouth);
   const longDegs = Math.max(longDegsNorth, longDegsSouth);
   return [
-    [center[0], center[1]],
-    [center[0], wrapLongitude(center[1] - longDegs)],
-    [center[0], wrapLongitude(center[1] + longDegs)],
-    [latitudeNorth, center[1]],
-    [latitudeNorth, wrapLongitude(center[1] - longDegs)],
-    [latitudeNorth, wrapLongitude(center[1] + longDegs)],
-    [latitudeSouth, center[1]],
-    [latitudeSouth, wrapLongitude(center[1] - longDegs)],
-    [latitudeSouth, wrapLongitude(center[1] + longDegs)]
+    new firestore.GeoPoint(center.latitude, center.longitude),
+    new firestore.GeoPoint(center.latitude, wrapLongitude(center.longitude - longDegs)),
+    new firestore.GeoPoint(center.latitude, wrapLongitude(center.longitude + longDegs)),
+    new firestore.GeoPoint(latitudeNorth, center.longitude),
+    new firestore.GeoPoint(latitudeNorth, wrapLongitude(center.longitude - longDegs)),
+    new firestore.GeoPoint(latitudeNorth, wrapLongitude(center.longitude + longDegs)),
+    new firestore.GeoPoint(latitudeSouth, center.longitude),
+    new firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude - longDegs)),
+    new firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude + longDegs))
   ];
 };
 
@@ -407,11 +406,11 @@ export function geohashQuery(geohash: string, bits: number): string[] {
  * Calculates a set of queries to fully contain a given circle. A query is a [start, end] pair
  * where any geohash is guaranteed to be lexiographically larger then start and smaller than end.
  *
- * @param center The center given as [latitude, longitude] pair.
+ * @param center The center given as a GeoPoint.
  * @param radius The radius of the circle.
- * @return An array of geohashes containing a [start, end] pair.
+ * @return An array of geohashes containing a GeoPoint.
  */
-export function geohashQueries(center: number[], radius: number): string[][] {
+export function geohashQueries(center: firestore.GeoPoint, radius: number): string[][] {
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
   const geohashPrecision = Math.ceil(queryBits / g_BITS_PER_CHAR);
@@ -434,10 +433,10 @@ export function geohashQueries(center: number[], radius: number): string[][] {
  * @param geohash The geohash of the location.
  * @returns The location encoded as GeoFire object.
  */
-export function encodeGeoFireObject(location: number[], geohash: string): GeoFirestoreObj {
+export function encodeGeoFireObject(location: firestore.GeoPoint, geohash: string, document: any): GeoFirestoreObj {
   validateLocation(location);
   validateGeohash(geohash);
-  return { '.priority': geohash, 'g': geohash, 'l': location };
+  return { g: geohash, l: location, d: document };
 }
 
 /**
@@ -448,36 +447,55 @@ export function encodeGeoFireObject(location: number[], geohash: string): GeoFir
  */
 export function decodeGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj): any {
   if (validateGeoFirestoreObject(geoFirestoreObj, true)) {
-    return geoFirestoreObj.document;
+    return geoFirestoreObj.d;
   } else {
     throw new Error('Unexpected location object encountered: ' + JSON.stringify(geoFirestoreObj));
   }
 }
 
 /**
- * Returns the key of a Firebase snapshot across SDK versions.
- *
- * @param A Firebase snapshot.
- * @returns The Firebase snapshot's key.
- */
-export function geoFireGetKey(snapshot: firebase.database.DataSnapshot): string {
-  let key: string;
-  if (typeof snapshot.key === 'string' || snapshot.key === null) {
-    key = snapshot.key;
-  }
-  return key;
-}
-
-/**
  * Returns the id of a Firestore snapshot across SDK versions.
  *
- * @param A Firestore snapshot.
+ * @param snapshot A Firestore snapshot.
  * @returns The Firestore snapshot's id.
  */
-export function geoFirestoreGetKey(snapshot: firebase.firestore.DocumentSnapshot): string {
+export function geoFirestoreGetKey(snapshot: firestore.DocumentSnapshot): string {
   let id: string;
   if (typeof snapshot.id === 'string' || snapshot.id === null) {
     id = snapshot.id;
   }
   return id;
+}
+
+/**
+ * Returns the key of a document that is a GeoPoint.
+ *
+ * @param document A GeoFirestore document.
+ * @returns The key for the location field of a document. 
+ */
+export function findCoordinatesKey(document: any, customKey?: string): string {
+  let error: string;
+  let key: string;
+
+  if (document && typeof document === 'object') {
+    if (customKey in document) {
+      key = customKey
+    } else if ('coordinates' in document) {
+      key = 'coordinates';
+    } else {
+      error = 'no valid key exists'
+    }
+  } else {
+    error = 'document not an object';
+  }
+
+  if (!validateLocation(document[key], true)) {
+    error = key + ' is not a valid GeoPoint';
+  }
+
+  if (typeof error !== 'undefined') {
+    throw new Error('Invalid GeoFirestore document: ' + error);
+  }
+
+  return key;
 }
