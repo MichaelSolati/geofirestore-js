@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 
-import { GeoFirestoreObj } from './interfaces';
+import { GeoFirestoreObj, QueryCriteria } from './interfaces';
 
 // Default geohash length
 export const g_GEOHASH_PRECISION: number = 10;
@@ -76,10 +76,10 @@ export function validateLocation(location: firebase.firestore.GeoPoint, flag: bo
   let error: string;
 
   if (!location) {
-    error = 'no GeoPoint provided';
-  } else if (!('latitude' in location)) {
+    error = 'GeoPoint must exist';
+  } else if (typeof location.latitude === 'undefined') {
     error = 'latitude must exist on GeoPoint';
-  } else if (!('longitude' in location)) {
+  } else if (typeof location.longitude === 'undefined') {
     error = 'longitude must exist on GeoPoint';
   } else {
     const latitude = location.latitude;
@@ -97,7 +97,7 @@ export function validateLocation(location: firebase.firestore.GeoPoint, flag: bo
   }
 
   if (typeof error !== 'undefined' && !flag) {
-    throw new Error('Invalid GeoFire location \'' + location + '\': ' + error);
+    throw new Error('Invalid GeoFire location: ' + error);
   } else {
     return !error;
   }
@@ -140,8 +140,8 @@ export function validateGeohash(geohash: string, flag: boolean = false): boolean
 export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag: boolean = false): boolean {
   let error: string;
 
-  error = (validateGeohash(geoFirestoreObj.g, true)) ? 'invalid geohash on object' : null;
-  error = (validateLocation(geoFirestoreObj.l, true)) ? 'invalid location on object' : error;
+  error = (!validateGeohash(geoFirestoreObj.g, true)) ? 'invalid geohash on object' : null;
+  error = (!validateLocation(geoFirestoreObj.l, true)) ? 'invalid location on object' : error;
 
   if (!geoFirestoreObj || !('d' in geoFirestoreObj) || typeof geoFirestoreObj.d !== 'object') {
     error = 'no valid document found';
@@ -160,7 +160,7 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
  * @param newQueryCriteria The criteria which specifies the query's center and/or radius.
  * @param requireCenterAndRadius The criteria which center and radius required.
  */
-export function validateCriteria(newQueryCriteria: any, requireCenterAndRadius: boolean = false): void {
+export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius: boolean = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('query criteria must be an object');
   } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {

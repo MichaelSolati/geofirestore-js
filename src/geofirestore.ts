@@ -81,17 +81,21 @@ export class GeoFirestore {
   public set(keyOrDocuments: string | any, document?: any, customKey?: string): Promise<void> {
     if (typeof keyOrDocuments === 'string' && keyOrDocuments.length !== 0) {
       validateKey(keyOrDocuments);
-      if (document === null) {
+      if (!document) {
         // Setting location to null is valid since it will remove the key
         return this._collectionRef.doc(keyOrDocuments).delete();
       } else {
-        const locationKey = findCoordinatesKey(document, customKey);
+        const locationKey: string = findCoordinatesKey(document, customKey);
         const location: firebase.firestore.GeoPoint = document[locationKey];
         const geohash: string = encodeGeohash(location);
         return this._collectionRef.doc(keyOrDocuments).set(encodeGeoFireObject(location, geohash, document));
       }
-    } else if (typeof keyOrDocuments !== 'object') {
-      throw new Error('keyOrLocations must be a string or a mapping of key - document pairs.');
+    } else if (typeof keyOrDocuments === 'object') {
+      if (typeof document !== 'undefined') {
+        throw new Error('The location argument should not be used if you pass an object to set().');
+      }
+    } else {
+      throw new Error('keyOrDocuments must be a string or a mapping of key - document pairs.');
     }
 
     const batch: firebase.firestore.WriteBatch = this._collectionRef.firestore.batch();
@@ -99,7 +103,7 @@ export class GeoFirestore {
       validateKey(key);
       const ref = this._collectionRef.doc(key);
       const documentToUpdate: any = keyOrDocuments[key];
-      if (documentToUpdate === null) {
+      if (!documentToUpdate) {
         batch.delete(ref);
       } else {
         const locationKey = findCoordinatesKey(documentToUpdate, customKey);
