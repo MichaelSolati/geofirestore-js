@@ -1,3 +1,10 @@
+### 1.2.0 (2018-05-29)
+
+##### Chores
+
+*  lock to firebase 5.x.x ([295e9f7b](https://github.com/MichaelSolati/geofirestore/commit/295e9f7b3dd3aae227dcca089bb13cfefb0a2d40))
+*  update dependencies ([b45d9e8e](https://github.com/MichaelSolati/geofirestore/commit/b45d9e8e6998b2391a9c9ad55d658e2eeb5ade03))
+
 #### 1.1.1 (2018-05-24)
 
 ##### Bug Fixes
