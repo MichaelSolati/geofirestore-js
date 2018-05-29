@@ -1,3 +1,5 @@
+import * as firebase from 'firebase';
+
 import { GeoCallbackRegistration } from '../src/callbackRegistration';
 import {
   afterEachHelper, beforeEachHelper, Checklist,
@@ -33,20 +35,20 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('\'key_moved\' registrations can be cancelled', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 moved'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyMovedRegistration = geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
         cl.x(key + ' moved');
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [1, 1]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) }
       }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc1', [2, 2]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(2, 2) });
       }).then(() => {
         cl.x('p2');
 
@@ -55,7 +57,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         onKeyMovedRegistration.cancel();
         cl.x('p3');
 
-        return geoFirestore.set('loc3', [1, 2]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(1, 2) });
       }).then(() => {
         cl.x('p4');
 
@@ -68,16 +70,16 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('\'key_entered\' registrations can be cancelled', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'loc1 entered'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyEnteredRegistration = geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
         cl.x(key + ' entered');
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [80, 80]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(80, 80) }
       }).then(() => {
         cl.x('p1');
 
@@ -86,7 +88,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         onKeyEnteredRegistration.cancel();
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [1, 2]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(1, 2) });
       }).then(() => {
         cl.x('p3');
 
@@ -99,7 +101,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('\'key_exited\' registrations can be cancelled', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 exited'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyExitedRegistration = geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
         cl.x(key + ' exited');
@@ -107,13 +109,13 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [1, 1]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) }
       }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc1', [80, 80]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(80, 80) });
       }).then(() => {
         cl.x('p2');
 
@@ -121,7 +123,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
       }).then(() => {
         cl.x('p3');
 
-        return geoFirestore.set('loc3', [-80, -80]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-80, -80) });
       }).then(() => {
         cl.x('p4');
 
@@ -134,7 +136,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('Cancelling a \'key_moved\' registration does not cancel all \'key_moved\' callbacks', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 moved1', 'loc1 moved2', 'loc3 moved2'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyMovedRegistration1 = geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
         cl.x(key + ' moved1');
@@ -144,13 +146,13 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [1, 1]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) }
       }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc1', [2, 2]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(2, 2) });
       }).then(() => {
         cl.x('p2');
 
@@ -159,7 +161,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         onKeyMovedRegistration1.cancel();
         cl.x('p3');
 
-        return geoFirestore.set('loc3', [1, 2]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(1, 2) });
       }).then(() => {
         cl.x('p4');
 
@@ -172,7 +174,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('Cancelling a \'key_entered\' registration does not cancel all \'key_entered\' callbacks', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'loc1 entered1', 'loc1 entered2', 'loc3 entered2'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyEnteredRegistration1 = geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
         cl.x(key + ' entered1');
@@ -182,9 +184,9 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [80, 80]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(80, 80) }
       }).then(() => {
         cl.x('p1');
 
@@ -193,7 +195,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         onKeyEnteredRegistration1.cancel();
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [1, 2]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(1, 2) });
       }).then(() => {
         cl.x('p3');
 
@@ -206,7 +208,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('Cancelling a \'key_exited\' registration does not cancel all \'key_exited\' callbacks', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 exited1', 'loc1 exited2', 'loc3 exited2'], expect, done);
 
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyExitedRegistration1 = geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
         cl.x(key + ' exited1');
@@ -216,13 +218,13 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
       });
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, -7],
-        'loc3': [1, 1]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) }
       }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc1', [80, 80]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(80, 80) });
       }).then(() => {
         cl.x('p2');
 
@@ -231,7 +233,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         onKeyExitedRegistration1.cancel();
         cl.x('p3');
 
-        return geoFirestore.set('loc3', [-80, -80]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-80, -80) });
       }).then(() => {
         cl.x('p4');
 
@@ -242,7 +244,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     });
 
     it('Calling cancel on a GeoCallbackRegistration twice does not throw', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       const onKeyExitedRegistration = geoFirestoreQueries[0].on('key_exited', () => { });
 
