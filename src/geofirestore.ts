@@ -73,7 +73,7 @@ export class GeoFirestore {
    *
    * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
    *
-   * @param keyOrDocuments The key representing the document to add or an array of $key/document pairs.
+   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
    * @param document The document to be added to the GeoFirestore.
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @returns A promise that is fulfilled when the write is complete.
