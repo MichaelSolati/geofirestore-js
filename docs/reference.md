@@ -6,9 +6,7 @@
    - [`new GeoFirestore(collectionRef)`](#new-geofirestorecollectionref)
    - [`ref()`](#geofirestoreref)
    - [`get(key)`](#geofirestoregetkey)
-   - [`getWithDocument(key)`](#geofirestoregetwithdocumentkey)
    - [`set(keyOrLocations[, location])`](#geofirestoresetkeyorlocations-location)
-   - [`setWithDocument(keyOrLocations[, location])`](#geofirestoresetwithdocumentkeyorlocations-location)
    - [`remove(key)`](#geofirestoreremovekey)
    - [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
  * [`GeoFirestoreQuery`](#geofirestorequery)
@@ -76,37 +74,20 @@ geoFirestore.get('some_key').then((location) => {
 });
 ```
 
-### GeoFirestore.getWithDocument(key)
+### GeoFirestore.set(keyOrDocuments[, document, customKey])
 
-Fetches the location with the document stored for `key`.
+Adds the specified key - document pair(s) to this `GeoFirestore`. If the provided `keyOrDocuments` argument is a string, the single `document` will be added. The `keyOrDocuments` argument can also be an object containing a mapping between keys and documents allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
 
-Returns a promise fulfilled with `{ key, location, document }` corresponding to the provided `key`. If `key` does not exist, the returned promise is fulfilled with `null`.
+If any of the provided keys already exist in this `GeoFirestore`, they will be overwritten with the new location values. Documents must have a `coordinates` field as a Firestore GeoPoint.
 
-```JavaScript
-geoFirestore.getWithDocument('some_key').then(({ key, location, document }) => {
-  if (location === null) {
-    console.log('Provided key is not in GeoFirestore');
-  }
-  else {
-    console.log('Provided key has a location of ' + location);
-  }
-}, (error) => {
-  console.log('Error: ' + error);
-});
-```
-
-### GeoFirestore.set(keyOrLocations[, location])
-
-Adds the specified key - location pair(s) to this `GeoFirestore`. If the provided `keyOrLocations` argument is a string, the single `location` will be added. The `keyOrLocations` argument can also be an object containing a mapping between keys and locations allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
-
-If any of the provided keys already exist in this `GeoFirestore`, they will be overwritten with the new location values. Locations must have the form `[latitude, longitude]`.
+If you want to use a custom attribute as for the location pass the attribute as a string as the `customKey` argument. Keep in mind that if you pass an object of key - document pairs, then your `document` object should be `null`.
 
 Returns a promise which is fulfilled when the new location has been synchronized with the Firebase servers.
 
 Keys must be strings and [valid Firstore id](https://firebase.google.com/docs/database/web/structure-data).
 
 ```JavaScript
-geoFirestore.set('some_key', [37.79, -122.41]).then(() => {
+geoFirestore.set('some_key', { coordinates: new firebase.firestore.GeoPoint(37.79, -122.41)}).then(() => {
   console.log('Provided key has been added to GeoFirestore');
 }, (error) => {
   console.log('Error: ' + error);
@@ -115,37 +96,8 @@ geoFirestore.set('some_key', [37.79, -122.41]).then(() => {
 
 ```JavaScript
 geoFirestore.set({
-  'some_key': [37.79, -122.41],
-  'another_key': [36.98, -122.56]
-}).then(() => {
-  console.log('Provided keys have been added to GeoFirestore');
-}, (error) => {
-  console.log('Error: ' + error);
-});
-```
-
-### GeoFirestore.setWithDocument(keyOrLocations[, location][, document])
-
-Adds the specified key - obj pair(s) to this `GeoFirestore`. If the provided `keyOrLocations` argument is a string, the single `location` and `document` will be added. The `keyOrLocations` argument can also be an object containing a mapping between keys and locations allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
-
-If any of the provided keys already exist in this `GeoFirestore`, they will be overwritten with the new location and document values. Locations must have the form `{ location: [latitude, longitude], document: {} }`.
-
-Returns a promise which is fulfilled when the new location has been synchronized with the Firebase servers.
-
-Keys must be strings and [valid Firstore id](https://firebase.google.com/docs/database/web/structure-data).
-
-```JavaScript
-geoFirestore.setWithDocument('some_key', [37.79, -122.41], { name: 'Joe Blow' }).then(() => {
-  console.log('Provided key has been added to GeoFirestore');
-}, (error) => {
-  console.log('Error: ' + error);
-});
-```
-
-```JavaScript
-geoFirestore.set({
-  'some_key': { location: [37.79, -122.41], document: { name: 'Joe Blow' }},
-  'another_key': { location: [36.98, -122.56], document: { name: 'Blow Joe' }}
+  'some_key':  { coordinates: new firebase.firestore.GeoPoint(37.79, -122.41)},
+  'another_key':  { coordinates: new firebase.firestore.GeoPoint(36.98, -122.56)}
 }).then(() => {
   console.log('Provided keys have been added to GeoFirestore');
 }, (error) => {
@@ -167,18 +119,20 @@ geoFirestore.remove('some_key').then(() => {
 });
 ```
 
+You may additionally pass in an array of keys to remove many documents at once.
+
 ### GeoFirestore.query(queryCriteria)
 
 Creates and returns a new `GeoFirestoreQuery` instance with the provided `queryCriteria`.
 
 The `queryCriteria` describe a circular query and must be an object with the following keys:
 
-* `center` - the center of this query, with the form `[latitude, longitude]`
+* `center` - the center of this query, in the form of a Firestore GeoPoint
 * `radius` - the radius, in kilometers, from the center of this query in which to include results
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
-  center: [10.38, 2.41],
+  center: new firebase.firestore.GeoPoint(10.38, 2.41),
   radius: 10.5
 });
 ```
@@ -191,15 +145,15 @@ A standing query that tracks a set of keys matching a criteria. A new `GeoFirest
 
 Returns the `location` signifying the center of this query.
 
-The returned `location` will have the form `[latitude, longitude]`.
+The returned `location` will be a Firestore GeoPoint.
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
-  center: [10.38, 2.41],
+  center: new firebase.firestore.GeoPoint(10.38, 2.41),
   radius: 10.5
 });
 
-const center = geoQuery.center();  // center === [10.38, 2.41]
+const center = geoQuery.center(); // center === GeoPoint { _lat: 10.38, _long: 2.41 }
 ```
 
 ### GeoFirestoreQuery.radius()
@@ -208,7 +162,7 @@ Returns the `radius` of this query, in kilometers.
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
-  center: [10.38, 2.41],
+  center: new firebase.firestore.GeoPoint(10.38, 2.41),
   radius: 10.5
 });
 
@@ -223,37 +177,36 @@ Updates the criteria for this query.
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
-  center: [10.38, 2.41],
+  center: new firebase.firestore.GeoPoint(10.38, 2.41),
   radius: 10.5
 });
 
-let center = geoQuery.center();  // center === [10.38, 2.41]
+let center = geoQuery.center();  // center === GeoPoint { _lat: 10.38, _long: 2.41 }
 let radius = geoQuery.radius();  // radius === 10.5
 
 geoQuery.updateCriteria({
-  center: [-50.83, 100.19],
+  center: new firebase.firestore.GeoPoint(-50.83, 100.19),
   radius: 5
 });
 
-center = geoQuery.center();  // center === [-50.83, 100.19]
+center = geoQuery.center();  // center === GeoPoint { _lat: -50.83, _long: 100.19 }
 radius = geoQuery.radius();  // radius === 5
 
 geoQuery.updateCriteria({
   radius: 7
 });
 
-center = geoQuery.center();  // center === [-50.83, 100.19]
+center = geoQuery.center();  // center === GeoPoint { _lat: -50.83, _long: 100.19 }
 radius = geoQuery.radius();  // radius === 7
 ```
 
 ### GeoFirestoreQuery.on(eventType, callback)
 
-Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed four parameters:
+Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
 
 1. the location's key
 2. the location's [latitude, longitude] pair
 3. the distance, in kilometers, from the location to this query's center
-4. the document, if attached to the location
 
 `ready` fires once when this query's initial state has been loaded from the server. The `ready` event will fire after all other events associated with the loaded data have been triggered. `ready` will fire again once each time `updateCriteria()` is called, after all new data is loaded and all other new events have been fired.
 
@@ -270,16 +223,16 @@ const onReadyRegistration = geoQuery.on('ready', () => {
   console.log('GeoFirestoreQuery has loaded and fired all other events for initial data');
 });
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, document) {
-  console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, document) {
-  console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, location, distance, document) {
-  console.log(key + ' moved within query to ' + location + ' (' + distance + ' km from center)');
+const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, location, distance) {
+  console.log(key + ' moved within query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 });
 ```
 
@@ -291,12 +244,12 @@ Terminates this query so that it no longer sends location updates. All callbacks
 // This example stops listening for all key events in the query once the
 // first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, document) {
-  console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, document) {
-  console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 
   // Cancel all of the query's callbacks
   geoQuery.cancel();
@@ -317,12 +270,12 @@ Cancels this callback registration so that it no longer fires its callback. This
 // This example stops listening for new keys entering the query once the
 // first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance, document) {
-  console.log(key + ' entered query at ' + location + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
+  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance, document) {
-  console.log(key + ' exited query to ' + location + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
+  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
 
   // Cancel the 'key_entered' callback
   onKeyEnteredRegistration.cancel();
@@ -335,11 +288,11 @@ const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location
 
 Static helper method which returns the distance, in kilometers, between `location1` and `location2`.
 
-`location1` and `location1` must have the form `[latitude, longitude]`.
+`location1` and `location1` must be in GeoPoint form.
 
 ```JavaScript
-const location1 = [10.3, -55.3];
-const location2 = [-78.3, 105.6];
+const location1 = new firebase.firestore.GeoPoint(10.3, -55.3);
+const location2 = new firebase.firestore.GeoPoint(-78.3, 105.6);
 
 const distance = GeoFirestore.distance(location1, location2);  // distance === 12378.536597423461
 ```

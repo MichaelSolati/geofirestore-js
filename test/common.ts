@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase';
-import 'firebase/firestore';
 
 import { GeoFirestore } from '../src';
 import { GeoFirestoreQuery } from '../src/query';
@@ -13,12 +12,14 @@ const expect = chai.expect;
 export const invalidFirebaseRefs = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
 export const validKeys = ['a', 'loc1', '(e@Xi:4t>*E2)hc<5oa:1s6{B0d?u', Array(700).join('a')];
 export const invalidKeys = ['', true, false, null, undefined, { a: 1 }, 'loc.1', 'loc$1', '[loc1', 'loc1]', 'loc#1', 'loc/1', 'a#i]$da[s', 'te/nst', 'te/rst', 'te/u0000st', 'te/u0015st', 'te/007Fst', Array(800).join('a')];
-export const validLocations = [[0, 0], [-90, 180], [90, -180], [23, 74], [47.235124363, 127.2379654226]];
-export const invalidLocations = [[-91, 0], [91, 0], [0, 181], [0, -181], [[0, 0], 0], ['a', 0], [0, 'a'], ['a', 'a'], [NaN, 0], [0, NaN], [undefined, NaN], [null, 0], [null, null], [0, undefined], [undefined, undefined], '', 'a', true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
+export const validLocations = [new firebase.firestore.GeoPoint(0, 0), new firebase.firestore.GeoPoint(-90, 180), new firebase.firestore.GeoPoint(90, -180), new firebase.firestore.GeoPoint(23, 74), new firebase.firestore.GeoPoint(47.235124363, 127.2379654226)];
+// @ts-ignore
+export const invalidLocations = [{ latitude: -91, longitude: 0 }, { latitude: 91, longitude: 0 }, { latitude: 0, longitude: 181 }, { latitude: 0, longitude: -181 }, { latitude: [0, 0], longitude: 0 }, { latitude: 'a', longitude: 0 }, { latitude: 0, longitude: 'a' }, { latitude: 'a', longitude: 'a' }, { latitude: NaN, longitude: 0 }, { latitude: 0, longitude: NaN }, { latitude: undefined, longitude: NaN }, { latitude: null, longitude: 0 }, { latitude: null, longitude: null }, { latitude: 0, longitude: undefined }, { latitude: undefined, longitude: undefined }, '', 'a', true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
 export const validGeohashes = ['4', 'd62dtu', '000000000000'];
 export const invalidGeohashes = ['', 'aaa', 1, true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
-export const validQueryCriterias = [{ center: [0, 0], radius: 1000 }, { center: [1, -180], radius: 1.78 }, { center: [22.22, -107.77], radius: 0 }, { center: [0, 0] }, { center: [1, -180] }, { center: [22.22, -107.77] }, { radius: 1000 }, { radius: 1.78 }, { radius: 0 }];
-export const invalidQueryCriterias = [{}, { random: 100 }, { center: [91, 2], radius: 1000, random: 'a' }, { center: [91, 2], radius: 1000 }, { center: [1, -181], radius: 1000 }, { center: ['a', 2], radius: 1000 }, { center: [1, [1, 2]], radius: 1000 }, { center: [0, 0], radius: -1 }, { center: [null, 2], radius: 1000 }, { center: [1, undefined], radius: 1000 }, { center: [NaN, 0], radius: 1000 }, { center: [1, 2], radius: -10 }, { center: [1, 2], radius: 'text' }, { center: [1, 2], radius: [1, 2] }, { center: [1, 2], radius: null }, true, false, undefined, NaN, [], 'a', 1];
+export const validQueryCriterias = [{ center: new firebase.firestore.GeoPoint(0, 0), radius: 1000 }, { center: new firebase.firestore.GeoPoint(1, -180), radius: 1.78 }, { center: new firebase.firestore.GeoPoint(22.22, -107.77), radius: 0 }, { center: new firebase.firestore.GeoPoint(0, 0) }, { center: new firebase.firestore.GeoPoint(1, -180) }, { center: new firebase.firestore.GeoPoint(22.22, -107.77) }, { radius: 1000 }, { radius: 1.78 }, { radius: 0 }];
+// @ts-ignore
+export const invalidQueryCriterias = [{}, { random: 100 }, { center: { latitude: 91, longitude: 2 }, radius: 1000, random: 'a' }, { center: { latitude: 91, longitude: 2 }, radius: 1000 }, { center: { latitude: 1, longitude: -181 }, radius: 1000 }, { center: { latitude: 'a', longitude: 2 }, radius: 1000 }, { center: { latitude: 1, longitude: [1, 2] }, radius: 1000 }, { center: new firebase.firestore.GeoPoint(0, 0), radius: -1 }, { center: { latitude: null, longitude: 2 }, radius: 1000 }, { center: { latitude: 1, longitude: undefined }, radius: 1000 }, { center: { latitude: NaN, longitude: 0 }, radius: 1000 }, { center: new firebase.firestore.GeoPoint(1, 2), radius: -10 }, { center: new firebase.firestore.GeoPoint(1, 2), radius: 'text' }, { center: new firebase.firestore.GeoPoint(1, 2), radius: [1, 2] }, { center: new firebase.firestore.GeoPoint(1, 2), radius: null }, true, false, undefined, NaN, [], 'a', 1];
 
 // Create global constiables to hold the Firebase and GeoFire constiables
 export let geoFirestoreRef: firebase.firestore.CollectionReference,
@@ -105,7 +106,7 @@ export function Checklist(items, expect, done) {
   this.x = function (item) {
     const index = eventsToComplete.indexOf(item);
     if (index === -1) {
-      expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').toBeFalsy();
+      expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false;
     }
     else {
       eventsToComplete.splice(index, 1);

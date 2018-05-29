@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 
-import { GeoFireObj } from './interfaces';
+import { GeoFirestoreObj, QueryCriteria } from './interfaces';
 
 // Default geohash length
 export const g_GEOHASH_PRECISION: number = 10;
@@ -38,11 +38,12 @@ Math.log2 = Math.log2 || function (x) {
 };
 
 /**
- * Validates the inputted key and throws an error if it is invalid.
+ * Validates the inputted key and throws an error, or returns boolean, if it is invalid.
  *
  * @param key The key to be verified.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateKey(key: string): void {
+export function validateKey(key: string, flag: boolean = false): boolean {
   let error: string;
 
   if (typeof key !== 'string') {
@@ -58,26 +59,31 @@ export function validateKey(key: string): void {
     error = 'key cannot contain any of the following characters: . # $ ] [ /';
   }
 
-  if (typeof error !== 'undefined') {
+  if (typeof error !== 'undefined' && !flag) {
     throw new Error('Invalid GeoFire key \'' + key + '\': ' + error);
+  } else {
+    return !error;
   }
 };
 
 /**
- * Validates the inputted location and throws an error if it is invalid.
+ * Validates the inputted location and throws an error, or returns boolean, if it is invalid.
  *
- * @param location The [latitude, longitude] pair to be verified.
+ * @param location The Firestore GeoPoint to be verified.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: number[]): void {
+export function validateLocation(location: firebase.firestore.GeoPoint, flag: boolean = false): boolean {
   let error: string;
 
-  if (!Array.isArray(location)) {
-    error = 'location must be an array';
-  } else if (location.length !== 2) {
-    error = 'expected array of length 2, got length ' + location.length;
+  if (!location) {
+    error = 'GeoPoint must exist';
+  } else if (typeof location.latitude === 'undefined') {
+    error = 'latitude must exist on GeoPoint';
+  } else if (typeof location.longitude === 'undefined') {
+    error = 'longitude must exist on GeoPoint';
   } else {
-    const latitude = location[0];
-    const longitude = location[1];
+    const latitude = location.latitude;
+    const longitude = location.longitude;
 
     if (typeof latitude !== 'number' || isNaN(latitude)) {
       error = 'latitude must be a number';
@@ -90,17 +96,20 @@ export function validateLocation(location: number[]): void {
     }
   }
 
-  if (typeof error !== 'undefined') {
-    throw new Error('Invalid GeoFire location \'' + location + '\': ' + error);
+  if (typeof error !== 'undefined' && !flag) {
+    throw new Error('Invalid GeoFire location: ' + error);
+  } else {
+    return !error;
   }
 };
 
 /**
- * Validates the inputted geohash and throws an error if it is invalid.
+ * Validates the inputted geohash and throws an error, or returns boolean, if it is invalid.
  *
  * @param geohash The geohash to be validated.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateGeohash(geohash: string): void {
+export function validateGeohash(geohash: string, flag: boolean = false): boolean {
   let error;
 
   if (typeof geohash !== 'string') {
@@ -115,8 +124,33 @@ export function validateGeohash(geohash: string): void {
     }
   }
 
-  if (typeof error !== 'undefined') {
+  if (typeof error !== 'undefined' && !flag) {
     throw new Error('Invalid GeoFire geohash \'' + geohash + '\': ' + error);
+  } else {
+    return !error;
+  }
+};
+
+/**
+ * Validates the inputted GeoFirestore object and throws an error, or returns boolean, if it is invalid.
+ *
+ * @param geoFirestoreObj The GeoFirestore object to be validated.
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
+ */
+export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag: boolean = false): boolean {
+  let error: string;
+
+  error = (!validateGeohash(geoFirestoreObj.g, true)) ? 'invalid geohash on object' : null;
+  error = (!validateLocation(geoFirestoreObj.l, true)) ? 'invalid location on object' : error;
+
+  if (!geoFirestoreObj || !('d' in geoFirestoreObj) || typeof geoFirestoreObj.d !== 'object') {
+    error = 'no valid document found';
+  }
+
+  if (typeof error !== 'undefined' && !flag) {
+    throw new Error('Invalid GeoFirestore object: ' + error);
+  } else {
+    return !error;
   }
 };
 
@@ -126,7 +160,7 @@ export function validateGeohash(geohash: string): void {
  * @param newQueryCriteria The criteria which specifies the query's center and/or radius.
  * @param requireCenterAndRadius The criteria which center and radius required.
  */
-export function validateCriteria(newQueryCriteria: any, requireCenterAndRadius: boolean = false): void {
+export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius: boolean = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('query criteria must be an object');
   } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
@@ -173,15 +207,14 @@ export function degreesToRadians(degrees: number): number {
 };
 
 /**
- * Generates a geohash of the specified precision/string length from the  [latitude, longitude]
- * pair, specified as an array.
+ * Generates a geohash of the specified precision/string length from the inputted GeoPoint.
  *
- * @param location The [latitude, longitude] pair to encode into a geohash.
+ * @param location The GeoPoint to encode into a geohash.
  * @param precision The length of the geohash to create. If no precision is specified, the
  * global default is used.
  * @returns The geohash of the inputted location.
  */
-export function encodeGeohash(location: number[], precision: number = g_GEOHASH_PRECISION): string {
+export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: number = g_GEOHASH_PRECISION): string {
   validateLocation(location);
   if (typeof precision !== 'undefined') {
     if (typeof precision !== 'number' || isNaN(precision)) {
@@ -209,7 +242,7 @@ export function encodeGeohash(location: number[], precision: number = g_GEOHASH_
   let even: number | boolean = 1;
 
   while (hash.length < precision) {
-    const val = even ? location[1] : location[0];
+    const val = even ? location.longitude : location.latitude;
     const range = even ? longitudeRange : latitudeRange;
     const mid = (range.min + range.max) / 2;
 
@@ -300,14 +333,14 @@ export function wrapLongitude(longitude: number): number {
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a
  * given size at the given coordinate.
  *
- * @param coordinate The coordinate as a [latitude, longitude] pair.
+ * @param coordinate The coordinate as a Firestore GeoPoint.
  * @param size The size of the bounding box.
  * @returns The number of bits necessary for the geohash.
  */
-export function boundingBoxBits(coordinate: number[], size: number): number {
+export function boundingBoxBits(coordinate: firebase.firestore.GeoPoint, size: number): number {
   const latDeltaDegrees = size / g_METERS_PER_DEGREE_LATITUDE;
-  const latitudeNorth = Math.min(90, coordinate[0] + latDeltaDegrees);
-  const latitudeSouth = Math.max(-90, coordinate[0] - latDeltaDegrees);
+  const latitudeNorth = Math.min(90, coordinate.latitude + latDeltaDegrees);
+  const latitudeSouth = Math.max(-90, coordinate.latitude - latDeltaDegrees);
   const bitsLat = Math.floor(latitudeBitsForResolution(size)) * 2;
   const bitsLongNorth = Math.floor(longitudeBitsForResolution(size, latitudeNorth)) * 2 - 1;
   const bitsLongSouth = Math.floor(longitudeBitsForResolution(size, latitudeSouth)) * 2 - 1;
@@ -319,27 +352,27 @@ export function boundingBoxBits(coordinate: number[], size: number): number {
  * geohash of these nine coordinates, truncated to a precision of at most radius, are guaranteed
  * to be prefixes of any geohash that lies within the circle.
  *
- * @param center The center given as [latitude, longitude].
+ * @param center The center given as Firestore GeoPoint.
  * @param radius The radius of the circle.
  * @returns The eight bounding box points.
  */
-export function boundingBoxCoordinates(center: number[], radius: number): number[][] {
+export function boundingBoxCoordinates(center: firebase.firestore.GeoPoint, radius: number): firebase.firestore.GeoPoint[] {
   const latDegrees = radius / g_METERS_PER_DEGREE_LATITUDE;
-  const latitudeNorth = Math.min(90, center[0] + latDegrees);
-  const latitudeSouth = Math.max(-90, center[0] - latDegrees);
+  const latitudeNorth = Math.min(90, center.latitude + latDegrees);
+  const latitudeSouth = Math.max(-90, center.latitude - latDegrees);
   const longDegsNorth = metersToLongitudeDegrees(radius, latitudeNorth);
   const longDegsSouth = metersToLongitudeDegrees(radius, latitudeSouth);
   const longDegs = Math.max(longDegsNorth, longDegsSouth);
   return [
-    [center[0], center[1]],
-    [center[0], wrapLongitude(center[1] - longDegs)],
-    [center[0], wrapLongitude(center[1] + longDegs)],
-    [latitudeNorth, center[1]],
-    [latitudeNorth, wrapLongitude(center[1] - longDegs)],
-    [latitudeNorth, wrapLongitude(center[1] + longDegs)],
-    [latitudeSouth, center[1]],
-    [latitudeSouth, wrapLongitude(center[1] - longDegs)],
-    [latitudeSouth, wrapLongitude(center[1] + longDegs)]
+    new firebase.firestore.GeoPoint(center.latitude, center.longitude),
+    new firebase.firestore.GeoPoint(center.latitude, wrapLongitude(center.longitude - longDegs)),
+    new firebase.firestore.GeoPoint(center.latitude, wrapLongitude(center.longitude + longDegs)),
+    new firebase.firestore.GeoPoint(latitudeNorth, center.longitude),
+    new firebase.firestore.GeoPoint(latitudeNorth, wrapLongitude(center.longitude - longDegs)),
+    new firebase.firestore.GeoPoint(latitudeNorth, wrapLongitude(center.longitude + longDegs)),
+    new firebase.firestore.GeoPoint(latitudeSouth, center.longitude),
+    new firebase.firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude - longDegs)),
+    new firebase.firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude + longDegs))
   ];
 };
 
@@ -375,11 +408,11 @@ export function geohashQuery(geohash: string, bits: number): string[] {
  * Calculates a set of queries to fully contain a given circle. A query is a [start, end] pair
  * where any geohash is guaranteed to be lexiographically larger then start and smaller than end.
  *
- * @param center The center given as [latitude, longitude] pair.
+ * @param center The center given as a GeoPoint.
  * @param radius The radius of the circle.
- * @return An array of geohashes containing a [start, end] pair.
+ * @return An array of geohashes containing a GeoPoint.
  */
-export function geohashQueries(center: number[], radius: number): string[][] {
+export function geohashQueries(center: firebase.firestore.GeoPoint, radius: number): string[][] {
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
   const geohashPrecision = Math.ceil(queryBits / g_BITS_PER_CHAR);
@@ -402,70 +435,30 @@ export function geohashQueries(center: number[], radius: number): string[][] {
  * @param geohash The geohash of the location.
  * @returns The location encoded as GeoFire object.
  */
-export function encodeGeoFireObject(location: number[], geohash: string): GeoFireObj {
+export function encodeGeoFireObject(location: firebase.firestore.GeoPoint, geohash: string, document: any): GeoFirestoreObj {
   validateLocation(location);
   validateGeohash(geohash);
-  return { '.priority': geohash, 'g': geohash, 'l': location };
+  return { g: geohash, l: location, d: document };
 }
 
 /**
- * Encodes a location and geohash as a GeoFire object.
+ * Decodes the document given as GeoFirestore object. Returns null if decoding fails.
  *
- * @param location The location as [latitude, longitude] pair.
- * @param geohash The geohash of the location.
- * @param document The optional document to include on the index (keep this small)
- * @returns The location encoded as GeoFire object.
+ * @param geoFirestoreObj The document encoded as GeoFirestore object.
+ * @returns The Firestore document or null if decoding fails.
  */
-export function encodeGeoFireDocumentObject(location: number[], geohash: string, document = null): GeoFireObj {
-  validateLocation(location);
-  validateGeohash(geohash);
-  return { '.priority': geohash, 'g': geohash, 'l': location, 'd': document };
-}
-
-/**
- * Decodes the location given as GeoFire object. Returns null if decoding fails.
- *
- * @param geoFireObj The location encoded as GeoFire object.
- * @returns The location as [latitude, longitude] pair or null if decoding fails.
- */
-export function decodeGeoFireObject(geoFireObj: GeoFireObj): number[] {
-  if (geoFireObj && 'l' in geoFireObj && Array.isArray(geoFireObj.l) && geoFireObj.l.length === 2) {
-    return geoFireObj.l;
+export function decodeGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj): any {
+  if (validateGeoFirestoreObject(geoFirestoreObj, true)) {
+    return geoFirestoreObj.d;
   } else {
-    throw new Error('Unexpected location object encountered: ' + JSON.stringify(geoFireObj));
+    throw new Error('Unexpected location object encountered: ' + JSON.stringify(geoFirestoreObj));
   }
-}
-
-/**
- * Decodes a GeoFire snapshot value to get the optionally stored document object
- *
- * @param geoFireObj The GeoFire snapshot value
- * @returns The optionally stored document object, if it exists
- */
-export function decodeGeoFireDocumentObject(geoFireObj): any {
-  if (geoFireObj && 'd' in geoFireObj) {
-    return geoFireObj.d;
-  }
-}
-
-/**
- * Returns the key of a Firebase snapshot across SDK versions.
- *
- * @param A Firebase snapshot.
- * @returns The Firebase snapshot's key.
- */
-export function geoFireGetKey(snapshot: firebase.database.DataSnapshot): string {
-  let key: string;
-  if (typeof snapshot.key === 'string' || snapshot.key === null) {
-    key = snapshot.key;
-  }
-  return key;
 }
 
 /**
  * Returns the id of a Firestore snapshot across SDK versions.
  *
- * @param A Firestore snapshot.
+ * @param snapshot A Firestore snapshot.
  * @returns The Firestore snapshot's id.
  */
 export function geoFirestoreGetKey(snapshot: firebase.firestore.DocumentSnapshot): string {
@@ -474,4 +467,37 @@ export function geoFirestoreGetKey(snapshot: firebase.firestore.DocumentSnapshot
     id = snapshot.id;
   }
   return id;
+}
+
+/**
+ * Returns the key of a document that is a GeoPoint.
+ *
+ * @param document A GeoFirestore document.
+ * @returns The key for the location field of a document. 
+ */
+export function findCoordinatesKey(document: any, customKey?: string): string {
+  let error: string;
+  let key: string;
+
+  if (document && typeof document === 'object') {
+    if (customKey in document) {
+      key = customKey
+    } else if ('coordinates' in document) {
+      key = 'coordinates';
+    } else {
+      error = 'no valid key exists'
+    }
+  } else {
+    error = 'document not an object';
+  }
+
+  if (!validateLocation(document[key], true)) {
+    error = key + ' is not a valid GeoPoint';
+  }
+
+  if (typeof error !== 'undefined') {
+    throw new Error('Invalid GeoFirestore document: ' + error);
+  }
+
+  return key;
 }

@@ -1,4 +1,5 @@
 import * as chai from 'chai';
+import * as firebase from 'firebase';
 
 import { GeoFirestore } from '../src/geofirestore';
 import { GeoFirestoreQuery } from '../src/query';
@@ -43,7 +44,7 @@ describe('GeoFirestore Tests:', () => {
 
       const cl = new Checklist(['p1'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
       });
     });
@@ -51,23 +52,23 @@ describe('GeoFirestore Tests:', () => {
     it('set() updates Firebase when adding new locations', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(50, 50) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-90, -90) });
       }).then(() => {
         cl.x('p3');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { 'coordinates': new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { 'coordinates': new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { 'coordinates': new firebase.firestore.GeoPoint(-90, -90) } },
         });
 
         cl.x('p4');
@@ -76,42 +77,26 @@ describe('GeoFirestore Tests:', () => {
       });
     });
 
-    it('setWithDocument() updates Firebase when adding new locations with a document', (done) => {
-      var cl = new Checklist(['p1','p2'], expect, done);
-
-      geoFirestore.setWithDocument('loc1', [0, 0], { name: 'Test 1' }).then(() => {
-        cl.x('p1');
-
-        return getFirestoreData();
-      }).then((firebaseData) => {
-        expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz', 'd': { name: 'Test 1' } },
-        });
-
-        cl.x('p2');
-      }).catch(failTestOnCaughtError);
-    });
-
     it('set() handles decimal latitudes and longitudes', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFirestore.set('loc1', [0.254, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0.254, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [50, 50.293403]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(50, 50.293403) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [-82.614, -90.938]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) });
       }).then(() => {
         cl.x('p3');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 'ebpcrypzxv', 'l': [0.254, 0], 'g': 'ebpcrypzxv' },
-          'loc2': { '.priority': 'v0gu2qnx15', 'l': [50, 50.293403], 'g': 'v0gu2qnx15' },
-          'loc3': { '.priority': '1cr648sfx4', 'l': [-82.614, -90.938], 'g': '1cr648sfx4' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0.254, 0), 'g': 'ebpcrypzxv', 'd': { coordinates: new firebase.firestore.GeoPoint(0.254, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50.293403), 'g': 'v0gu2qnx15', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50.293403) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-82.614, -90.938), 'g': '1cr648sfx4', 'd': { coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) } },
         });
 
         cl.x('p4');
@@ -121,27 +106,31 @@ describe('GeoFirestore Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(50, 50) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-90, -90) });
       }).then(() => {
         cl.x('p3');
 
-        return geoFirestore.set('loc1', [2, 3]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(2, 3) });
       }).then(() => {
         cl.x('p4');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': {
+            'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': {
+              coordinates: new firebase.firestore.GeoPoint(2, 3)
+            }
+          },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p5');
@@ -151,27 +140,27 @@ describe('GeoFirestore Tests:', () => {
     it('set() updates Firebase when changing a pre-existing key to the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(50, 50) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [-90, -90]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(-90, -90) });
       }).then(() => {
         cl.x('p3');
 
-        return geoFirestore.set('loc1', [0, 0]);
+        return geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) });
       }).then(() => {
         cl.x('p4');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p5');
@@ -181,23 +170,23 @@ describe('GeoFirestore Tests:', () => {
     it('set() handles multiple keys at the same location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [0, 0]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(0, 0) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc3', [0, 0]);
+        return geoFirestore.set('loc3', { coordinates: new firebase.firestore.GeoPoint(0, 0) });
       }).then(() => {
         cl.x('p3');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p4');
@@ -207,14 +196,14 @@ describe('GeoFirestore Tests:', () => {
     it('set() updates Firebase after complex operations', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'p11'], expect, done);
 
-      geoFirestore.set('loc:1', [0, 0]).then(() => {
+      geoFirestore.set('loc:1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
-        return geoFirestore.set('loc2', [50, 50]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(50, 50) });
       }).then(() => {
         cl.x('p2');
 
-        return geoFirestore.set('loc%!A72f()3', [-90, -90]);
+        return geoFirestore.set('loc%!A72f()3', { coordinates: new firebase.firestore.GeoPoint(-90, -90) });
       }).then(() => {
         cl.x('p3');
 
@@ -222,15 +211,15 @@ describe('GeoFirestore Tests:', () => {
       }).then(() => {
         cl.x('p4');
 
-        return geoFirestore.set('loc2', [0.2358, -72.621]);
+        return geoFirestore.set('loc2', { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) });
       }).then(() => {
         cl.x('p5');
 
-        return geoFirestore.set('loc4', [87.6, -130]);
+        return geoFirestore.set('loc4', { coordinates: new firebase.firestore.GeoPoint(87.6, -130) });
       }).then(() => {
         cl.x('p6');
 
-        return geoFirestore.set('loc5', [5, 55.555]);
+        return geoFirestore.set('loc5', { coordinates: new firebase.firestore.GeoPoint(5, 55.555) });
       }).then(() => {
         cl.x('p7');
 
@@ -238,22 +227,22 @@ describe('GeoFirestore Tests:', () => {
       }).then(() => {
         cl.x('p8');
 
-        return geoFirestore.set('loc:1', [87.6, -130]);
+        return geoFirestore.set('loc:1', { coordinates: new firebase.firestore.GeoPoint(87.6, -130) });
       }).then(() => {
         cl.x('p9');
 
-        return geoFirestore.set('loc6', [-72.258, 0.953215]);
+        return geoFirestore.set('loc6', { coordinates: new firebase.firestore.GeoPoint(-72.258, 0.953215) });
       }).then(() => {
         cl.x('p10');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc:1': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
-          'loc2': { '.priority': 'd2h376zj8h', 'l': [0.2358, -72.621], 'g': 'd2h376zj8h' },
-          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' },
-          'loc4': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
-          'loc6': { '.priority': 'h50svty4es', 'l': [-72.258, 0.953215], 'g': 'h50svty4es' }
+          'loc:1': { 'l': new firebase.firestore.GeoPoint(87.6, -130), 'g': 'cped3g0fur', 'd': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(0.2358, -72.621), 'g': 'd2h376zj8h', 'd': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) } },
+          'loc%!A72f()3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } },
+          'loc4': { 'l': new firebase.firestore.GeoPoint(87.6, -130), 'g': 'cped3g0fur', 'd': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) } },
+          'loc6': { 'l': new firebase.firestore.GeoPoint(-72.258, 0.953215), 'g': 'h50svty4es', 'd': { coordinates: new firebase.firestore.GeoPoint(-72.258, 0.953215) } },
         });
 
         cl.x('p11');
@@ -263,7 +252,7 @@ describe('GeoFirestore Tests:', () => {
     it('set() does not throw errors given valid keys', () => {
       validKeys.forEach((validKey) => {
         expect(() => {
-          geoFirestore.set(validKey, [0, 0]);
+          geoFirestore.set(validKey, { coordinates: new firebase.firestore.GeoPoint(0, 0) });
         }).not.to.throw();
       });
     });
@@ -271,7 +260,7 @@ describe('GeoFirestore Tests:', () => {
     it('set() throws errors given invalid keys', () => {
       invalidKeys.forEach((invalidKey) => {
         expect(() => {
-          geoFirestore.set(invalidKey, [0, 0]);
+          geoFirestore.set(invalidKey, { coordinates: new firebase.firestore.GeoPoint(0, 0) });
         }).to.throw();
       });
     });
@@ -279,7 +268,7 @@ describe('GeoFirestore Tests:', () => {
     it('set() does not throw errors given valid locations', () => {
       validLocations.forEach((validLocation) => {
         expect(() => {
-          geoFirestore.set('loc', validLocation);
+          geoFirestore.set('loc', { coordinates: validLocation });
         }).not.to.throw();
       });
     });
@@ -289,9 +278,8 @@ describe('GeoFirestore Tests:', () => {
         // Setting location to null is valid since it will remove the key
         if (invalidLocation !== null) {
           expect(() => {
-            // @ts-ignore
-            geoFirestore.set('loc', invalidLocation);
-          }).to.throw(Error, /Invalid GeoFire location/);
+            geoFirestore.set('loc', { coordinates: invalidLocation });
+          }).to.throw(Error, /Invalid GeoFirestore document/);
         }
       });
     });
@@ -303,7 +291,7 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) }
       }).then(() => {
         cl.x('p1');
       });
@@ -313,18 +301,18 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, 50],
-        'loc3': [-90, -90]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
       }).then(() => {
         cl.x('p1');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p2');
@@ -335,18 +323,18 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0.254, 0],
-        'loc2': [50, 50.293403],
-        'loc3': [-82.614, -90.938]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0.254, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50.293403) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) }
       }).then(() => {
         cl.x('p1');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 'ebpcrypzxv', 'l': [0.254, 0], 'g': 'ebpcrypzxv' },
-          'loc2': { '.priority': 'v0gu2qnx15', 'l': [50, 50.293403], 'g': 'v0gu2qnx15' },
-          'loc3': { '.priority': '1cr648sfx4', 'l': [-82.614, -90.938], 'g': '1cr648sfx4' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0.254, 0), 'g': 'ebpcrypzxv', 'd': { coordinates: new firebase.firestore.GeoPoint(0.254, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50.293403), 'g': 'v0gu2qnx15', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50.293403) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-82.614, -90.938), 'g': '1cr648sfx4', 'd': { coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) } }
         });
 
         cl.x('p2');
@@ -357,14 +345,14 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, 50],
-        'loc3': [-90, -90]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.set({
-          'loc1': [2, 3]
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 3) }
         });
       }).then(() => {
         cl.x('p2');
@@ -372,9 +360,9 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { coordinates: new firebase.firestore.GeoPoint(2, 3) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p3');
@@ -385,14 +373,14 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, 50],
-        'loc3': [-90, -90]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.set({
-          'loc1': [0, 0]
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) }
         });
       }).then(() => {
         cl.x('p2');
@@ -400,9 +388,9 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': 'v0gs3y0zh7', 'l': [50, 50], 'g': 'v0gs3y0zh7' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p3');
@@ -413,18 +401,18 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [0, 0],
-        'loc3': [0, 0]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(0, 0) }
       }).then(() => {
         cl.x('p1');
 
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc2': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p2');
@@ -435,9 +423,9 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6'], expect, done);
 
       geoFirestore.set({
-        'loc:1': [0, 0],
-        'loc2': [50, 50],
-        'loc%!A72f()3': [-90, -90]
+        'loc:1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
+        'loc%!A72f()3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
       }).then(() => {
         cl.x('p1');
 
@@ -446,9 +434,9 @@ describe('GeoFirestore Tests:', () => {
         cl.x('p2');
 
         return geoFirestore.set({
-          'loc2': [0.2358, -72.621],
-          'loc4': [87.6, -130],
-          'loc5': [5, 55.555]
+          'loc2': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) },
+          'loc4': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) },
+          'loc5': { coordinates: new firebase.firestore.GeoPoint(5, 55.555) }
         });
       }).then(() => {
         cl.x('p3');
@@ -460,8 +448,8 @@ describe('GeoFirestore Tests:', () => {
         cl.x('p4');
 
         return geoFirestore.set({
-          'loc:1': [87.6, -130],
-          'loc6': [-72.258, 0.953215]
+          'loc:1': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) },
+          'loc6': { coordinates: new firebase.firestore.GeoPoint(-72.258, 0.953215) }
         });
       }).then(() => {
         cl.x('p5');
@@ -469,11 +457,11 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc:1': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
-          'loc2': { '.priority': 'd2h376zj8h', 'l': [0.2358, -72.621], 'g': 'd2h376zj8h' },
-          'loc%!A72f()3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' },
-          'loc4': { '.priority': 'cped3g0fur', 'l': [87.6, -130], 'g': 'cped3g0fur' },
-          'loc6': { '.priority': 'h50svty4es', 'l': [-72.258, 0.953215], 'g': 'h50svty4es' }
+          'loc:1': { 'l': new firebase.firestore.GeoPoint(87.6, -130), 'g': 'cped3g0fur', 'd': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) } },
+          'loc2': { 'l': new firebase.firestore.GeoPoint(0.2358, -72.621), 'g': 'd2h376zj8h', 'd': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) } },
+          'loc%!A72f()3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } },
+          'loc4': { 'l': new firebase.firestore.GeoPoint(87.6, -130), 'g': 'cped3g0fur', 'd': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) } },
+          'loc6': { 'l': new firebase.firestore.GeoPoint(-72.258, 0.953215), 'g': 'h50svty4es', 'd': { coordinates: new firebase.firestore.GeoPoint(-72.258, 0.953215) } }
         });
 
         cl.x('p6');
@@ -484,7 +472,7 @@ describe('GeoFirestore Tests:', () => {
       validKeys.forEach((validKey) => {
         expect(() => {
           const locations = {};
-          locations[validKey] = [0, 0];
+          locations[validKey] = { coordinates: new firebase.firestore.GeoPoint(0, 0) };
           geoFirestore.set(locations);
         }).not.to.throw();
       });
@@ -496,7 +484,7 @@ describe('GeoFirestore Tests:', () => {
           expect(() => {
             const locations = {};
             // @ts-ignore
-            locations[invalidKey] = [0, 0];
+            locations[invalidKey] = { coordinates: new firebase.firestore.GeoPoint(0, 0) };
             geoFirestore.set(locations);
           }).to.throw();
         }
@@ -506,8 +494,8 @@ describe('GeoFirestore Tests:', () => {
     it('set() throws errors given a location argument in combination with an object', () => {
       expect(() => {
         geoFirestore.set({
-          'loc': [0, 0]
-        }, [0, 0]);
+          'loc': { coordinates: new firebase.firestore.GeoPoint(0, 0) }
+        }, { coordinates: new firebase.firestore.GeoPoint(0, 0) });
       }).to.throw();
     });
 
@@ -515,7 +503,7 @@ describe('GeoFirestore Tests:', () => {
       validLocations.forEach((validLocation) => {
         expect(() => {
           geoFirestore.set({
-            'loc': validLocation
+            'loc': { coordinates: validLocation }
           });
         }).not.to.throw();
       });
@@ -527,9 +515,9 @@ describe('GeoFirestore Tests:', () => {
         if (invalidLocation !== null) {
           expect(() => {
             geoFirestore.set({
-              'loc': invalidLocation
+              'loc': { coordinates: invalidLocation }
             });
-          }).to.throw(Error, /Invalid GeoFire location/);
+          }).to.throw(Error, /Invalid GeoFirestore document/);
         }
       });
     });
@@ -558,52 +546,25 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [50, 50],
-        'loc3': [-90, -90]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
         cl.x('p2');
 
         return geoFirestore.get('loc2');
       }).then((location) => {
-        expect(location).to.deep.equal([50, 50]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(50, 50) });
         cl.x('p3');
 
         return geoFirestore.get('loc3');
       }).then((location) => {
-        expect(location).to.deep.equal([-90, -90]);
-        cl.x('p4');
-      }).catch(failTestOnCaughtError);
-    });
-
-    it('getWithDocument() retrieves locations and document given existing keys', (done) => {
-      const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
-
-      geoFirestore.setWithDocument({
-        'loc1': { location: [0, 0], document: { name: 'Name 1' }},
-        'loc2': { location: [50, 50], document: { name: 'Name 2' }},
-        'loc3': { location: [-90, -90], document: { name: 'Name 3' }}
-      }).then(() => {
-        cl.x('p1');
-
-        return geoFirestore.getWithDocument('loc1');
-      }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc1', location: [0, 0], document: { name: 'Name 1' }});
-        cl.x('p2');
-
-        return geoFirestore.getWithDocument('loc2');
-      }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc2', location: [50, 50], document: { name: 'Name 2' }});
-        cl.x('p3');
-
-        return geoFirestore.getWithDocument('loc3');
-      }).then((location) => {
-        expect(location).to.deep.equal({ key: 'loc3', location: [-90, -90], document: { name: 'Name 3' }});
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(-90, -90) });
         cl.x('p4');
       }).catch(failTestOnCaughtError);
     });
@@ -627,14 +588,14 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [2, 3]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(2, 3) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
@@ -651,7 +612,7 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' }
+          'loc2': { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { coordinates: new firebase.firestore.GeoPoint(2, 3) } }
         });
 
         cl.x('p5');
@@ -661,12 +622,12 @@ describe('GeoFirestore Tests:', () => {
     it('set() does nothing given a non-existent location and null', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
@@ -683,7 +644,7 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p5');
@@ -694,20 +655,20 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [2, 3]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(2, 3) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
         return geoFirestore.set({
           'loc1': null,
-          'loc3': [-90, -90]
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
         });
       }).then(() => {
         cl.x('p3');
@@ -721,8 +682,8 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
-          'loc3': { '.priority': '1bpbpbpbpb', 'l': [-90, -90], 'g': '1bpbpbpbpb' }
+          'loc2': { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { coordinates: new firebase.firestore.GeoPoint(2, 3) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } }
         });
 
         cl.x('p5');
@@ -733,14 +694,14 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
         'loc2': null
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
@@ -753,7 +714,7 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p4');
@@ -764,14 +725,14 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
       geoFirestore.set({
-        'loc:^%*1': [0, 0],
-        'loc2': [2, 3]
+        'loc:^%*1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(2, 3) }
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc:^%*1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
@@ -788,7 +749,7 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' }
+          'loc2': { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { coordinates: new firebase.firestore.GeoPoint(2, 3) } }
         });
 
         cl.x('p5');
@@ -798,12 +759,12 @@ describe('GeoFirestore Tests:', () => {
     it('remove() does nothing given a non-existent location', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
 
-      geoFirestore.set('loc1', [0, 0]).then(() => {
+      geoFirestore.set('loc1', { coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
         cl.x('p1');
 
         return geoFirestore.get('loc1');
       }).then((location) => {
-        expect(location).to.deep.equal([0, 0]);
+        expect(location).to.deep.equal({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
 
         cl.x('p2');
 
@@ -820,7 +781,7 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc1': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc1': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p5');
@@ -831,9 +792,9 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
       geoFirestore.set({
-        'loc1': [0, 0],
-        'loc2': [2, 3],
-        'loc3': [0, 0]
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(2, 3) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(0, 0) }
       }).then(() => {
         cl.x('p1');
 
@@ -844,8 +805,8 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
-          'loc2': { '.priority': 's065kk0dc5', 'l': [2, 3], 'g': 's065kk0dc5' },
-          'loc3': { '.priority': '7zzzzzzzzz', 'l': [0, 0], 'g': '7zzzzzzzzz' }
+          'loc2': { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { coordinates: new firebase.firestore.GeoPoint(2, 3) } },
+          'loc3': { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
         });
 
         cl.x('p3');
@@ -868,7 +829,7 @@ describe('GeoFirestore Tests:', () => {
 
   describe('query():', () => {
     it('query() returns GeoFireQuery instance', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: [1, 2], radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
       expect(geoFirestoreQueries[0] instanceof GeoFirestoreQuery).to.be.ok;
     });
