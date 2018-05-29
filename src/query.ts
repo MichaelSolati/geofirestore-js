@@ -416,7 +416,7 @@ export class GeoFirestoreQuery {
 
       // For every new matching geohash, determine if we should fire the 'key_entered' event
       const childCallback = firestoreQuery.onSnapshot((snapshot: firebase.firestore.QuerySnapshot) => {
-        snapshot.docChanges.forEach((change: firebase.firestore.DocumentChange) => {
+        snapshot.docChanges().forEach((change: firebase.firestore.DocumentChange) => {
           if (change.type === 'added') {
             this._childAddedCallback(change.doc);
           }
