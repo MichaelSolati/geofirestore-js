@@ -1,7 +1,7 @@
 {
   "name": "geofirestore",
   "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "Michael Solati mkslt04@gmail.com",
   "homepage": "https://github.com/MichaelSolati/geofirestore/",
   "repository": {
