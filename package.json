@@ -1,7 +1,7 @@
 {
   "name": "geofirestore",
   "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "author": "Michael Solati mkslt04@gmail.com",
   "homepage": "https://github.com/MichaelSolati/geofirestore/",
   "repository": {
@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/MichaelSolati/geofirestore/issues"
   },
+  "readme": "README.md",
   "license": "MIT",
   "keywords": [
     "geoquery",
@@ -32,21 +33,24 @@
     "firebase": "^5.x.x"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.2",
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^9.4.6",
+    "@types/chai": "^4.1.3",
+    "@types/mocha": "^5.2.0",
+    "@types/node": "^10.1.2",
     "chai": "^4.1.2",
-    "codelyzer": "^4.3.0",
     "firebase": "5.x.x",
-    "jsdom": "^11.6.2",
+    "generate-changelog": "^1.7.1",
+    "jsdom": "^11.11.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^5.0.4",
-    "ts-node": "^5.0.1",
-    "tslint": "^5.9.1",
-    "typescript": "^2.7.2"
+    "mocha": "^5.2.0",
+    "ts-node": "^6.0.4",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
   },
   "scripts": {
     "build": "rm -rf ./dist && tsc",
-    "test": "mocha"
+    "test": "mocha",
+    "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
+    "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
+    "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch"
   }
 }

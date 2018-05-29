@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - stable
-sudo: false
+  - 8
+sudo: required
 install:
   - npm install
 script:
@@ -15,3 +15,4 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
+      tags: true

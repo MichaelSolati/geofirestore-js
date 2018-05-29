@@ -21,6 +21,7 @@ queries.
  * [Downloading GeoFirestore](#downloading-geofirestore)
  * [Documentation](#documentation)
  * [Example Usage](#example-usage)
+ * [Contributing](#contributing)
 
 
 ## Downloading GeoFirestore
@@ -38,3 +39,7 @@ $ npm install geofirestore firebase --save
 ### Example Usage
 
 Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, at `/bars/<bar-id>`. Later, you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store the location for each bar using GeoFirestore, using the bar IDs as GeoFirestore keys. GeoFirestore then allows you to easily query which bar IDs (the keys) are nearby. To display any additional information about the bars, you can load the information for each bar returned by the query at `/bars/<bar-id>`.
+
+## Contributing
+
+All code should pass tests, as well as be well documented. Please open PRs into the `dev` branch. [Please also see the Commit Message Guidelines](COMMITS.md) for how commit messages should be structured.
