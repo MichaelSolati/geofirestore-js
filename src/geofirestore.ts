@@ -22,6 +22,24 @@ export class GeoFirestore {
   /*  PUBLIC METHODS  */
   /********************/
   /**
+   * Adds document to Firestore. Returns a promise which is fulfilled when the write is complete.
+   *
+   * @param document The document to be added to the GeoFirestore.
+   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+  public add(document: any, customKey?: string): Promise<firebase.firestore.DocumentReference> {
+    if (typeof document === 'object' && !Array.isArray(document)) {
+      const locationKey: string = findCoordinatesKey(document, customKey);
+      const location: firebase.firestore.GeoPoint = document[locationKey];
+      const geohash: string = encodeGeohash(location);
+      return this._collectionRef.add(encodeGeoFireObject(location, geohash, document));
+    } else {
+      throw new Error('document must be an object');
+    }
+  };
+
+  /**
    * Returns a promise fulfilled with the document corresponding to the provided key.
    *
    * If the provided key does not exist, the returned promise is fulfilled with null.

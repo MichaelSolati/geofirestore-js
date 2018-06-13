@@ -39,6 +39,158 @@ describe('GeoFirestore Tests:', () => {
     });
   });
 
+describe('Adding a single location via add():', () => {
+  it('add() returns a promise', (done) => {
+
+    const cl = new Checklist(['p1'], expect, done);
+
+    geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
+      cl.x('p1');
+    });
+  });
+
+  it('add() updates Firebase when adding new locations', (done) => {
+    const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
+
+    geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
+      cl.x('p1');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(50, 50) });
+    }).then(() => {
+      cl.x('p2');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(-90, -90) });
+    }).then(() => {
+      cl.x('p3');
+
+      return getFirestoreData();
+    }).then((firebaseData) => {      
+      firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+      expect(firebaseData).to.have.deep.members([
+        { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { 'coordinates': new firebase.firestore.GeoPoint(0, 0) } },
+        { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { 'coordinates': new firebase.firestore.GeoPoint(50, 50) } },
+        { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { 'coordinates': new firebase.firestore.GeoPoint(-90, -90) } },
+      ]);
+
+      cl.x('p4');
+    }).catch((error) => {
+      failTestOnCaughtError(error)
+    });
+  });
+
+  it('add() handles decimal latitudes and longitudes', (done) => {
+    const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
+
+    geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0.254, 0) }).then(() => {
+      cl.x('p1');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(50, 50.293403) });
+    }).then(() => {
+      cl.x('p2');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) });
+    }).then(() => {
+      cl.x('p3');
+
+      return getFirestoreData();
+    }).then((firebaseData) => {
+      firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+      expect(firebaseData).to.have.deep.members([
+        { 'l': new firebase.firestore.GeoPoint(0.254, 0), 'g': 'ebpcrypzxv', 'd': { coordinates: new firebase.firestore.GeoPoint(0.254, 0) } },
+        { 'l': new firebase.firestore.GeoPoint(50, 50.293403), 'g': 'v0gu2qnx15', 'd': { coordinates: new firebase.firestore.GeoPoint(50, 50.293403) } },
+        { 'l': new firebase.firestore.GeoPoint(-82.614, -90.938), 'g': '1cr648sfx4', 'd': { coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938) } },
+      ]);
+
+      cl.x('p4');
+    }).catch(failTestOnCaughtError);
+  });
+
+  it('add() handles custom fields for coordinates', (done) => {
+    const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
+
+    geoFirestore.add({ location: new firebase.firestore.GeoPoint(0, 0) }, 'location').then(() => {
+      cl.x('p1');
+
+      return geoFirestore.add({ place: new firebase.firestore.GeoPoint(50, 50) }, 'place');
+    }).then(() => {
+      cl.x('p2');
+
+      return geoFirestore.add({ coord: new firebase.firestore.GeoPoint(-90, -90) }, 'coord');
+    }).then(() => {
+      cl.x('p3');
+
+      return geoFirestore.add({ hotGeofire: new firebase.firestore.GeoPoint(2, 3) }, 'hotGeofire');
+    }).then(() => {
+      cl.x('p4');
+
+      return getFirestoreData();
+    }).then((firebaseData) => {
+      firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+      expect(firebaseData).to.have.deep.members([
+        { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { location: new firebase.firestore.GeoPoint(0, 0) } },
+        { 'l': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { place: new firebase.firestore.GeoPoint(50, 50) } },
+        { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coord: new firebase.firestore.GeoPoint(-90, -90) } },
+        { 'l': new firebase.firestore.GeoPoint(2, 3), 'g': 's065kk0dc5', 'd': { hotGeofire: new firebase.firestore.GeoPoint(2, 3) } }
+      ]);
+
+      cl.x('p5');
+    }).catch(failTestOnCaughtError);
+  });
+
+  it('add() handles multiple insertions at the same location', (done) => {
+    const cl = new Checklist(['p1', 'p2', 'p3', 'p4'], expect, done);
+
+    geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0, 0) }).then(() => {
+      cl.x('p1');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
+    }).then(() => {
+      cl.x('p2');
+
+      return geoFirestore.add({ coordinates: new firebase.firestore.GeoPoint(0, 0) });
+    }).then(() => {
+      cl.x('p3');
+
+      return getFirestoreData();
+    }).then((firebaseData) => {
+      firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+      expect(firebaseData).to.have.deep.members([
+        { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+        { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+        { 'l': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { coordinates: new firebase.firestore.GeoPoint(0, 0) } }
+      ]);
+
+      cl.x('p4');
+    }).catch(failTestOnCaughtError);
+  });
+
+  it('add() throws errors given invalid custom location keys', () => {
+      expect(() => {
+        geoFirestore.add({ invalidKey: new firebase.firestore.GeoPoint(0, 0) });
+      }).to.throw();
+
+      expect(() => {
+        geoFirestore.add({ invalidKey: new firebase.firestore.GeoPoint(0, 0) }, 'coord');
+      }).to.throw();
+    });
+  });
+
+  it('add() does not throw errors given valid locations', () => {
+    validLocations.forEach((validLocation) => {
+      expect(() => {
+        geoFirestore.add({ coordinates: validLocation });
+      }).not.to.throw();
+    });
+  });
+
+  it('add() throws errors given invalid locations', () => {
+    invalidLocations.forEach((invalidLocation) => {
+        expect(() => {
+          geoFirestore.add({ coordinates: invalidLocation });
+        }).to.throw(Error, /Invalid GeoFirestore document/);
+    });
+  });
+
   describe('Adding a single location via set():', () => {
     it('set() returns a promise', (done) => {
 
