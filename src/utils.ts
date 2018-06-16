@@ -3,39 +3,39 @@ import * as firebase from 'firebase';
 import { GeoFirestoreObj, QueryCriteria } from './interfaces';
 
 // Default geohash length
-export const g_GEOHASH_PRECISION: number = 10;
+export const GEOHASH_PRECISION = 10;
 
 // Characters used in location geohashes
-export const g_BASE32: string = '0123456789bcdefghjkmnpqrstuvwxyz';
+export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
 
 // The meridional circumference of the earth in meters
-export const g_EARTH_MERI_CIRCUMFERENCE: number = 40007860;
+export const EARTH_MERI_CIRCUMFERENCE = 40007860;
 
 // Length of a degree latitude at the equator
-export const g_METERS_PER_DEGREE_LATITUDE: number = 110574;
+export const METERS_PER_DEGREE_LATITUDE = 110574;
 
 // Number of bits per geohash character
-export const g_BITS_PER_CHAR: number = 5;
+export const BITS_PER_CHAR = 5;
 
 // Maximum length of a geohash in bits
-export const g_MAXIMUM_BITS_PRECISION: number = 22 * g_BITS_PER_CHAR;
+export const MAXIMUM_BITS_PRECISION = 22 * BITS_PER_CHAR;
 
 // Equatorial radius of the earth in meters
-export const g_EARTH_EQ_RADIUS: number = 6378137.0;
+export const EARTH_EQ_RADIUS = 6378137.0;
 
 // The following value assumes a polar radius of
-// const g_EARTH_POL_RADIUS = 6356752.3;
-// The formulate to calculate g_E2 is
-// g_E2 == (g_EARTH_EQ_RADIUS^2-g_EARTH_POL_RADIUS^2)/(g_EARTH_EQ_RADIUS^2)
+// const EARTH_POL_RADIUS = 6356752.3;
+// The formulate to calculate E2 is
+// E2 == (EARTH_EQ_RADIUS^2-EARTH_POL_RADIUS^2)/(EARTH_EQ_RADIUS^2)
 // The exact value is used here to avoid rounding errors
-export const g_E2: number = 0.00669447819799;
+export const E2 = 0.00669447819799;
 
 // Cutoff for rounding errors on double calculations
-export const g_EPSILON: number = 1e-12;
+export const EPSILON = 1e-12;
 
-Math.log2 = Math.log2 || function (x) {
+Math.log2 = Math.log2 || ((x) => {
   return Math.log(x) / Math.log(2);
-};
+});
 
 /**
  * Validates the inputted key and throws an error, or returns boolean, if it is invalid.
@@ -43,14 +43,14 @@ Math.log2 = Math.log2 || function (x) {
  * @param key The key to be verified.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateKey(key: string, flag: boolean = false): boolean {
+export function validateKey(key: string, flag = false): boolean {
   let error: string;
 
   if (typeof key !== 'string') {
     error = 'key must be a string';
   } else if (key.length === 0) {
     error = 'key cannot be the empty string';
-  } else if (1 + g_GEOHASH_PRECISION + key.length > 755) {
+  } else if (1 + GEOHASH_PRECISION + key.length > 755) {
     // Firebase can only stored child paths up to 768 characters
     // The child path for this key is at the least: 'i/<geohash>key'
     error = 'key is too long to be stored in Firebase';
@@ -64,7 +64,7 @@ export function validateKey(key: string, flag: boolean = false): boolean {
   } else {
     return !error;
   }
-};
+}
 
 /**
  * Validates the inputted location and throws an error, or returns boolean, if it is invalid.
@@ -72,7 +72,7 @@ export function validateKey(key: string, flag: boolean = false): boolean {
  * @param location The Firestore GeoPoint to be verified.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: firebase.firestore.GeoPoint, flag: boolean = false): boolean {
+export function validateLocation(location: firebase.firestore.GeoPoint, flag = false): boolean {
   let error: string;
 
   if (!location) {
@@ -101,7 +101,7 @@ export function validateLocation(location: firebase.firestore.GeoPoint, flag: bo
   } else {
     return !error;
   }
-};
+}
 
 /**
  * Validates the inputted geohash and throws an error, or returns boolean, if it is invalid.
@@ -109,7 +109,7 @@ export function validateLocation(location: firebase.firestore.GeoPoint, flag: bo
  * @param geohash The geohash to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateGeohash(geohash: string, flag: boolean = false): boolean {
+export function validateGeohash(geohash: string, flag = false): boolean {
   let error;
 
   if (typeof geohash !== 'string') {
@@ -118,7 +118,7 @@ export function validateGeohash(geohash: string, flag: boolean = false): boolean
     error = 'geohash cannot be the empty string';
   } else {
     for (const letter of geohash) {
-      if (g_BASE32.indexOf(letter) === -1) {
+      if (BASE32.indexOf(letter) === -1) {
         error = 'geohash cannot contain \'' + letter + '\'';
       }
     }
@@ -129,7 +129,7 @@ export function validateGeohash(geohash: string, flag: boolean = false): boolean
   } else {
     return !error;
   }
-};
+}
 
 /**
  * Validates the inputted GeoFirestore object and throws an error, or returns boolean, if it is invalid.
@@ -137,7 +137,7 @@ export function validateGeohash(geohash: string, flag: boolean = false): boolean
  * @param geoFirestoreObj The GeoFirestore object to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag: boolean = false): boolean {
+export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, flag = false): boolean {
   let error: string;
 
   error = (!validateGeohash(geoFirestoreObj.g, true)) ? 'invalid geohash on object' : null;
@@ -152,7 +152,7 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
   } else {
     return !error;
   }
-};
+}
 
 /**
  * Validates the inputted query criteria and throws an error if it is invalid.
@@ -160,7 +160,7 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
  * @param newQueryCriteria The criteria which specifies the query's center and/or radius.
  * @param requireCenterAndRadius The criteria which center and radius required.
  */
-export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius: boolean = false): void {
+export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('query criteria must be an object');
   } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
@@ -190,7 +190,7 @@ export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterA
       throw new Error('radius must be greater than or equal to 0');
     }
   }
-};
+}
 
 /**
  * Converts degrees to radians.
@@ -204,7 +204,7 @@ export function degreesToRadians(degrees: number): number {
   }
 
   return (degrees * Math.PI / 180);
-};
+}
 
 /**
  * Generates a geohash of the specified precision/string length from the inputted GeoPoint.
@@ -214,7 +214,7 @@ export function degreesToRadians(degrees: number): number {
  * global default is used.
  * @returns The geohash of the inputted location.
  */
-export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: number = g_GEOHASH_PRECISION): string {
+export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: number = GEOHASH_PRECISION): string {
   validateLocation(location);
   if (typeof precision !== 'undefined') {
     if (typeof precision !== 'number' || isNaN(precision)) {
@@ -236,9 +236,9 @@ export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: 
     min: -180,
     max: 180
   };
-  let hash: string = '';
+  let hash = '';
   let hashVal = 0;
-  let bits: number = 0;
+  let bits = 0;
   let even: number | boolean = 1;
 
   while (hash.length < precision) {
@@ -259,13 +259,13 @@ export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: 
       bits++;
     } else {
       bits = 0;
-      hash += g_BASE32[hashVal];
+      hash += BASE32[hashVal];
       hashVal = 0;
     }
   }
 
   return hash;
-};
+}
 
 /**
  * Calculates the number of degrees a given distance is at a given latitude.
@@ -276,16 +276,16 @@ export function encodeGeohash(location: firebase.firestore.GeoPoint, precision: 
  */
 export function metersToLongitudeDegrees(distance: number, latitude: number): number {
   const radians = degreesToRadians(latitude);
-  const num = Math.cos(radians) * g_EARTH_EQ_RADIUS * Math.PI / 180;
-  const denom = 1 / Math.sqrt(1 - g_E2 * Math.sin(radians) * Math.sin(radians));
+  const num = Math.cos(radians) * EARTH_EQ_RADIUS * Math.PI / 180;
+  const denom = 1 / Math.sqrt(1 - E2 * Math.sin(radians) * Math.sin(radians));
   const deltaDeg = num * denom;
-  if (deltaDeg < g_EPSILON) {
+  if (deltaDeg < EPSILON) {
     return distance > 0 ? 360 : 0;
   }
   else {
     return Math.min(360, distance / deltaDeg);
   }
-};
+}
 
 /**
  * Calculates the bits necessary to reach a given resolution, in meters, for the longitude at a
@@ -298,7 +298,7 @@ export function metersToLongitudeDegrees(distance: number, latitude: number): nu
 export function longitudeBitsForResolution(resolution: number, latitude: number): number {
   const degs = metersToLongitudeDegrees(resolution, latitude);
   return (Math.abs(degs) > 0.000001) ? Math.max(1, Math.log2(360 / degs)) : 1;
-};
+}
 
 /**
  * Calculates the bits necessary to reach a given resolution, in meters, for the latitude.
@@ -307,8 +307,8 @@ export function longitudeBitsForResolution(resolution: number, latitude: number)
  * @returns Bits necessary to reach a given resolution, in meters, for the latitude.
  */
 export function latitudeBitsForResolution(resolution: number): number {
-  return Math.min(Math.log2(g_EARTH_MERI_CIRCUMFERENCE / 2 / resolution), g_MAXIMUM_BITS_PRECISION);
-};
+  return Math.min(Math.log2(EARTH_MERI_CIRCUMFERENCE / 2 / resolution), MAXIMUM_BITS_PRECISION);
+}
 
 /**
  * Wraps the longitude to [-180,180].
@@ -327,7 +327,7 @@ export function wrapLongitude(longitude: number): number {
   else {
     return 180 - (-adjusted % 360);
   }
-};
+}
 
 /**
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a
@@ -338,14 +338,14 @@ export function wrapLongitude(longitude: number): number {
  * @returns The number of bits necessary for the geohash.
  */
 export function boundingBoxBits(coordinate: firebase.firestore.GeoPoint, size: number): number {
-  const latDeltaDegrees = size / g_METERS_PER_DEGREE_LATITUDE;
+  const latDeltaDegrees = size / METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, coordinate.latitude + latDeltaDegrees);
   const latitudeSouth = Math.max(-90, coordinate.latitude - latDeltaDegrees);
   const bitsLat = Math.floor(latitudeBitsForResolution(size)) * 2;
   const bitsLongNorth = Math.floor(longitudeBitsForResolution(size, latitudeNorth)) * 2 - 1;
   const bitsLongSouth = Math.floor(longitudeBitsForResolution(size, latitudeSouth)) * 2 - 1;
-  return Math.min(bitsLat, bitsLongNorth, bitsLongSouth, g_MAXIMUM_BITS_PRECISION);
-};
+  return Math.min(bitsLat, bitsLongNorth, bitsLongSouth, MAXIMUM_BITS_PRECISION);
+}
 
 /**
  * Calculates eight points on the bounding box and the center of a given circle. At least one
@@ -357,7 +357,7 @@ export function boundingBoxBits(coordinate: firebase.firestore.GeoPoint, size: n
  * @returns The eight bounding box points.
  */
 export function boundingBoxCoordinates(center: firebase.firestore.GeoPoint, radius: number): firebase.firestore.GeoPoint[] {
-  const latDegrees = radius / g_METERS_PER_DEGREE_LATITUDE;
+  const latDegrees = radius / METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, center.latitude + latDegrees);
   const latitudeSouth = Math.max(-90, center.latitude - latDegrees);
   const longDegsNorth = metersToLongitudeDegrees(radius, latitudeNorth);
@@ -374,7 +374,7 @@ export function boundingBoxCoordinates(center: firebase.firestore.GeoPoint, radi
     new firebase.firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude - longDegs)),
     new firebase.firestore.GeoPoint(latitudeSouth, wrapLongitude(center.longitude + longDegs))
   ];
-};
+}
 
 /**
  * Calculates the bounding box query for a geohash with x bits precision.
@@ -385,24 +385,24 @@ export function boundingBoxCoordinates(center: firebase.firestore.GeoPoint, radi
  */
 export function geohashQuery(geohash: string, bits: number): string[] {
   validateGeohash(geohash);
-  const precision = Math.ceil(bits / g_BITS_PER_CHAR);
+  const precision = Math.ceil(bits / BITS_PER_CHAR);
   if (geohash.length < precision) {
     return [geohash, geohash + '~'];
   }
   geohash = geohash.substring(0, precision);
   const base = geohash.substring(0, geohash.length - 1);
-  const lastValue = g_BASE32.indexOf(geohash.charAt(geohash.length - 1));
-  const significantBits = bits - (base.length * g_BITS_PER_CHAR);
-  const unusedBits = (g_BITS_PER_CHAR - significantBits);
+  const lastValue = BASE32.indexOf(geohash.charAt(geohash.length - 1));
+  const significantBits = bits - (base.length * BITS_PER_CHAR);
+  const unusedBits = (BITS_PER_CHAR - significantBits);
   // delete unused bits
   const startValue = (lastValue >> unusedBits) << unusedBits;
   const endValue = startValue + (1 << unusedBits);
   if (endValue > 31) {
-    return [base + g_BASE32[startValue], base + '~'];
+    return [base + BASE32[startValue], base + '~'];
   } else {
-    return [base + g_BASE32[startValue], base + g_BASE32[endValue]];
+    return [base + BASE32[startValue], base + BASE32[endValue]];
   }
-};
+}
 
 /**
  * Calculates a set of queries to fully contain a given circle. A query is a [start, end] pair
@@ -415,18 +415,18 @@ export function geohashQuery(geohash: string, bits: number): string[] {
 export function geohashQueries(center: firebase.firestore.GeoPoint, radius: number): string[][] {
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
-  const geohashPrecision = Math.ceil(queryBits / g_BITS_PER_CHAR);
+  const geohashPrecision = Math.ceil(queryBits / BITS_PER_CHAR);
   const coordinates = boundingBoxCoordinates(center, radius);
-  const queries = coordinates.map(function (coordinate) {
+  const queries = coordinates.map((coordinate) => {
     return geohashQuery(encodeGeohash(coordinate, geohashPrecision), queryBits);
   });
   // remove duplicates
-  return queries.filter(function (query, index) {
-    return !queries.some(function (other, otherIndex) {
+  return queries.filter((query, index) => {
+    return !queries.some((other, otherIndex) => {
       return index > otherIndex && query[0] === other[0] && query[1] === other[1];
     });
   });
-};
+}
 
 /**
  * Encodes a location and geohash as a GeoFire object.
@@ -481,11 +481,11 @@ export function findCoordinatesKey(document: any, customKey?: string): string {
 
   if (document && typeof document === 'object') {
     if (customKey in document) {
-      key = customKey
+      key = customKey;
     } else if ('coordinates' in document) {
       key = 'coordinates';
     } else {
-      error = 'no valid key exists'
+      error = 'no valid key exists';
     }
   } else {
     error = 'document not an object';

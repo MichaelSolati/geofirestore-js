@@ -74,7 +74,7 @@ describe('Adding a single location via add():', () => {
 
       cl.x('p4');
     }).catch((error) => {
-      failTestOnCaughtError(error)
+      failTestOnCaughtError(error);
     });
   });
 
@@ -225,7 +225,7 @@ describe('Adding a single location via add():', () => {
 
         cl.x('p4');
       }).catch((error) => {
-        failTestOnCaughtError(error)
+        failTestOnCaughtError(error);
       });
     });
 
@@ -983,7 +983,7 @@ describe('Adding a single location via add():', () => {
     it('query() returns GeoFireQuery instance', () => {
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      expect(geoFirestoreQueries[0] instanceof GeoFirestoreQuery).to.be.ok;
+      expect(geoFirestoreQueries[0] instanceof GeoFirestoreQuery).to.be.ok; // tslint:disable-line
     });
 
     it('query() does not throw errors given valid query criteria', () => {

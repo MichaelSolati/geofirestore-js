@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 
 import { GeoFirestore } from '../src/geofirestore';
 import {
-  boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, g_GEOHASH_PRECISION,
+  boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION,
   metersToLongitudeDegrees, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude
 } from '../src/utils';
 import {
@@ -148,16 +148,16 @@ describe('geoFireUtils Tests:', () => {
 
   describe('Geohashing:', () => {
     it('encodeGeohash() encodes locations to geohashes given no precision', () => {
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, -180))).to.be.equal('000000000000'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(90, 180))).to.be.equal('zzzzzzzzzzzz'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, 180))).to.be.equal('pbpbpbpbpbpb'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(90, -180))).to.be.equal('bpbpbpbpbpbp'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(37.7853074, -122.4054274))).to.be.equal('9q8yywe56gcf'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(38.98719, -77.250783))).to.be.equal('dqcjf17sy6cp'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(29.3760648, 47.9818853))).to.be.equal('tj4p5gerfzqu'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(78.216667, 15.55))).to.be.equal('umghcygjj782'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(-54.933333, -67.616667))).to.be.equal('4qpzmren1kwb'.slice(0, g_GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(-54, -67))).to.be.equal('4w2kg3s54y7h'.slice(0, g_GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, -180))).to.be.equal('0000000000'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(90, 180))).to.be.equal('zzzzzzzzzzzz'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, 180))).to.be.equal('pbpbpbpbpbpb'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(90, -180))).to.be.equal('bpbpbpbpbpbp'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(37.7853074, -122.4054274))).to.be.equal('9q8yywe56gcf'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(38.98719, -77.250783))).to.be.equal('dqcjf17sy6cp'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(29.3760648, 47.9818853))).to.be.equal('tj4p5gerfzqu'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(78.216667, 15.55))).to.be.equal('umghcygjj782'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(-54.933333, -67.616667))).to.be.equal('4qpzmren1kwb'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(new firebase.firestore.GeoPoint(-54, -67))).to.be.equal('4w2kg3s54y7h'.slice(0, GEOHASH_PRECISION));
     });
 
     it('encodeGeohash() encodes locations to geohashes given a custom precision', () => {
@@ -290,7 +290,7 @@ describe('geoFireUtils Tests:', () => {
           const pointLat = Math.max(-89.9, Math.min(89.9, centerLat + Math.random() * degreeRadius));
           const pointLong = wrapLongitude(centerLong + Math.random() * degreeRadius);
           if (GeoFirestore.distance(new firebase.firestore.GeoPoint(centerLat, centerLong), new firebase.firestore.GeoPoint(pointLat, pointLong)) < radius / 1000) {
-            expect(inQuery(queries, encodeGeohash(new firebase.firestore.GeoPoint(pointLat, pointLong)))).to.be.true;
+            expect(inQuery(queries, encodeGeohash(new firebase.firestore.GeoPoint(pointLat, pointLong)))).to.be.true; // tslint:disable-line
           }
         }
       }

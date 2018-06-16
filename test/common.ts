@@ -10,8 +10,8 @@ import { GeoFirestoreQuery } from '../src/query';
 const expect = chai.expect;
 // Define examples of valid and invalid parameters
 export const invalidFirebaseRefs = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
-export const validKeys = ['a', 'loc1', '(e@Xi:4t>*E2)hc<5oa:1s6{B0d?u', Array(700).join('a')];
-export const invalidKeys = ['', true, false, null, undefined, { a: 1 }, 'loc.1', 'loc$1', '[loc1', 'loc1]', 'loc#1', 'loc/1', 'a#i]$da[s', 'te/nst', 'te/rst', 'te/u0000st', 'te/u0015st', 'te/007Fst', Array(800).join('a')];
+export const validKeys = ['a', 'loc1', '(e@Xi:4t>*E2)hc<5oa:1s6{B0d?u', new Array(700).join('a')];
+export const invalidKeys = ['', true, false, null, undefined, { a: 1 }, 'loc.1', 'loc$1', '[loc1', 'loc1]', 'loc#1', 'loc/1', 'a#i]$da[s', 'te/nst', 'te/rst', 'te/u0000st', 'te/u0015st', 'te/007Fst', new Array(800).join('a')];
 export const validLocations = [new firebase.firestore.GeoPoint(0, 0), new firebase.firestore.GeoPoint(-90, 180), new firebase.firestore.GeoPoint(90, -180), new firebase.firestore.GeoPoint(23, 74), new firebase.firestore.GeoPoint(47.235124363, 127.2379654226)];
 // @ts-ignore
 export const invalidLocations = [{ latitude: -91, longitude: 0 }, { latitude: 91, longitude: 0 }, { latitude: 0, longitude: 181 }, { latitude: 0, longitude: -181 }, { latitude: [0, 0], longitude: 0 }, { latitude: 'a', longitude: 0 }, { latitude: 0, longitude: 'a' }, { latitude: 'a', longitude: 'a' }, { latitude: NaN, longitude: 0 }, { latitude: 0, longitude: NaN }, { latitude: undefined, longitude: NaN }, { latitude: null, longitude: 0 }, { latitude: null, longitude: null }, { latitude: 0, longitude: undefined }, { latitude: undefined, longitude: undefined }, '', 'a', true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
@@ -33,6 +33,7 @@ const config = {
   projectId: 'geofirestore',
 };
 firebase.initializeApp(config);
+firebase.firestore().settings({ timestampsInSnapshots: true });
 
 /**********************/
 /*  HELPER FUNCTIONS  */
@@ -40,7 +41,7 @@ firebase.initializeApp(config);
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done) {
   // Create a new Firebase database ref at a random node
-  geoFirestoreRef = firebase.firestore().collection('geofire');
+  geoFirestoreRef = firebase.firestore().collection('geofirestore');
   // Create a new GeoFire instance
   geoFirestore = new GeoFirestore(geoFirestoreRef);
 
@@ -57,7 +58,7 @@ export function afterEachHelper(done) {
     geoFirestoreQuery.cancel();
   });
 
-  deleteCollection(geoFirestoreRef.firestore, 'geofire', 50).then(() => {
+  deleteCollection(geoFirestoreRef.firestore, 'geofirestore', 50).then(() => {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
   }).then(done);
@@ -85,18 +86,18 @@ export function getFirestoreData() {
     });
     return data;
   });
-};
+}
 
 
 /* Returns a promise which is fulfilled after the inputted number of milliseconds pass */
 export function wait(milliseconds) {
-  return new Promise(function (resolve) {
+  return new Promise((resolve) => {
     const timeout = window.setTimeout(() => {
       window.clearTimeout(timeout);
       resolve();
     }, milliseconds);
   });
-};
+}
 
 /* Keeps track of all the current asynchronous tasks being run */
 export function Checklist(items, expect, done) {
@@ -106,7 +107,7 @@ export function Checklist(items, expect, done) {
   this.x = function (item) {
     const index = eventsToComplete.indexOf(item);
     if (index === -1) {
-      expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false;
+      expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false; // tslint:disable-line
     }
     else {
       eventsToComplete.splice(index, 1);
@@ -117,7 +118,7 @@ export function Checklist(items, expect, done) {
   };
 
   /* Returns the length of the events list */
-  this.length = function () {
+  this.length = () => {
     return eventsToComplete.length;
   };
 
@@ -125,7 +126,7 @@ export function Checklist(items, expect, done) {
   this.isEmpty = function () {
     return (this.length() === 0);
   };
-};
+}
 
 /* Common error handler for use in .catch() statements of promises. This will
  * cause the test to fail, outputting the details of the exception. Otherwise, tests
@@ -148,7 +149,7 @@ function deleteCollection(db: firebase.firestore.Firestore, collectionPath: stri
 function deleteQueryBatch(db: firebase.firestore.Firestore, query: firebase.firestore.Query, batchSize: number, resolve: Function, reject: Function) {
   query.get().then((snapshot) => {
     // When there are no documents left, we are done
-    if (snapshot.size == 0) { return 0; }
+    if (snapshot.size === 0) { return 0; }
 
     // Delete documents in a batch
     const batch = db.batch();

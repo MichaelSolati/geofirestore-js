@@ -1,5 +1,5 @@
 export interface GeoFirestoreQueryState {
   active: boolean;
-  childCallback: Function;
-  valueCallback: Function;
+  childCallback: () => void;
+  valueCallback: () => void;
 }

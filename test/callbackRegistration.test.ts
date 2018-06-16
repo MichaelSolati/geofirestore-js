@@ -24,8 +24,8 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
     it('Constructor throws error given non-function', () => {
       const createCallbackRegistration = () => {
         // @ts-ignore 
-        new GeoCallbackRegistration('nonFunction');
-      }
+        new GeoCallbackRegistration('nonFunction'); // tslint:disable-line
+      };
 
       expect(() => createCallbackRegistration()).to.throw(null, 'callback must be a function');
     });
@@ -64,7 +64,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
         return wait(100);
       }).then(() => {
         cl.x('p5');
-      }).catch(failTestOnCaughtError);;
+      }).catch(failTestOnCaughtError);
     });
 
     it('\'key_entered\' registrations can be cancelled', (done) => {

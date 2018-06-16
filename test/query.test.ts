@@ -329,7 +329,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       const setInvalidEventType = () => {
         geoFirestoreQueries[0].on('invalid_event', () => { });
-      }
+      };
 
       expect(setInvalidEventType).to.throw();
     });
@@ -340,7 +340,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const setInvalidCallback = () => {
         // @ts-ignore
         geoFirestoreQueries[0].on('key_entered', 'non-function');
-      }
+      };
 
       expect(setInvalidCallback).to.throw();
     });
@@ -1306,7 +1306,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         return wait(100);
       }).then(() => {
-        cl.x('p3')
+        cl.x('p3');
 
         geoFirestoreQueries[0].cancel();
 
@@ -1411,7 +1411,9 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         let numKeyEnteredEventsFired = 0;
         geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
-          cl.x('key entered');
+          if (numKeyEnteredEventsFired === 0) {
+            cl.x('key entered');
+          }
           numKeyEnteredEventsFired++;
           if (numKeyEnteredEventsFired === 1) {
             cl.x('cancel query');

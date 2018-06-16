@@ -37,7 +37,7 @@ export class GeoFirestore {
     } else {
       throw new Error('document must be an object');
     }
-  };
+  }
 
   /**
    * Returns a promise fulfilled with the document corresponding to the provided key.
@@ -53,11 +53,11 @@ export class GeoFirestore {
       if (!documentSnapshot.exists) {
         return null;
       } else {
-        const snapshotVal: GeoFirestoreObj = <GeoFirestoreObj>documentSnapshot.data();
+        const snapshotVal: GeoFirestoreObj = documentSnapshot.data() as GeoFirestoreObj;
         return decodeGeoFirestoreObject(snapshotVal);
       }
     });
-  };
+  }
 
   /**
    * Returns the Firestore Collection used to create this GeoFirestore instance.
@@ -66,7 +66,7 @@ export class GeoFirestore {
    */
   public ref(): firebase.firestore.CollectionReference {
     return this._collectionRef;
-  };
+  }
 
   /**
    * Removes the provided key, or keys, from this GeoFirestore. Returns an empty promise fulfilled when the key(s) has been removed.
@@ -84,7 +84,7 @@ export class GeoFirestore {
     } else {
       return this.set(keyOrKeys);
     }
-  };
+  }
 
   /**
    * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
@@ -131,7 +131,7 @@ export class GeoFirestore {
       }
     });
     return batch.commit();
-  };
+  }
 
   /**
    * Returns a new GeoQuery instance with the provided queryCriteria.
@@ -141,7 +141,7 @@ export class GeoFirestore {
    */
   public query(queryCriteria: QueryCriteria): GeoFirestoreQuery {
     return new GeoFirestoreQuery(this._collectionRef, queryCriteria);
-  };
+  }
 
   /********************/
   /*  STATIC METHODS  */
@@ -155,20 +155,20 @@ export class GeoFirestore {
    * @param location2 The GeoPoint of the second location.
    * @returns The distance, in kilometers, between the inputted locations.
    */
-  static distance(location1: firebase.firestore.GeoPoint, location2: firebase.firestore.GeoPoint) {
+  public static distance(location1: firebase.firestore.GeoPoint, location2: firebase.firestore.GeoPoint) {
     validateLocation(location1);
     validateLocation(location2);
 
-    var radius = 6371; // Earth's radius in kilometers
-    var latDelta = degreesToRadians(location2.latitude - location1.latitude);
-    var lonDelta = degreesToRadians(location2.longitude - location1.longitude);
+    const radius = 6371; // Earth's radius in kilometers
+    const latDelta = degreesToRadians(location2.latitude - location1.latitude);
+    const lonDelta = degreesToRadians(location2.longitude - location1.longitude);
 
-    var a = (Math.sin(latDelta / 2) * Math.sin(latDelta / 2)) +
+    const a = (Math.sin(latDelta / 2) * Math.sin(latDelta / 2)) +
       (Math.cos(degreesToRadians(location1.latitude)) * Math.cos(degreesToRadians(location2.latitude)) *
         Math.sin(lonDelta / 2) * Math.sin(lonDelta / 2));
 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return radius * c;
-  };
+  }
 }
