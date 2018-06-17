@@ -252,6 +252,48 @@ describe('GeoFirestoreQuery Tests:', () => {
       }).catch(failTestOnCaughtError);
     });
 
+    it('updateCriteria() does not cause \'key_modified\' callbacks to fire for keys in both the previous and updated queries', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'loc1 entered', 'loc4 entered', 'loc4 exited', 'loc2 entered'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
+        cl.x(key + ' entered');
+      });
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
+        cl.x(key + ' exited');
+      });
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 3) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(16, -150) },
+        'loc4': { coordinates: new firebase.firestore.GeoPoint(5, 5) },
+        'loc5': { coordinates: new firebase.firestore.GeoPoint(88, 88) },
+      }).then(() => {
+        cl.x('p1');
+
+        geoFirestoreQueries[0].updateCriteria({ center: new firebase.firestore.GeoPoint(1, 1), radius: 1000 });
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p2');
+
+        return geoFirestore.set({
+          'loc2': { coordinates: new firebase.firestore.GeoPoint(1, 1), modified: true },
+          'loc4': { coordinates: new firebase.firestore.GeoPoint(89, 90), modified: true },
+        });
+      }).then(() => {
+        cl.x('p3');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p4');
+      }).catch(failTestOnCaughtError);
+    });
+
     it('updateCriteria() does not cause \'key_exited\' callbacks to fire twice for keys in the previous query but not in the updated query and which were moved after the query was updated', (done) => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'loc1 entered', 'loc4 entered', 'loc1 exited', 'loc4 exited', 'loc4 entered', 'loc5 entered', 'loc5 moved'], expect, done);
 
@@ -785,6 +827,208 @@ describe('GeoFirestoreQuery Tests:', () => {
     });
   });
 
+  describe('\'key_modified\' event:', () => {
+    it('\'key_modified\' callback does not fire for brand new documents who\'s location within or outside of the GeoFirestoreQuery', (done) => {
+      const cl = new Checklist(['p1', 'p2'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' moved');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) },
+      }).then(() => {
+        cl.x('p1');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p2');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('\'key_modified\' callback does not fire for documents who\'s location has moved outside of the GeoFirestoreQuery', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 90) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(16, -150) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 91), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(-50, -50), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('\'key_modified\' callback does not fire for documents who\'s location outside of the GeoFirestoreQuery which are moved within the GeoFirestoreQuery', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 90) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(16, -150) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(-1, -1), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('\'key_modified\' callback does not fire for documents who\'s location within the GeoFirestoreQuery which are moved somewhere outside of the GeoFirestoreQuery', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 90), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(-1, -90), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('\'key_modified\' callback fires for a document modified within the GeoFirestoreQuery when the location is the same location', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3', 'loc3 modified'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, -1) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+          'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(1, -1), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('\'key_modified\' callback properly fires when multiple keys are at the same location within the GeoFirestoreQuery and only one of them are modified', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3', 'loc1 modified', 'loc3 modified'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(0, 0), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(1, 1), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+
+    it('multiple \'key_modified\' callbacks fire for documents within the GeoFirestoreQuery which are modified', (done) => {
+      const cl = new Checklist(['p1', 'p2', 'p3', 'loc1 modified1', 'loc3 modified1', 'loc1 modified2', 'loc3 modified2'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified1');
+      });
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified2');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 2) },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(-1, -1) },
+      }).then(() => {
+        cl.x('p1');
+
+        return geoFirestore.set({
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 2), modified: true },
+          'loc3': { coordinates: new firebase.firestore.GeoPoint(-1, -1), modified: true },
+        });
+      }).then(() => {
+        cl.x('p2');
+
+        return wait(100);
+      }).then(() => {
+        cl.x('p3');
+      }).catch(failTestOnCaughtError);
+    });
+  });
+
   describe('\'key_entered\' event:', () => {
     it('\'key_entered\' callback fires when a location enters the GeoFirestoreQuery before onKeyEntered() was called', (done) => {
       const cl = new Checklist(['p1', 'p2', 'loc1 entered', 'loc4 entered'], expect, done);
@@ -1253,6 +1497,9 @@ describe('GeoFirestoreQuery Tests:', () => {
       geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
 
       geoFirestore.set({
         'loc1': { coordinates: new firebase.firestore.GeoPoint(-1, -1) },
@@ -1274,7 +1521,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
   describe('Cancelling GeoFirestoreQuery:', () => {
     it('cancel() prevents GeoFirestoreQuery from firing any more \'key_*\' event callbacks', (done) => {
-      const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 entered', 'loc4 entered', 'loc1 moved', 'loc4 exited'], expect, done);
+      const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 entered', 'loc4 entered', 'loc5 entered', 'loc1 moved', 'loc4 exited', 'loc5 modified'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
@@ -1287,19 +1534,23 @@ describe('GeoFirestoreQuery Tests:', () => {
       geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified');
+      });
 
       geoFirestore.set({
         'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 3) },
         'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
         'loc3': { coordinates: new firebase.firestore.GeoPoint(16, -150) },
         'loc4': { coordinates: new firebase.firestore.GeoPoint(5, 5) },
-        'loc5': { coordinates: new firebase.firestore.GeoPoint(67, 55) },
+        'loc5': { coordinates: new firebase.firestore.GeoPoint(3, 2) },
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.set({
           'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 1) },
           'loc4': { coordinates: new firebase.firestore.GeoPoint(25, 5) },
+          'loc5': { coordinates: new firebase.firestore.GeoPoint(3, 2), modified: true },
         });
       }).then(() => {
         cl.x('p2');
@@ -1337,8 +1588,7 @@ describe('GeoFirestoreQuery Tests:', () => {
     });
 
     it('Calling cancel() on one GeoFirestoreQuery does not cancel other GeoQueries', (done) => {
-      const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 entered1', 'loc1 entered2', 'loc4 entered1', 'loc4 entered2', 'loc1 moved1', 'loc1 moved2', 'loc4 exited1', 'loc4 exited2', 'loc1 exited2', 'loc5 entered2'], expect, done);
-
+      const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'loc1 entered1', 'loc1 entered2', 'loc4 entered1', 'loc4 entered2', 'loc5 entered1', 'loc5 entered2', 'loc1 moved1', 'loc1 moved2', 'loc4 exited1', 'loc4 exited2', 'loc5 modified1', 'loc5 modified2', 'loc1 exited2'], expect, done);
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
@@ -1351,6 +1601,9 @@ describe('GeoFirestoreQuery Tests:', () => {
       geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved1');
       });
+      geoFirestoreQueries[0].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified1');
+      });
 
       geoFirestoreQueries[1].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered2');
@@ -1361,19 +1614,23 @@ describe('GeoFirestoreQuery Tests:', () => {
       geoFirestoreQueries[1].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved2');
       });
+      geoFirestoreQueries[1].on('key_modified', (key, document, distance) => {
+        cl.x(key + ' modified2');
+      });
 
       geoFirestore.set({
         'loc1': { coordinates: new firebase.firestore.GeoPoint(2, 3) },
         'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -7) },
         'loc3': { coordinates: new firebase.firestore.GeoPoint(16, -150) },
         'loc4': { coordinates: new firebase.firestore.GeoPoint(5, 5) },
-        'loc5': { coordinates: new firebase.firestore.GeoPoint(67, 55) },
+        'loc5': { coordinates: new firebase.firestore.GeoPoint(3, 2) },
       }).then(() => {
         cl.x('p1');
 
         return geoFirestore.set({
           'loc1': { coordinates: new firebase.firestore.GeoPoint(1, 1) },
           'loc4': { coordinates: new firebase.firestore.GeoPoint(25, 5) },
+          'loc5': { coordinates: new firebase.firestore.GeoPoint(3, 2), modified: true },
         });
       }).then(() => {
         cl.x('p2');
@@ -1386,7 +1643,6 @@ describe('GeoFirestoreQuery Tests:', () => {
         return geoFirestore.set({
           'loc1': { coordinates: new firebase.firestore.GeoPoint(10, -100) },
           'loc2': { coordinates: new firebase.firestore.GeoPoint(50, -50) },
-          'loc5': { coordinates: new firebase.firestore.GeoPoint(1, 2) },
         });
       }).then(() => {
         cl.x('p4');

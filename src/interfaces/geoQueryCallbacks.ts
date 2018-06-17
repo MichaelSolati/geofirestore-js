@@ -6,4 +6,5 @@ export interface GeoQueryCallbacks {
   key_entered: KeyCallback[];
   key_exited: KeyCallback[];
   key_moved: KeyCallback[];
+  key_modified: KeyCallback[];
 }

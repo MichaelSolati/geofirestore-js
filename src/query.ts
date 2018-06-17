@@ -11,7 +11,7 @@ import { GeoFirestoreObj, GeoFirestoreQueryState, GeoQueryCallbacks, LocationTra
  */
 export class GeoFirestoreQuery {
   // Event callbacks
-  private _callbacks: GeoQueryCallbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [] };
+  private _callbacks: GeoQueryCallbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
   // Variable to track when the query is cancelled
   private _cancelled = false;
   private _center: firebase.firestore.GeoPoint;
@@ -70,7 +70,7 @@ export class GeoFirestoreQuery {
     this._cancelled = true;
 
     // Cancel all callbacks in this query's callback list
-    this._callbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [] };
+    this._callbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
 
     // Turn off all Firebase listeners for the current geohashes being queried
     const keys: string[] = Array.from(this._currentGeohashesQueried.keys());
@@ -97,9 +97,9 @@ export class GeoFirestoreQuery {
 
   /**
    * Attaches a callback to this query which will be run when the provided eventType fires. Valid eventType
-   * values are 'ready', 'key_entered', 'key_exited', and 'key_moved'. The ready event callback is passed no
-   * parameters. All other callbacks will be passed three parameters: (1) the location's key, (2) the location's
-   * [latitude, longitude] pair, and (3) the distance, in kilometers, from the location to this query's center
+   * values are 'ready', 'key_entered', 'key_exited', 'key_moved', and 'key_modified'. The ready event callback
+   * is passed no parameters. All other callbacks will be passed three parameters: (1) the location's key, (2)
+   * the location's document, and (3) the distance, in kilometers, from the location to this query's center
    *
    * 'ready' is used to signify that this query has loaded its initial state and is up-to-date with its corresponding
    * GeoFirestore instance. 'ready' fires when this query has loaded all of the initial data from GeoFirestore and fired all
@@ -114,20 +114,22 @@ export class GeoFirestoreQuery {
    * entirely removed from GeoFire, both the location and distance passed to the callback will be null.
    *
    * 'key_moved' fires when a key which is already in this query moves to another location inside of it.
+   * 
+   * 'key_modified' fires when a key which is already in this query and the document has changed, while the location has stayed the same.
    *
    * Returns a GeoCallbackRegistration which can be used to cancel the callback. You can add as many callbacks
    * as you would like for the same eventType by repeatedly calling on(). Each one will get called when its
    * corresponding eventType fires. Each callback must be cancelled individually.
    *
    * @param eventType The event type for which to attach the callback. One of 'ready', 'key_entered',
-   * 'key_exited', or 'key_moved'.
+   * 'key_exited', 'key_moved', or 'key_modified'.
    * @param callback Callback function to be called when an event of type eventType fires.
    * @returns A callback registration which can be used to cancel the provided callback.
    */
   public on(eventType: string, callback: KeyCallback | ReadyCallback): GeoCallbackRegistration {
     // Validate the inputs
-    if (['ready', 'key_entered', 'key_exited', 'key_moved'].indexOf(eventType) === -1) {
-      throw new Error('event type must be \'ready\', \'key_entered\', \'key_exited\', or \'key_moved\'');
+    if (['ready', 'key_entered', 'key_exited', 'key_moved', 'key_modified'].indexOf(eventType) === -1) {
+      throw new Error('event type must be \'ready\', \'key_entered\', \'key_exited\', \'key_moved\', or \'key_modified\'');
     }
     if (typeof callback !== 'function') {
       throw new Error('callback must be a function');
@@ -243,7 +245,7 @@ export class GeoFirestoreQuery {
     const data: GeoFirestoreObj = (locationDataSnapshot.exists) ? locationDataSnapshot.data() as GeoFirestoreObj : null;
     const document: any = (data && validateGeoFirestoreObject(data)) ? data.d : null;
     const location: firebase.firestore.GeoPoint = (data && validateLocation(data.l)) ? data.l : null;
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location, document);
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location, document, true);
   }
 
   /**
@@ -307,7 +309,7 @@ export class GeoFirestoreQuery {
   /**
    * Fires each callback for the provided eventType, passing it provided key's data.
    *
-   * @param eventType The event type whose callbacks to fire. One of 'key_entered', 'key_exited', or 'key_moved'.
+   * @param eventType The event type whose callbacks to fire. One of 'key_entered', 'key_exited', 'key_moved', or 'key_modified'.
    * @param key The key of the location for which to fire the callbacks.
    * @param document The document from the GeoFirestore Collection.
    * @param distanceFromCenter The distance from the center or null.
@@ -505,8 +507,9 @@ export class GeoFirestoreQuery {
    * @param key The key of the GeoFirestore location.
    * @param location The location as a Firestore GeoPoint.
    * @param document The current Document from Firestore.
+   * @param modified Flag for if document is a modified document/
    */
-  private _updateLocation(key: string, location?: firebase.firestore.GeoPoint, document?: any): void {
+  private _updateLocation(key: string, location?: firebase.firestore.GeoPoint, document?: any, modified = false): void {
     validateLocation(location);
     // Get the key and location
     let distanceFromCenter: number, isInQuery;
@@ -533,6 +536,8 @@ export class GeoFirestoreQuery {
       this._fireCallbacksForKey('key_moved', key, document, distanceFromCenter);
     } else if (!isInQuery && wasInQuery) {
       this._fireCallbacksForKey('key_exited', key, document, distanceFromCenter);
+    } else if (isInQuery && modified) {
+      this._fireCallbacksForKey('key_modified', key, document, distanceFromCenter);
     }
   }
 }

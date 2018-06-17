@@ -1,8 +1,7 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase';
 
-import { GeoFirestore } from '../src';
-import { GeoFirestoreQuery } from '../src/query';
+import { GeoFirestore, GeoFirestoreQuery } from '../src';
 
 /*************/
 /*  GLOBALS  */
@@ -100,32 +99,35 @@ export function wait(milliseconds) {
 }
 
 /* Keeps track of all the current asynchronous tasks being run */
-export function Checklist(items, expect, done) {
-  const eventsToComplete = items;
-
+export class Checklist {
+  constructor(private _eventsToComplete: string[], private _expect: Function, private _done: Function) { }
   /* Removes a task from the events list */
-  this.x = function (item) {
-    const index = eventsToComplete.indexOf(item);
+  public x(item: string): void {
+    const index = this._eventsToComplete.indexOf(item);
     if (index === -1) {
-      expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false; // tslint:disable-line
+      this._expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false; // tslint:disable-line
     }
     else {
-      eventsToComplete.splice(index, 1);
+      this._eventsToComplete.splice(index, 1);
       if (this.isEmpty()) {
-        done();
+        this._done();
       }
     }
-  };
+  }
+
+  public remaining(): string[] {
+    return [...this._eventsToComplete];
+  }
 
   /* Returns the length of the events list */
-  this.length = () => {
-    return eventsToComplete.length;
-  };
+  public length(): number {
+    return this._eventsToComplete.length;
+  }
 
   /* Returns true if the events list is empty */
-  this.isEmpty = function () {
+  public isEmpty(): boolean {
     return (this.length() === 0);
-  };
+  }
 }
 
 /* Common error handler for use in .catch() statements of promises. This will

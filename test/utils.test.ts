@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase';
 
-import { GeoFirestore } from '../src/geofirestore';
+import { GeoFirestore } from '../src';
 import {
   boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION,
   metersToLongitudeDegrees, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude

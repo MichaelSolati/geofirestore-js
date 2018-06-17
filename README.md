@@ -253,7 +253,7 @@ radius = geoQuery.radius();  // radius === 7
 
 #### GeoFirestoreQuery.on(eventType, callback)
 
-Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
+Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, `key_moved`, and `key_modified`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
 
 1. the location's key
 2. the location's Firestore Document
@@ -266,6 +266,8 @@ Attaches a `callback` to this query which will be run when the provided `eventTy
 `key_exited` fires when a key moves from a location inside of this query to one outside of it. If the key was entirely removed from `GeoFirestore`, both the document and distance passed to the `callback` will be `null`.
 
 `key_moved` fires when a key which is already in this query moves to another location inside of it.
+
+`key_modified` fires when a key which is already in this query and the document has changed, while the location has stayed the same.
 
 Returns a `GeoCallbackRegistration` which can be used to cancel the `callback`. You can add as many callbacks as you would like for the same `eventType` by repeatedly calling `on()`. Each one will get called when its corresponding `eventType` fires. Each `callback` must be cancelled individually.
 
