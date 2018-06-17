@@ -37,7 +37,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyMovedRegistration = geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      const onKeyMovedRegistration = geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -72,7 +72,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyEnteredRegistration = geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      const onKeyEnteredRegistration = geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -103,7 +103,7 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyExitedRegistration = geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      const onKeyExitedRegistration = geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
         onKeyExitedRegistration.cancel();
       });
@@ -138,10 +138,10 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyMovedRegistration1 = geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      const onKeyMovedRegistration1 = geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved1');
       });
-      const onKeyMovedRegistration2 = geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      const onKeyMovedRegistration2 = geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved2');
       });
 
@@ -176,10 +176,10 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyEnteredRegistration1 = geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      const onKeyEnteredRegistration1 = geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered1');
       });
-      const onKeyEnteredRegistration2 = geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      const onKeyEnteredRegistration2 = geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered2');
       });
 
@@ -210,10 +210,10 @@ describe('GeoFirestore GeoCallbackRegistration Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      const onKeyExitedRegistration1 = geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      const onKeyExitedRegistration1 = geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited1');
       });
-      const onKeyExitedRegistration2 = geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      const onKeyExitedRegistration2 = geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited2');
       });
 

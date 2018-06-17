@@ -147,7 +147,7 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
     error = 'no valid document found';
   }
 
-  if (typeof error !== 'undefined' && !flag) {
+  if (error && !flag) {
     throw new Error('Invalid GeoFirestore object: ' + error);
   } else {
     return !error;
@@ -480,7 +480,7 @@ export function findCoordinatesKey(document: any, customKey?: string): string {
   let key: string;
 
   if (document && typeof document === 'object') {
-    if (customKey in document) {
+    if (customKey && customKey in document) {
       key = customKey;
     } else if ('coordinates' in document) {
       key = 'coordinates';
@@ -491,11 +491,11 @@ export function findCoordinatesKey(document: any, customKey?: string): string {
     error = 'document not an object';
   }
 
-  if (!validateLocation(document[key], true)) {
+  if (key && !validateLocation(document[key], true)) {
     error = key + ' is not a valid GeoPoint';
   }
 
-  if (typeof error !== 'undefined') {
+  if (error) {
     throw new Error('Invalid GeoFirestore document: ' + error);
   }
 

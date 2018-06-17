@@ -100,7 +100,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'loc1 entered', 'loc4 entered'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(90, 90), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -125,7 +125,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'loc:^:*1 entered', 'loc-+-+-4 entered'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(90, 90), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -150,7 +150,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'loc1 exited', 'loc4 exited'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -175,10 +175,10 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'loc1 entered', 'loc4 entered', 'loc1 exited', 'loc4 exited', 'loc4 entered', 'loc5 entered'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -214,13 +214,13 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'loc1 entered', 'loc4 entered', 'loc4 exited', 'loc2 entered'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -256,13 +256,13 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'loc1 entered', 'loc4 entered', 'loc1 exited', 'loc4 exited', 'loc4 entered', 'loc5 entered', 'loc5 moved'], expect, done);
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -366,7 +366,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           cl.x(key + ' entered');
         });
 
@@ -396,7 +396,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           cl.x(key + ' entered');
         });
 
@@ -440,11 +440,11 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           cl.x(key + ' entered');
         });
 
-        geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
           cl.x(key + ' exited');
         });
 
@@ -473,7 +473,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -495,7 +495,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -524,7 +524,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -553,7 +553,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -582,7 +582,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -612,7 +612,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -641,8 +641,8 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
-        cl.x(key + ' moved to ' + location.latitude + ',' + location.longitude);
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
+        cl.x(key + ' moved to ' + document.coordinates.latitude + ',' + document.coordinates.longitude);
       });
 
       geoFirestore.set({
@@ -670,7 +670,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved (' + distance.toFixed(2) + ' km from center)');
       });
 
@@ -699,7 +699,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -728,7 +728,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -757,10 +757,10 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved1');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved2');
       });
 
@@ -800,7 +800,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       }).then(() => {
         cl.x('p1');
 
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           cl.x(key + ' entered');
         });
 
@@ -815,7 +815,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -839,8 +839,8 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
-        cl.x(key + ' entered at ' + location.latitude + ',' + location.longitude);
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
+        cl.x(key + ' entered at ' + document.coordinates.latitude + ',' + document.coordinates.longitude);
       });
 
       geoFirestore.set({
@@ -863,7 +863,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered (' + distance.toFixed(2) + ' km from center)');
       });
 
@@ -887,7 +887,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -913,7 +913,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
 
@@ -939,10 +939,10 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered1');
       });
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered2');
       });
 
@@ -968,7 +968,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -999,8 +999,8 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
-        cl.x(key + ' exited to ' + location.latitude + ',' + location.longitude);
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
+        cl.x(key + ' exited to ' + document.coordinates.latitude + ',' + document.coordinates.longitude);
       });
 
       geoFirestore.set({
@@ -1031,7 +1031,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited (' + distance.toFixed(2) + ' km from center)');
       });
 
@@ -1063,8 +1063,8 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
-        expect(location).to.be.equal(null);
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
+        expect(document).to.be.equal(null);
         expect(distance).to.be.equal(null);
         cl.x(key + ' exited');
       });
@@ -1087,7 +1087,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -1111,7 +1111,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'loc1 exited'], expect, done);
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -1137,7 +1137,7 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
 
@@ -1163,10 +1163,10 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited1');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited2');
       });
 
@@ -1199,13 +1199,13 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -1244,13 +1244,13 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(0, 0), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -1278,13 +1278,13 @@ describe('GeoFirestoreQuery Tests:', () => {
 
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved');
       });
 
@@ -1312,13 +1312,13 @@ describe('GeoFirestoreQuery Tests:', () => {
 
         return wait(1000);
       }).then(() => {
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           cl.x(key + ' entered');
         });
-        geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
           cl.x(key + ' exited');
         });
-        geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
           cl.x(key + ' moved');
         });
 
@@ -1342,23 +1342,23 @@ describe('GeoFirestoreQuery Tests:', () => {
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
 
-      geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered1');
       });
-      geoFirestoreQueries[0].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited1');
       });
-      geoFirestoreQueries[0].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[0].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved1');
       });
 
-      geoFirestoreQueries[1].on('key_entered', (key, location, distance) => {
+      geoFirestoreQueries[1].on('key_entered', (key, document, distance) => {
         cl.x(key + ' entered2');
       });
-      geoFirestoreQueries[1].on('key_exited', (key, location, distance) => {
+      geoFirestoreQueries[1].on('key_exited', (key, document, distance) => {
         cl.x(key + ' exited2');
       });
-      geoFirestoreQueries[1].on('key_moved', (key, location, distance) => {
+      geoFirestoreQueries[1].on('key_moved', (key, document, distance) => {
         cl.x(key + ' moved2');
       });
 
@@ -1410,7 +1410,7 @@ describe('GeoFirestoreQuery Tests:', () => {
         cl.x('p1');
 
         let numKeyEnteredEventsFired = 0;
-        geoFirestoreQueries[0].on('key_entered', (key, location, distance) => {
+        geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
           if (numKeyEnteredEventsFired === 0) {
             cl.x('key entered');
           }

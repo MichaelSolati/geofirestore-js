@@ -2,9 +2,9 @@ import * as firebase from 'firebase';
 
 import { GeoFirestore } from './geofirestore';
 import { GeoCallbackRegistration } from './callbackRegistration';
-import { encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation } from './utils';
+import { encodeGeohash, geoFirestoreGetKey, geohashQueries, validateCriteria, validateLocation, validateGeoFirestoreObject, findCoordinatesKey } from './utils';
 
-import { GeoFirestoreObj, GeoFirestoreQueryState, GeoQueryCallbacks, LocationTracked, QueryCriteria } from './interfaces';
+import { GeoFirestoreObj, GeoFirestoreQueryState, GeoQueryCallbacks, LocationTracked, QueryCriteria, KeyCallback, ReadyCallback } from './interfaces';
 
 /**
  * Creates a GeoFirestoreQuery instance.
@@ -75,8 +75,7 @@ export class GeoFirestoreQuery {
     // Turn off all Firebase listeners for the current geohashes being queried
     const keys: string[] = Array.from(this._currentGeohashesQueried.keys());
     keys.forEach((geohashQueryStr: string) => {
-      const query: string[] = this._stringToQuery(geohashQueryStr);
-      this._cancelGeohashQuery(query, this._currentGeohashesQueried.get(geohashQueryStr));
+      this._cancelGeohashQuery(this._currentGeohashesQueried.get(geohashQueryStr));
       this._currentGeohashesQueried.delete(geohashQueryStr);
     });
 
@@ -125,7 +124,7 @@ export class GeoFirestoreQuery {
    * @param callback Callback function to be called when an event of type eventType fires.
    * @returns A callback registration which can be used to cancel the provided callback.
    */
-  public on(eventType: string, callback: Function): GeoCallbackRegistration {
+  public on(eventType: string, callback: KeyCallback | ReadyCallback): GeoCallbackRegistration {
     // Validate the inputs
     if (['ready', 'key_entered', 'key_exited', 'key_moved'].indexOf(eventType) === -1) {
       throw new Error('event type must be \'ready\', \'key_entered\', \'key_exited\', or \'key_moved\'');
@@ -141,7 +140,8 @@ export class GeoFirestoreQuery {
     if (eventType === 'key_entered') {
       this._locationsTracked.forEach((locationMap: LocationTracked, key: string) => {
         if (typeof locationMap !== 'undefined' && locationMap.isInQuery) {
-          callback(key, locationMap.location, locationMap.distanceFromCenter);
+          const keyCallback: KeyCallback = callback; 
+          keyCallback(key, locationMap.document, locationMap.distanceFromCenter);
         }
       });
     }
@@ -195,9 +195,9 @@ export class GeoFirestoreQuery {
       // If the location just left the query, fire the 'key_exited' callbacks
       // Else if the location just entered the query, fire the 'key_entered' callbacks
       if (wasAlreadyInQuery && !locationMap.isInQuery) {
-        this._fireCallbacksForKey('key_exited', key, locationMap.location, locationMap.distanceFromCenter);
+        this._fireCallbacksForKey('key_exited', key, locationMap.document, locationMap.distanceFromCenter);
       } else if (!wasAlreadyInQuery && locationMap.isInQuery) {
-        this._fireCallbacksForKey('key_entered', key, locationMap.location, locationMap.distanceFromCenter);
+        this._fireCallbacksForKey('key_entered', key, locationMap.document, locationMap.distanceFromCenter);
       }
     }
 
@@ -215,10 +215,9 @@ export class GeoFirestoreQuery {
   /**
    * Turns off all callbacks for the provide geohash query.
    *
-   * @param query The geohash query.
    * @param queryState An object storing the current state of the query.
    */
-  private _cancelGeohashQuery(query: string[], queryState: GeoFirestoreQueryState): void {
+  private _cancelGeohashQuery(queryState: GeoFirestoreQueryState): void {
     queryState.childCallback();
     queryState.valueCallback();
   }
@@ -230,8 +229,9 @@ export class GeoFirestoreQuery {
    */
   private _childAddedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data: GeoFirestoreObj = (locationDataSnapshot.exists) ? locationDataSnapshot.data() as GeoFirestoreObj : null;
+    const document: any = (data && validateGeoFirestoreObject(data)) ? data.d : null;
     const location: firebase.firestore.GeoPoint = (data && validateLocation(data.l)) ? data.l : null;
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location);
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location, document);
   }
 
   /**
@@ -241,8 +241,9 @@ export class GeoFirestoreQuery {
    */
   private _childChangedCallback(locationDataSnapshot: firebase.firestore.DocumentSnapshot): void {
     const data: GeoFirestoreObj = (locationDataSnapshot.exists) ? locationDataSnapshot.data() as GeoFirestoreObj : null;
+    const document: any = (data && validateGeoFirestoreObject(data)) ? data.d : null;
     const location: firebase.firestore.GeoPoint = (data && validateLocation(data.l)) ? data.l : null;
-    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location);
+    this._updateLocation(geoFirestoreGetKey(locationDataSnapshot), location, document);
   }
 
   /**
@@ -255,13 +256,14 @@ export class GeoFirestoreQuery {
     if (this._locationsTracked.has(key)) {
       this._collectionRef.doc(key).get().then((snapshot: firebase.firestore.DocumentSnapshot) => {
         const data: GeoFirestoreObj = (snapshot.exists) ? snapshot.data() as GeoFirestoreObj : null;
+        const document: any = (data && validateGeoFirestoreObject(data)) ? data.d : null;
         const location: firebase.firestore.GeoPoint = (data && validateLocation(data.l)) ? data.l : null;
         const geohash: string = (location !== null) ? encodeGeohash(location) : null;
         // Only notify observers if key is not part of any other geohash query or this actually might not be
         // a key exited event, but a key moved or entered event. These events will be triggered by updates
         // to a different query
         if (!this._geohashInSomeQuery(geohash)) {
-          this._removeLocation(key, location);
+          this._removeLocation(key, document);
         }
       });
     }
@@ -275,9 +277,8 @@ export class GeoFirestoreQuery {
     keys.forEach((geohashQueryStr: string) => {
       const queryState: any = this._currentGeohashesQueried.get(geohashQueryStr);
       if (queryState.active === false) {
-        const query = this._stringToQuery(geohashQueryStr);
         // Delete the geohash since it should no longer be queried
-        this._cancelGeohashQuery(query, queryState);
+        this._cancelGeohashQuery(queryState);
         this._currentGeohashesQueried.delete(geohashQueryStr);
       }
     });
@@ -308,15 +309,15 @@ export class GeoFirestoreQuery {
    *
    * @param eventType The event type whose callbacks to fire. One of 'key_entered', 'key_exited', or 'key_moved'.
    * @param key The key of the location for which to fire the callbacks.
-   * @param location The location as a Firestore GeoPoint.
+   * @param document The document from the GeoFirestore Collection.
    * @param distanceFromCenter The distance from the center or null.
    */
-  private _fireCallbacksForKey(eventType: string, key: string, location?: firebase.firestore.GeoPoint, distanceFromCenter?: number): void {
+  private _fireCallbacksForKey(eventType: string, key: string, document?: any, distanceFromCenter?: number): void {
     this._callbacks[eventType].forEach((callback) => {
-      if (typeof location === 'undefined' || location === null) {
+      if (typeof document === 'undefined' || document === null) {
         callback(key, null, null);
       } else {
-        callback(key, location, distanceFromCenter);
+        callback(key, document, distanceFromCenter);
       }
     });
   }
@@ -464,17 +465,19 @@ export class GeoFirestoreQuery {
   }
 
   /**
-   * Removes the location from the local state and fires any events if necessary.
+   * Removes the document/location from the local state and fires any events if necessary.
    *
    * @param key The key to be removed.
-   * @param currentLocation The current location as firestore GeoPoint or null if removed.
+   * @param document The current Document from Firestore, or null if removed.
    */
-  private _removeLocation(key: string, currentLocation?: firebase.firestore.GeoPoint): void {
+  private _removeLocation(key: string, document?: any): void {
     const locationMap = this._locationsTracked.get(key);
     this._locationsTracked.delete(key);
     if (typeof locationMap !== 'undefined' && locationMap.isInQuery) {
-      const distanceFromCenter: number = (currentLocation) ? GeoFirestore.distance(currentLocation, this._center) : null;
-      this._fireCallbacksForKey('key_exited', key, currentLocation, distanceFromCenter);
+      const locationKey = (document) ? findCoordinatesKey(document) : null;
+      const location: firebase.firestore.GeoPoint = (locationKey) ? document[locationKey] :  null;
+      const distanceFromCenter: number = (location) ? GeoFirestore.distance(location, this._center) : null;
+      this._fireCallbacksForKey('key_exited', key, document, distanceFromCenter);
     }
   }
 
@@ -501,8 +504,9 @@ export class GeoFirestoreQuery {
    *
    * @param key The key of the GeoFirestore location.
    * @param location The location as a Firestore GeoPoint.
+   * @param document The current Document from Firestore.
    */
-  private _updateLocation(key: string, location?: firebase.firestore.GeoPoint): void {
+  private _updateLocation(key: string, location?: firebase.firestore.GeoPoint, document?: any): void {
     validateLocation(location);
     // Get the key and location
     let distanceFromCenter: number, isInQuery;
@@ -515,19 +519,20 @@ export class GeoFirestoreQuery {
 
     // Add this location to the locations queried map even if it is not within this query
     this._locationsTracked.set(key, {
-      location,
       distanceFromCenter,
+      document,
+      geohash: encodeGeohash(location),
       isInQuery,
-      geohash: encodeGeohash(location)
+      location
     });
 
     // Fire the 'key_entered' event if the provided key has entered this query
     if (isInQuery && !wasInQuery) {
-      this._fireCallbacksForKey('key_entered', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_entered', key, document, distanceFromCenter);
     } else if (isInQuery && oldLocation !== null && (location.latitude !== oldLocation.latitude || location.longitude !== oldLocation.longitude)) {
-      this._fireCallbacksForKey('key_moved', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_moved', key, document, distanceFromCenter);
     } else if (!isInQuery && wasInQuery) {
-      this._fireCallbacksForKey('key_exited', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_exited', key, document, distanceFromCenter);
     }
   }
 }

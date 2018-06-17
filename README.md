@@ -1,4 +1,4 @@
-# GeoFirestore for JavaScript [![Build Status](https://travis-ci.org/MichaelSolati/geofirestore.svg?branch=master)](https://travis-ci.org/MichaelSolati/geofirestore) [![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore)
+# GeoFirestore [![Build Status](https://travis-ci.org/MichaelSolati/geofirestore.svg?branch=master)](https://travis-ci.org/MichaelSolati/geofirestore) [![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore)
 
 GeoFirestore is an open-source library that allows you to store and query a set of keys based on their
 geographic location. At its heart, GeoFirestore simply stores locations with string keys. Its main
@@ -34,7 +34,7 @@ $ npm install geofirestore firebase --save
 
 ## Example Usage
 
-Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, at `/bars/<bar-id>`. Later, you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store the location for each bar using GeoFirestore, using the bar IDs as GeoFirestore keys. GeoFirestore then allows you to easily query which bar IDs (the keys) are nearby. To display any additional information about the bars, you can load the information for each bar returned by the query at `/bars/<bar-id>`.
+Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, and you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store the wrap each bar using GeoFirestore, using the location to build an easily queryabledocument . GeoFirestore then allows you to easily query which bars are nearby in a simalar fashion as `geofire` but will also return the bar information (not just the key or location).
 
 ## Documentation
 ### Table of Contents
@@ -256,14 +256,14 @@ radius = geoQuery.radius();  // radius === 7
 Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, and `key_moved`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
 
 1. the location's key
-2. the location's [latitude, longitude] pair
+2. the location's Firestore Document
 3. the distance, in kilometers, from the location to this query's center
 
 `ready` fires once when this query's initial state has been loaded from the server. The `ready` event will fire after all other events associated with the loaded data have been triggered. `ready` will fire again once each time `updateCriteria()` is called, after all new data is loaded and all other new events have been fired.
 
 `key_entered` fires when a key enters this query. This can happen when a key moves from a location outside of this query to one inside of it or when a key is written to `GeoFirestore` for the first time and it falls within this query.
 
-`key_exited` fires when a key moves from a location inside of this query to one outside of it. If the key was entirely removed from `GeoFirestore`, both the location and distance passed to the `callback` will be `null`.
+`key_exited` fires when a key moves from a location inside of this query to one outside of it. If the key was entirely removed from `GeoFirestore`, both the document and distance passed to the `callback` will be `null`.
 
 `key_moved` fires when a key which is already in this query moves to another location inside of it.
 
@@ -274,33 +274,32 @@ const onReadyRegistration = geoQuery.on('ready', () => {
   console.log('GeoFirestoreQuery has loaded and fired all other events for initial data');
 });
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
-  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, document, distance) {
+  console.log(key + ' entered query at ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
-  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, document, distance) {
+  console.log(key + ' exited query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, location, distance) {
-  console.log(key + ' moved within query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, document, distance) {
+  console.log(key + ' moved within query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
 ```
 
 #### GeoFirestoreQuery.cancel()
 
-Terminates this query so that it no longer sends location updates. All callbacks attached to this query via `on()` will be cancelled. This query can no longer be used in the future.
+Terminates this query so that it no longer sends location/document updates. All callbacks attached to this query via `on()` will be cancelled. This query can no longer be used in the future.
 
 ```JavaScript
-// This example stops listening for all key events in the query once the
-// first key leaves the query
+// This example stops listening for all key events in the query once the first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
-  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, document, distance) {
+  console.log(key + ' entered query at ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
-  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, document, distance) {
+  console.log(key + ' exited query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 
   // Cancel all of the query's callbacks
   geoQuery.cancel();
@@ -318,15 +317,14 @@ These are useful when you want to stop firing a callback for a certain `eventTyp
 Cancels this callback registration so that it no longer fires its callback. This has no effect on any other callback registrations you may have created.
 
 ```JavaScript
-// This example stops listening for new keys entering the query once the
-// first key leaves the query
+// This example stops listening for new keys entering the query once the first key leaves the query
 
-const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, location, distance) {
-  console.log(key + ' entered query at ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, document, distance) {
+  console.log(key + ' entered query at ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
 
-const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, location, distance) {
-  console.log(key + ' exited query to ' + location.latitude + ',' + location.longitude + ' (' + distance + ' km from center)');
+const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, document, distance) {
+  console.log(key + ' exited query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 
   // Cancel the 'key_entered' callback
   onKeyEnteredRegistration.cancel();
