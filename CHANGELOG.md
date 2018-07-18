@@ -1,3 +1,42 @@
+## 2.0.0 (2018-07-18)
+
+##### Build System / Dependencies
+
+*  change build to use rollup ([dddb80a2](https://github.com/MichaelSolati/geofirestore/commit/dddb80a287d53efab9e5d598b5ce5f0647c402a2))
+*  configure npm deploy for master AND tag ([7fd7c539](https://github.com/MichaelSolati/geofirestore/commit/7fd7c539f6344c7ed1754fd6e479c5336ee2e8e2))
+
+##### Chores
+
+* **release:**  minor version release ([81a9d979](https://github.com/MichaelSolati/geofirestore/commit/81a9d979d2857bd7374f0728952fd5707475cb80))
+*  lock to firebase 5.x.x ([8779a2c7](https://github.com/MichaelSolati/geofirestore/commit/8779a2c762314aaf1f3c34042caefaa08cfaee0f))
+*  bump firebase to v5.x.x ([1442de38](https://github.com/MichaelSolati/geofirestore/commit/1442de38fb667c1c3a13f0a08e8affda4bb15087))
+
+##### Documentation Changes
+
+*  update docs ([f040e981](https://github.com/MichaelSolati/geofirestore/commit/f040e98190572d3c62f1661713c59299e7683573))
+
+##### New Features
+
+* **query:**
+  *  add 'on_modified' event, this fixes [#7](https://github.com/MichaelSolati/geofirestore/pull/7) ([8a69d9e8](https://github.com/MichaelSolati/geofirestore/commit/8a69d9e83664782dce00df4300ce36ea2f6c6b22))
+  *  return document instead of just coordinates ([94fdc711](https://github.com/MichaelSolati/geofirestore/commit/94fdc711d040a4808be1946565af2cfdaf043270))
+* **add:**  add ability to add/insert documents without set ([1663b0e1](https://github.com/MichaelSolati/geofirestore/commit/1663b0e1777093658ad16b90d975db295a980adc))
+* **set:**  update set function to use GeoPoints ([5cf04fbd](https://github.com/MichaelSolati/geofirestore/commit/5cf04fbd445442fe8fe7c50aaae1c35df34d923b))
+* **remove:**  update remove function to no longer depend on set function ([51814436](https://github.com/MichaelSolati/geofirestore/commit/51814436b61e1275e4ff85d17bf44d5e4954822e))
+* **get:**  update get function to reflect new GeoFirestoreObj type ([ec4ac975](https://github.com/MichaelSolati/geofirestore/commit/ec4ac975feb9a278344a240863dbed79509d87a7))
+
+##### Bug Fixes
+
+*  tweak some validations ([7303a350](https://github.com/MichaelSolati/geofirestore/commit/7303a350d4097fb678578f815e41fe601a07755d))
+
+##### Refactors
+
+* **GeoFirestoreQuery:**  use Maps instead of Objects as well as general clean up ([2263bccd](https://github.com/MichaelSolati/geofirestore/commit/2263bccda9fa8bbe6a7e93c605e07b30060af94b))
+
+##### Tests
+
+*  update tests for new structure ([37600fb6](https://github.com/MichaelSolati/geofirestore/commit/37600fb6a9de903f144733f014fdb07490655e0d))
+
 ### 1.2.0 (2018-05-29)
 
 ##### Chores
