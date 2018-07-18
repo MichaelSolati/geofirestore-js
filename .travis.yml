@@ -14,5 +14,4 @@ deploy:
     api_key: $NPM_API
     skip_cleanup: true
     on:
-      branch: master
-      tags: true
+      branch: $TRAVIS_BRANCH == "master" && -n $TRAVIS_TAG

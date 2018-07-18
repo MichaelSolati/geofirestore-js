@@ -1,0 +1,8 @@
+## Folders
+src
+test
+
+## Files
+.gitignore
+tsconfig.json
+tslint.json
