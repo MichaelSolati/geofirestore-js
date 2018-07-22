@@ -34,7 +34,7 @@ $ npm install geofirestore firebase --save
 
 ## Example Usage
 
-Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, and you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store the wrap each bar using GeoFirestore, using the location to build an easily queryabledocument . GeoFirestore then allows you to easily query which bars are nearby in a simalar fashion as `geofire` but will also return the bar information (not just the key or location).
+Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, and you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store each bar using GeoFirestore, using the location to build an easily queryable document. GeoFirestore then allows you to easily query which bars are nearby in a simalar fashion as `geofire` but will also return the bar information (not just the key or location).
 
 ## Documentation
 ### Table of Contents
@@ -66,7 +66,7 @@ A `GeoFirestore` instance is used to read and write geolocation data to your Fir
 #### new GeoFirestore(collectionRef)
 
 Creates and returns a new `GeoFirestore` instance to manage your location data. Data will be stored at
-the collection defined by `collectionRef`. Note that this `collectionRef` must point to a in your Firestore Collection.
+the collection defined by `collectionRef`. Note that this `collectionRef` must point to a collection in your Firestore Database.
 
 ```JavaScript
 // Initialize the Firebase SDK
