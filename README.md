@@ -108,13 +108,13 @@ const ref = geoFirestore.ref();  // ref === collectionRef
 
 #### GeoFirestore.get(key)
 
-Fetches the location stored for `key`.
+Fetches the document stored for `key`.
 
 Returns a promise fulfilled with the `document` corresponding to the provided `key`. If `key` does not exist, the returned promise is fulfilled with `null`.
 
 ```JavaScript
 geoFirestore.get('some_key').then((document) => {
-  if (location === null) {
+  if (document === null) {
     console.log('Provided key is not in GeoFirestore');
   }
   else {
@@ -127,13 +127,13 @@ geoFirestore.get('some_key').then((document) => {
 
 #### GeoFirestore.set(keyOrDocuments[, document, customKey])
 
-Adds the specified key - document pair(s) to this `GeoFirestore`. If the provided `keyOrDocuments` argument is a string, the single `document` will be added. The `keyOrDocuments` argument can also be an object containing a mapping between keys and documents allowing you to add several locations to GeoFirestore in one write. It is much more efficient to add several locations at once than to write each one individually.
+Adds the specified key - document pair(s) to this `GeoFirestore`. If the provided `keyOrDocuments` argument is a string, the single `document` will be added. The `keyOrDocuments` argument can also be an object containing a mapping between keys and documents allowing you to add several documents to GeoFirestore in one write. It is much more efficient to add several documents at once than to write each one individually.
 
 If any of the provided keys already exist in this `GeoFirestore`, they will be overwritten with the new location values. Documents must have a `coordinates` field that is a Firestore GeoPoint.
 
 If you want to use a custom attribute as for the location pass the attribute as a string as the `customKey` argument. Keep in mind that if you pass an object of key - document pairs, then your `document` object should be `null`.
 
-Returns a promise which is fulfilled when the new location has been synchronized with the Firebase servers.
+Returns a promise which is fulfilled when the new document has been synchronized with the Firebase servers.
 
 Keys must be strings and [valid Firstore id](https://firebase.google.com/docs/database/web/structure-data).
 
@@ -255,8 +255,8 @@ radius = geoQuery.radius();  // radius === 7
 
 Attaches a `callback` to this query which will be run when the provided `eventType` fires. Valid `eventType` values are `ready`, `key_entered`, `key_exited`, `key_moved`, and `key_modified`. The `ready` event `callback` is passed no parameters. All other `callbacks` will be passed three parameters:
 
-1. the location's key
-2. the location's Firestore Document
+1. the document's key
+2. the Firestore Document
 3. the distance, in kilometers, from the location to this query's center
 
 `ready` fires once when this query's initial state has been loaded from the server. The `ready` event will fire after all other events associated with the loaded data have been triggered. `ready` will fire again once each time `updateCriteria()` is called, after all new data is loaded and all other new events have been fired.
