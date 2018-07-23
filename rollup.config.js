@@ -34,7 +34,7 @@ const completeBuilds = [{
     input: 'src/index.ts',
     output: {
       file: 'dist/' + GLOBAL_NAME + '.js',
-      format: 'umd',
+      format: 'iife',
       name: GLOBAL_NAME
     },
     plugins: [...plugins, uglify()]
