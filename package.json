@@ -9,7 +9,9 @@
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "deploy": "firebase deploy",
+    "deploy:travis": "firebase deploy --non-interactive --token $FIREBASE_TOKEN"
   },
   "main": "dist/index.cjs.js",
   "browser": "dist/geofirestore.js",
@@ -52,6 +54,7 @@
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
     "firebase": "5.x.x",
+    "firebase-tools": "^3.19.3",
     "generate-changelog": "^1.7.1",
     "jsdom": "^11.11.0",
     "jsdom-global": "^3.0.2",

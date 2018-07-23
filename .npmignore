@@ -1,9 +1,18 @@
 ## Folders
-src
-test
-.rpt2_cache
+.nyc_output/
+.rpt2_cache/
+coverage/
+examples/
+functions/
+src/
+test/
+
 
 ## Files
+.firebaserc
 .gitignore
+firebase.json
+firestore.indexes.json
+firestore.rules
 tsconfig.json
 tslint.json

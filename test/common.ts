@@ -40,7 +40,7 @@ firebase.firestore().settings({ timestampsInSnapshots: true });
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done) {
   // Create a new Firebase database ref at a random node
-  geoFirestoreRef = firebase.firestore().collection('geofirestore');
+  geoFirestoreRef = firebase.firestore().collection('tests');
   // Create a new GeoFire instance
   geoFirestore = new GeoFirestore(geoFirestoreRef);
 
@@ -57,7 +57,7 @@ export function afterEachHelper(done) {
     geoFirestoreQuery.cancel();
   });
 
-  deleteCollection(geoFirestoreRef.firestore, 'geofirestore', 50).then(() => {
+  deleteCollection(geoFirestoreRef.firestore, 'tests', 50).then(() => {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
   }).then(done);

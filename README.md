@@ -59,6 +59,7 @@ Assume you are building an app to rate bars and you store all information for a 
  * [Helper Methods](#helper-methods)
    - [`GeoFirestore.distance(location1, location2)`](#geofirestoredistancelocation1-location2)
  * [Promises](#promises)
+ * [Examples](#examples)
 
 
 ### GeoFirestore
@@ -289,6 +290,10 @@ const onKeyExitedRegistration = geoQuery.on('key_exited', function(key, document
 const onKeyMovedRegistration = geoQuery.on('key_moved', function(key, document, distance) {
   console.log(key + ' moved within query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
 });
+
+const onKeyModifiedRegistration = geoQuery.on('key_modified', function (key, document, distance) {
+    console.log(key + ' in query has been modified');
+  });
 ```
 
 #### GeoFirestoreQuery.cancel()
@@ -367,6 +372,12 @@ promise.then(function(result) {
   console.log('Promise was rejected with the following error: ' + error);
 })
 ```
+
+### Examples
+
+You can find a full list of our demos and view the code for each of them in the
+[examples directory](examples/) of this repository. The examples cover some of the common use
+cases for GeoFirestore.
 
 ## Contributing
 

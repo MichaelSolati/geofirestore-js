@@ -9,6 +9,7 @@ script:
 after_success:
   - npm run coverage
   - npm run build
+  - npm run deploy:travis
 deploy:
   - provider: npm
     email: $EMAIL_ADDRESS
