@@ -1,3 +1,17 @@
+#### 2.0.1 (2018-07-23)
+
+##### Build System / Dependencies
+
+*  set browser build to iife ([7b0df7f0](https://github.com/MichaelSolati/geofirestore/commit/7b0df7f0d6d39ba5d73e55d0171c37d26013bf0d))
+
+##### Documentation Changes
+
+*  Fix minor typos in README.md ([1ed6d659](https://github.com/MichaelSolati/geofirestore/commit/1ed6d65993da7e12387181463029b649fe88173d))
+
+##### Refactors
+
+*  modify how firestore is imported ([8525def6](https://github.com/MichaelSolati/geofirestore/commit/8525def6418a2e71a632a874413fe88b69581a61))
+
 ## 2.0.0 (2018-07-18)
 
 ##### Build System / Dependencies
