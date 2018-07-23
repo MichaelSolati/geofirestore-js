@@ -1,7 +1,6 @@
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import { firestore } from './firestore';
 
 export interface QueryCriteria {
-  center?: firebase.firestore.GeoPoint;
+  center?: firestore.GeoPoint;
   radius?: number;
 }

@@ -4,7 +4,7 @@ import * as firebase from 'firebase';
 import { GeoFirestore } from '../src';
 import {
   boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION,
-  metersToLongitudeDegrees, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude
+  metersToLongitudeDegrees, toGeoPoint, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
@@ -84,6 +84,24 @@ describe('geoFireUtils Tests:', () => {
       });
     });
   });
+
+
+
+  describe('GeoPoint Generation:', () => {
+    it('toGeoPoint() does not throw errors given valid coordinates', () => {
+      validLocations.forEach((validLocation, i) => {
+        expect(() => toGeoPoint(validLocation.latitude, validLocation.latitude)).not.to.throw();
+      });
+    });
+
+    it('toGeoPoint() throws errors given invalid coordinates', () => {
+      invalidLocations.forEach((invalidLocation, i) => {
+        // @ts-ignore
+        expect(() => toGeoPoint((invalidLocation.latitude || 900), (invalidLocation.latitude || 900))).to.throw();
+      });
+    });
+  });
+
 
   describe('Distance calculations:', () => {
     it('degreesToRadians() converts degrees to radians', () => {

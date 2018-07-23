@@ -1,10 +1,7 @@
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
-
 import { GeoFirestoreQuery } from './query';
 import { decodeGeoFirestoreObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey, findCoordinatesKey } from './utils';
 
-import { QueryCriteria, GeoFirestoreObj } from './interfaces';
+import { firestore, GeoFirestoreObj, QueryCriteria } from './interfaces';
 
 /**
  * Creates a GeoFirestore instance.
@@ -13,7 +10,7 @@ export class GeoFirestore {
   /**
    * @param _collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    */
-  constructor(private _collectionRef: firebase.firestore.CollectionReference) {
+  constructor(private _collectionRef: firestore.CollectionReference) {
     if (Object.prototype.toString.call(this._collectionRef) !== '[object Object]') {
       throw new Error('collectionRef must be an instance of a Firestore Collection');
     }
@@ -29,10 +26,10 @@ export class GeoFirestore {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  public add(document: any, customKey?: string): Promise<firebase.firestore.DocumentReference> {
+  public add(document: any, customKey?: string): Promise<firestore.DocumentReference> {
     if (typeof document === 'object' && !Array.isArray(document)) {
       const locationKey: string = findCoordinatesKey(document, customKey);
-      const location: firebase.firestore.GeoPoint = document[locationKey];
+      const location: firestore.GeoPoint = document[locationKey];
       const geohash: string = encodeGeohash(location);
       return this._collectionRef.add(encodeGeoFireObject(location, geohash, document));
     } else {
@@ -50,7 +47,7 @@ export class GeoFirestore {
    */
   public get($key: string): Promise<number[]> {
     validateKey($key);
-    return this._collectionRef.doc($key).get().then((documentSnapshot: firebase.firestore.DocumentSnapshot) => {
+    return this._collectionRef.doc($key).get().then((documentSnapshot: firestore.DocumentSnapshot) => {
       if (!documentSnapshot.exists) {
         return null;
       } else {
@@ -65,7 +62,7 @@ export class GeoFirestore {
    *
    * @returns The Firestore Collection used to create this GeoFirestore instance.
    */
-  public ref(): firebase.firestore.CollectionReference {
+  public ref(): firestore.CollectionReference {
     return this._collectionRef;
   }
 
@@ -105,7 +102,7 @@ export class GeoFirestore {
         return this._collectionRef.doc(keyOrDocuments).delete();
       } else {
         const locationKey: string = findCoordinatesKey(document, customKey);
-        const location: firebase.firestore.GeoPoint = document[locationKey];
+        const location: firestore.GeoPoint = document[locationKey];
         const geohash: string = encodeGeohash(location);
         return this._collectionRef.doc(keyOrDocuments).set(encodeGeoFireObject(location, geohash, document));
       }
@@ -117,7 +114,7 @@ export class GeoFirestore {
       throw new Error('keyOrDocuments must be a string or a mapping of key - document pairs.');
     }
 
-    const batch: firebase.firestore.WriteBatch = this._collectionRef.firestore.batch();
+    const batch: firestore.WriteBatch = this._collectionRef.firestore.batch();
     Object.keys(keyOrDocuments).forEach((key) => {
       validateKey(key);
       const ref = this._collectionRef.doc(key);
@@ -126,7 +123,7 @@ export class GeoFirestore {
         batch.delete(ref);
       } else {
         const locationKey = findCoordinatesKey(documentToUpdate, customKey);
-        const location: firebase.firestore.GeoPoint = documentToUpdate[locationKey];
+        const location: firestore.GeoPoint = documentToUpdate[locationKey];
         const geohash: string = encodeGeohash(location);
         batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate), { merge: true });
       }
@@ -156,7 +153,7 @@ export class GeoFirestore {
    * @param location2 The GeoPoint of the second location.
    * @returns The distance, in kilometers, between the inputted locations.
    */
-  public static distance(location1: firebase.firestore.GeoPoint, location2: firebase.firestore.GeoPoint) {
+  public static distance(location1: firestore.GeoPoint, location2: firestore.GeoPoint) {
     validateLocation(location1);
     validateLocation(location2);
 

@@ -1,20 +1,20 @@
 import commonjs from 'rollup-plugin-commonjs';
+import copy from 'rollup-plugin-copy';
 import resolveModule from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 import { uglify } from 'rollup-plugin-uglify';
 import pkg from './package.json';
-
-const GLOBAL_NAME = 'geofirestore';
 
 const plugins = [
   resolveModule(),
   typescript({
     typescript: require('typescript')
   }),
-  commonjs()
+  commonjs(),
+  copy({
+    'src/interfaces': 'dist/interfaces'
+  })
 ];
-
-const external = Object.keys(pkg.dependencies || {});
 
 const completeBuilds = [{
     input: 'src/index.ts',
@@ -27,15 +27,15 @@ const completeBuilds = [{
         format: 'es'
       }
     ],
-    plugins,
-    external
+    plugins
   },
   {
     input: 'src/index.ts',
     output: {
-      file: 'dist/' + GLOBAL_NAME + '.js',
-      format: 'iife',
-      name: GLOBAL_NAME
+      file: pkg.browser,
+      format: 'umd',
+      name: 'window',
+      extend: true
     },
     plugins: [...plugins, uglify()]
   },
