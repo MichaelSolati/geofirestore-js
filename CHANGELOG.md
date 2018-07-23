@@ -1,3 +1,17 @@
+#### 2.0.2 (2018-07-23)
+
+##### Build System / Dependencies
+
+*  add coveralls to testing process ([e670b279](https://github.com/MichaelSolati/geofirestore/commit/e670b279e072c00709968a9b3e6849cfcf5e98c5))
+
+##### Documentation Changes
+
+* **README:**  stop referencing `location` where `document` should be used ([72cc61af](https://github.com/MichaelSolati/geofirestore/commit/72cc61afdfb9e3f92b5f554e8fdea42231dacf3b))
+
+##### Refactors
+
+*  remove external dependency of firebase ([df31a871](https://github.com/MichaelSolati/geofirestore/commit/df31a871a62a8836d9905ccf108e1ee6b4c26113))
+
 #### 2.0.1 (2018-07-23)
 
 ##### Build System / Dependencies
