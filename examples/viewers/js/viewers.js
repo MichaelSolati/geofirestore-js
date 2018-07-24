@@ -3,17 +3,18 @@ const collectionRef = firestore.collection('viewers');
 const geoFirestore = new GeoFirestore(collectionRef);
 let geoQuery;
 const markers = {};
+const radius = 1500;
 
 // Query viewers' locations from Firestore
 function queryFirestore(location) {
   if (geoQuery) {
     geoQuery.updateCriteria({
-      center: new firebase.firestore.GeoPoint(location.lat(), location.lng())
+      center: new firebase.firestore.GeoPoint(location.lat, location.lng)
     });
   } else {
     geoQuery = geoFirestore.query({
-      center: new firebase.firestore.GeoPoint(location.lat(), location.lng()),
-      radius: 10
+      center: new firebase.firestore.GeoPoint(location.lat, location.lng),
+      radius
     });
 
     geoQuery.on('ready', () => {
@@ -79,6 +80,7 @@ function setInFirestore(key, document) {
 // Initialize Map
 function initMap() {
   var userLocation;
+  var mapCenter;
 
   map = new google.maps.Map(document.getElementById('map'), {
     center: {
@@ -107,8 +109,17 @@ function initMap() {
   }, console.log);
 
 
-  map.addListener('center_changed', function () {
-    queryFirestore(map.getCenter());
+  map.addListener('idle', function () {
+    var getCenter = map.getCenter()
+    var center = {
+      lat: getCenter.lat(),
+      lng: getCenter.lng()
+    };
+
+    if (!mapCenter || geokit.Geokit.distance(mapCenter, center) > (radius * 0.7)) {
+      mapCenter = center;
+      queryFirestore(center);
+    }
   });
 }
 
