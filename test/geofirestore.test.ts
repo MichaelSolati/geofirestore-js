@@ -1041,9 +1041,7 @@ describe('GeoFirestore Tests:', () => {
       const cl = new Checklist(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'], expect, done);
 
       geoFirestore.set({
-        'loc:1': { coordinates: new firebase.firestore.GeoPoint(0, 0) },
-        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) },
-        'loc%!A72f()3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) }
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(50, 50) }
       }).then(() => {
         cl.x('p1');
 
@@ -1064,15 +1062,14 @@ describe('GeoFirestore Tests:', () => {
         cl.x('p4');
 
         return geoFirestore.set({
-          'loc:1': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) },
+          'loc1': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) },
           'loc2': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) },
-          'loc%!A72f()3': { coordinates: new firebase.firestore.GeoPoint(-90, -90) },
           'loc6': { coordinates: new firebase.firestore.GeoPoint(-72.258, 0.953215) }
         });
       }).then(() => {
         cl.x('p5');
 
-        return geoFirestore.set(['loc:1', 'loc3', 'loc6']);
+        return geoFirestore.remove(['loc1', 'loc3', 'loc6']);
       }).then(() => {
         cl.x('p6');
 
@@ -1080,11 +1077,10 @@ describe('GeoFirestore Tests:', () => {
       }).then((firebaseData) => {
         expect(firebaseData).to.deep.equal({
           'loc2': { 'l': new firebase.firestore.GeoPoint(0.2358, -72.621), 'g': 'd2h376zj8h', 'd': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) } },
-          'loc%!A72f()3': { 'l': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coordinates: new firebase.firestore.GeoPoint(-90, -90) } },
           'loc4': { 'l': new firebase.firestore.GeoPoint(87.6, -130), 'g': 'cped3g0fur', 'd': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) } }
         });
 
-        cl.x('p6');
+        cl.x('p7');
       }).catch(failTestOnCaughtError);
     });
   });
