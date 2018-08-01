@@ -160,11 +160,13 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
  */
 export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
-    throw new Error('query criteria must be an object');
+    throw new Error('QueryCriteria must be an object');
   } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
     throw new Error('radius and/or center must be specified');
   } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
-    throw new Error('query criteria for a new query must contain both a center and a radius');
+    throw new Error('QueryCriteria for a new query must contain both a center and a radius');
+  } else if (Object.prototype.toString.call(newQueryCriteria.query) !== '[object Function]' && typeof newQueryCriteria.query !== 'undefined') {
+    throw new Error('query of QueryCriteria must be a function');
   }
 
   // Throw an error if there are any extraneous attributes

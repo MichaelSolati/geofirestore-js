@@ -19,6 +19,7 @@ export class GeoFirestoreQuery {
   // Note that not all of these are currently within this query
   private _locationsTracked: Map<string, LocationTracked> = new Map();
   private _radius: number;
+  private _query: firestore.Query;
 
   // Variables used to keep track of when to fire the 'ready' event
   private _valueEventFired = false;
@@ -51,6 +52,7 @@ export class GeoFirestoreQuery {
     validateCriteria(queryCriteria, true);
     this._center = queryCriteria.center;
     this._radius = queryCriteria.radius;
+    this._query = (queryCriteria.query) ? queryCriteria.query(this._collectionRef) : this._collectionRef;
 
     // Listen for new geohashes being added around this query and fire the appropriate events
     this._listenForNewGeohashes();
@@ -176,6 +178,10 @@ export class GeoFirestoreQuery {
     validateCriteria(newQueryCriteria);
     this._center = newQueryCriteria.center || this._center;
     this._radius = newQueryCriteria.radius || this._radius;
+    this._query = (newQueryCriteria.query) ? newQueryCriteria.query(this._collectionRef) : this._query;
+    if (typeof newQueryCriteria.query === 'undefined') {
+      this._query = this._collectionRef;
+    }
 
     // Loop through all of the locations in the query, update their distance from the center of the query, and fire any appropriate events
     const keys: string[] = Array.from(this._locationsTracked.keys());
@@ -410,7 +416,7 @@ export class GeoFirestoreQuery {
       const query: string[] = this._stringToQuery(toQueryStr);
 
       // Create the Firebase query
-      const firestoreQuery: firestore.Query = this._collectionRef.orderBy('g').startAt(query[0]).endAt(query[1]);
+      const firestoreQuery: firestore.Query = this._query.orderBy('g').startAt(query[0]).endAt(query[1]);
 
       // For every new matching geohash, determine if we should fire the 'key_entered' event
       const childCallback = firestoreQuery.onSnapshot((snapshot: firestore.QuerySnapshot) => {
