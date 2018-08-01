@@ -27,7 +27,7 @@ export class GeoFirestore {
    * @returns A promise that is fulfilled when the write is complete.
    */
   public add(document: any, customKey?: string): Promise<firestore.DocumentReference> {
-    if (typeof document === 'object' && !Array.isArray(document)) {
+    if (Object.prototype.toString.call(document) === '[object Object]') {
       const locationKey: string = findCoordinatesKey(document, customKey);
       const location: firestore.GeoPoint = document[locationKey];
       const geohash: string = encodeGeohash(location);
