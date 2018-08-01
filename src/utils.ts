@@ -165,7 +165,7 @@ export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterA
     throw new Error('radius and/or center must be specified');
   } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
     throw new Error('QueryCriteria for a new query must contain both a center and a radius');
-  } else if (Object.prototype.toString.call(newQueryCriteria.query) !== '[object Function]' && typeof newQueryCriteria.query !== 'undefined') {
+  } else if (!['[object Function]', '[object Null]', '[object Undefined]'].includes(Object.prototype.toString.call(newQueryCriteria.query))) {
     throw new Error('query of QueryCriteria must be a function');
   }
 
