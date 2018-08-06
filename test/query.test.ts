@@ -1755,4 +1755,26 @@ describe('GeoFirestoreQuery Tests:', () => {
       }).catch(failTestOnCaughtError);
     });
   });
+
+  describe('Private functions', () => {
+    it('`_queryToString` throws error when not given an array of length 2', () => {
+      geoFirestoreQueries.push(geoFirestore.query({
+        center: new firebase.firestore.GeoPoint(1, 2),
+        radius: 1000
+      }));
+
+      
+      expect(() => geoFirestoreQueries[0]['_queryToString']([])).to.throw();
+    });
+
+    it('`_stringToQuery` throws error when given invalid query string', () => {
+      geoFirestoreQueries.push(geoFirestore.query({
+        center: new firebase.firestore.GeoPoint(1, 2),
+        radius: 1000
+      }));
+
+      
+      expect(() => geoFirestoreQueries[0]['_stringToQuery']('p129438tr')).to.throw();
+    });
+  });
 });
