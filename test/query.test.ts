@@ -1,8 +1,10 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase';
 
+import { GeoFirestoreQuery } from '../src';
 import {
-  afterEachHelper, beforeEachHelper, Checklist, failTestOnCaughtError, geoFirestore, geoFirestoreQueries, invalidQueryCriterias, validQueryCriterias, wait
+  afterEachHelper, beforeEachHelper, Checklist, failTestOnCaughtError, geoFirestore, geoFirestoreQueries,
+  invalidObjects, invalidQueryCriterias, validQueryCriterias, wait
 } from './common';
 
 const expect = chai.expect;
@@ -18,11 +20,28 @@ describe('GeoFirestoreQuery Tests:', () => {
   });
 
   describe('Constructor:', () => {
+    const query = (ref) => ref.where('d.count', '==', 1);
     it('Constructor stores query criteria', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+      geoFirestoreQueries.push(geoFirestore.query({
+        center: new firebase.firestore.GeoPoint(1, 2),
+        radius: 1000,
+        query
+      }));
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(query(geoFirestore.ref()));
+    });
+
+    it('Constructor throws error on invalid firebaseRef', () => {
+      invalidObjects.forEach((invalidObject: any) => {
+        expect(() => new GeoFirestoreQuery(invalidObject, { center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 })).to.throw();
+      });
+
+      // @ts-ignore
+      expect(() => geoFirestore.query({ random: 100 })).to.throw();
+      expect(() => geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2) })).to.throw();
+      expect(() => geoFirestore.query({ radius: 1000 })).to.throw();
     });
 
     it('Constructor throws error on invalid query criteria', () => {
@@ -56,44 +75,99 @@ describe('GeoFirestoreQuery Tests:', () => {
       expect(() => geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: undefined })).to.throw();
       // @ts-ignore
       expect(() => geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, other: 'throw' })).to.throw();
+      // @ts-ignore
+      expect(() => geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1, query: false })).to.throw();
+      // @ts-ignore
+      expect(() => geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1, query: {} })).to.throw();
+    });
+  });
+
+  describe('Custom `query` in QueryCriteria:', () => {
+    it('Custom `query` function of GeoFirestoreQuery\'s QueryCriteria returns expected documents', (done) => {
+      const cl = new Checklist(['p1', 'loc1 entered', 'loc4 entered'], expect, done);
+
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(0, 0), radius: 5000, query: (ref) => ref.where('d.count', '==', 1) }));
+      geoFirestoreQueries[0].on('key_entered', (key, document, distance) => {
+        cl.x(key + ' entered');
+      });
+
+      geoFirestore.set({
+        'loc1': { coordinates: new firebase.firestore.GeoPoint(0.2, 0.3), count: 1 },
+        'loc2': { coordinates: new firebase.firestore.GeoPoint(5, -0.7), count: 2 },
+        'loc3': { coordinates: new firebase.firestore.GeoPoint(1.6, -15), count: 3 },
+        'loc4': { coordinates: new firebase.firestore.GeoPoint(.5, .5), count: 1 },
+        'loc5': { coordinates: new firebase.firestore.GeoPoint(6.7, 5.5), count: 2 },
+      }).then(() => {
+        cl.x('p1');
+      }).catch(failTestOnCaughtError);
     });
   });
 
   describe('updateCriteria():', () => {
     it('updateCriteria() updates query criteria', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+      const query1 = (ref) => ref.where('d.count', '==', 1);
+      const query2 = (ref) => ref.where('d.count', '==', 2);
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(query1(geoFirestore.ref()));
 
-      geoFirestoreQueries[0].updateCriteria({ center: new firebase.firestore.GeoPoint(2, 3), radius: 100 });
+      geoFirestoreQueries[0].updateCriteria({ center: new firebase.firestore.GeoPoint(2, 3), radius: 100, query: query2 });
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(2, 3));
       expect(geoFirestoreQueries[0].radius()).to.equal(100);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(query2(geoFirestore.ref()));
     });
 
     it('updateCriteria() updates query criteria when given only center', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+      const query1 = (ref) => ref.where('d.count', '==', 1);
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
+      const queryObject1 = query1(geoFirestore.ref());
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
 
       geoFirestoreQueries[0].updateCriteria({ center: new firebase.firestore.GeoPoint(2, 3) });
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(2, 3));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
     });
 
     it('updateCriteria() updates query criteria when given only radius', () => {
-      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }));
+      const query1 = (ref) => ref.where('d.count', '==', 1);
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
+      const queryObject1 = query1(geoFirestore.ref());
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
 
       geoFirestoreQueries[0].updateCriteria({ radius: 100 });
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(100);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
+    });
+
+    it('updateCriteria() updates query criteria when given only query', () => {
+      const query1 = (ref) => ref.where('d.count', '==', 1);
+      const query2 = (ref) => ref.where('d.count', '==', 2);
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
+      const queryObject1 = query1(geoFirestore.ref());
+      const queryObject2 = query1(geoFirestore.ref());
+
+      expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
+      expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
+
+      geoFirestoreQueries[0].updateCriteria({ query: query2 });
+
+      expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
+      expect(geoFirestoreQueries[0].radius()).to.equal(1000);
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject2);
     });
 
     it('updateCriteria() fires \'key_entered\' callback for locations which now belong to the GeoFirestoreQuery', (done) => {

@@ -160,6 +160,15 @@ export class GeoFirestoreQuery {
   }
 
   /**
+   * Returns Firestore query.
+   *
+   * @returns The Firestore query.
+   */
+  public query(): firestore.Query {
+    return this._query;
+  }
+
+  /**
    * Returns the radius of this query, in kilometers.
    *
    * @returns The radius of this query, in kilometers.
@@ -179,7 +188,7 @@ export class GeoFirestoreQuery {
     this._center = newQueryCriteria.center || this._center;
     this._radius = newQueryCriteria.radius || this._radius;
     this._query = (newQueryCriteria.query) ? newQueryCriteria.query(this._collectionRef) : this._query;
-    if (typeof newQueryCriteria.query === 'undefined') {
+    if (Object.prototype.toString.call(newQueryCriteria.query) === '[object Null]') {
       this._query = this._collectionRef;
     }
 

@@ -31,9 +31,16 @@ export const E2 = 0.00669447819799;
 // Cutoff for rounding errors on double calculations
 export const EPSILON = 1e-12;
 
-Math.log2 = Math.log2 || ((x) => {
+
+/**
+ * Calculates the base 2 logarithm of the given number.
+ *
+ * @param x A number
+ * @returns The base 2 logarithm of a number
+ */
+function log2(x: number): number {
   return Math.log(x) / Math.log(2);
-});
+}
 
 /**
  * Validates the inputted key and throws an error, or returns boolean, if it is invalid.
@@ -161,7 +168,7 @@ export function validateGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj, fla
 export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('QueryCriteria must be an object');
-  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
+  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined' && typeof newQueryCriteria.query === 'undefined') {
     throw new Error('radius and/or center must be specified');
   } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
     throw new Error('QueryCriteria for a new query must contain both a center and a radius');
@@ -172,7 +179,7 @@ export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterA
   // Throw an error if there are any extraneous attributes
   const keys: string[] = Object.keys(newQueryCriteria);
   for (const key of keys) {
-    if (key !== 'center' && key !== 'radius') {
+    if (!['center', 'radius', 'query'].includes(key)) {
       throw new Error('Unexpected attribute \'' + key + '\' found in query criteria');
     }
   }
@@ -297,7 +304,7 @@ export function metersToLongitudeDegrees(distance: number, latitude: number): nu
  */
 export function longitudeBitsForResolution(resolution: number, latitude: number): number {
   const degs = metersToLongitudeDegrees(resolution, latitude);
-  return (Math.abs(degs) > 0.000001) ? Math.max(1, Math.log2(360 / degs)) : 1;
+  return (Math.abs(degs) > 0.000001) ? Math.max(1, log2(360 / degs)) : 1;
 }
 
 /**
@@ -307,7 +314,7 @@ export function longitudeBitsForResolution(resolution: number, latitude: number)
  * @returns Bits necessary to reach a given resolution, in meters, for the latitude.
  */
 export function latitudeBitsForResolution(resolution: number): number {
-  return Math.min(Math.log2(EARTH_MERI_CIRCUMFERENCE / 2 / resolution), MAXIMUM_BITS_PRECISION);
+  return Math.min(log2(EARTH_MERI_CIRCUMFERENCE / 2 / resolution), MAXIMUM_BITS_PRECISION);
 }
 
 /**
