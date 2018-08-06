@@ -223,16 +223,16 @@ export function degreesToRadians(degrees: number): number {
  */
 export function encodeGeohash(location: firestore.GeoPoint, precision: number = GEOHASH_PRECISION): string {
   validateLocation(location);
-  if (typeof precision !== 'undefined') {
-    if (typeof precision !== 'number' || isNaN(precision)) {
-      throw new Error('precision must be a number');
-    } else if (precision <= 0) {
+  if (typeof precision === 'number' && !isNaN(precision)) {
+    if (precision <= 0) {
       throw new Error('precision must be greater than 0');
     } else if (precision > 22) {
       throw new Error('precision cannot be greater than 22');
     } else if (Math.round(precision) !== precision) {
       throw new Error('precision must be an integer');
     }
+  } else {
+    throw new Error('precision must be a number');
   }
 
   const latitudeRange = {

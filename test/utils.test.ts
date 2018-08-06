@@ -2,13 +2,14 @@ import * as chai from 'chai';
 import * as firebase from 'firebase';
 
 import { GeoFirestore } from '../src';
+
 import {
-  boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION,
-  metersToLongitudeDegrees, toGeoPoint, validateCriteria, validateGeohash, validateKey, validateLocation, wrapLongitude
+  boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION, metersToLongitudeDegrees,
+  toGeoPoint, validateCriteria, validateGeoFirestoreObject, validateGeohash, validateKey, validateLocation, wrapLongitude
 } from '../src/utils';
 import {
-  invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
-  validGeohashes, validKeys, validLocations, validQueryCriterias
+  invalidGeoFirestoreObjects, invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
+  validGeoFirestoreObjects, validGeohashes, validKeys, validLocations, validQueryCriterias
 } from './common';
 
 const expect = chai.expect;
@@ -21,10 +22,23 @@ describe('geoFireUtils Tests:', () => {
       });
     });
 
+    it('validateKey() returns true given valid keys with flag enabled', () => {
+      validKeys.forEach((validKey) => {
+        expect(validateKey(validKey, true)).to.be.true; // tslint:disable-line
+      });
+    });
+
     it('validateKey() throws errors given invalid keys', () => {
       invalidKeys.forEach((invalidKey) => {
         // @ts-ignore
         expect(() => validateKey(invalidKey)).to.throw();
+      });
+    });
+
+    it('validateKey() returns false given invalid keys with flag enabled', () => {
+      invalidKeys.forEach((invalidKey) => {
+        // @ts-ignore
+        expect(validateKey(invalidKey, true)).to.be.false; // tslint:disable-line
       });
     });
 
@@ -81,6 +95,32 @@ describe('geoFireUtils Tests:', () => {
       invalidQueryCriterias.forEach((invalidQueryCriteria) => {
         // @ts-ignore
         expect(() => validateCriteria(invalidQueryCriteria)).to.throw();
+      });
+
+      it('validateGeoFirestoreObject() does not throw errors given valid GeoFirestoreObj', () => {
+        validGeoFirestoreObjects.forEach((validGeoFirestoreObject) => {
+          expect(() => validateGeoFirestoreObject(validGeoFirestoreObject)).not.to.throw();
+        });
+      });
+  
+      it('validateGeoFirestoreObject() returns true given valid GeoFirestoreObj with flag enabled', () => {
+        validGeoFirestoreObjects.forEach((validGeoFirestoreObject) => {
+          expect(() => validateGeoFirestoreObject(validGeoFirestoreObject, true)).to.be.true; // tslint:disable-line
+        });
+      });
+  
+      it('validateGeoFirestoreObject() throws errors given invalid GeoFirestoreObj', () => {
+        invalidGeoFirestoreObjects.forEach((invalidGeoFirestoreObject) => {
+          // @ts-ignore
+          expect(() => validateGeoFirestoreObject(invalidGeoFirestoreObject)).to.throw();
+        });
+      });
+  
+      it('validateGeoFirestoreObject() returns false given invalid GeoFirestoreObj with flag enabled', () => {
+        invalidGeoFirestoreObjects.forEach((invalidGeoFirestoreObject) => {
+          // @ts-ignore
+          expect(() => validateGeoFirestoreObject(invalidGeoFirestoreObject, true)).to.throw();
+        });
       });
     });
   });
