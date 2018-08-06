@@ -7,13 +7,17 @@ import { firestore, GeoFirestoreObj, QueryCriteria } from './interfaces';
  * Creates a GeoFirestore instance.
  */
 export class GeoFirestore {
+  private _collectionRef: firestore.CollectionReference;
+
   /**
    * @param _collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    */
-  constructor(private _collectionRef: firestore.CollectionReference) {
-    if (Object.prototype.toString.call(this._collectionRef) !== '[object Object]') {
+  constructor(collectionRef: firestore.CollectionReference | firestore.cloud.CollectionReference) {
+    if (Object.prototype.toString.call(collectionRef) !== '[object Object]') {
       throw new Error('collectionRef must be an instance of a Firestore Collection');
     }
+
+    this._collectionRef = collectionRef as firestore.CollectionReference;
   }
 
   /********************/

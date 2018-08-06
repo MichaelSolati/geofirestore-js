@@ -54,6 +54,7 @@
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
     "firebase": "5.x.x",
+    "firebase-admin": "5.x.x",
     "firebase-tools": "^4.0.2",
     "generate-changelog": "^1.7.1",
     "jsdom": "^11.12.0",
