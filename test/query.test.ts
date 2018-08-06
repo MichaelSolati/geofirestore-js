@@ -108,16 +108,18 @@ describe('GeoFirestoreQuery Tests:', () => {
       const query1 = (ref) => ref.where('d.count', '==', 1);
       const query2 = (ref) => ref.where('d.count', '==', 2);
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
+      const queryObject1 = query1(geoFirestore.ref());
+      const queryObject2 = query2(geoFirestore.ref());
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
-      expect(geoFirestoreQueries[0].query()).to.deep.equal(query1(geoFirestore.ref()));
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject1);
 
       geoFirestoreQueries[0].updateCriteria({ center: new firebase.firestore.GeoPoint(2, 3), radius: 100, query: query2 });
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(2, 3));
       expect(geoFirestoreQueries[0].radius()).to.equal(100);
-      expect(geoFirestoreQueries[0].query()).to.deep.equal(query2(geoFirestore.ref()));
+      expect(geoFirestoreQueries[0].query()).to.deep.equal(queryObject2);
     });
 
     it('updateCriteria() updates query criteria when given only center', () => {
@@ -157,7 +159,7 @@ describe('GeoFirestoreQuery Tests:', () => {
       const query2 = (ref) => ref.where('d.count', '==', 2);
       geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000, query: query1 }));
       const queryObject1 = query1(geoFirestore.ref());
-      const queryObject2 = query1(geoFirestore.ref());
+      const queryObject2 = query2(geoFirestore.ref());
 
       expect(geoFirestoreQueries[0].center()).to.deep.equal(new firebase.firestore.GeoPoint(1, 2));
       expect(geoFirestoreQueries[0].radius()).to.equal(1000);
