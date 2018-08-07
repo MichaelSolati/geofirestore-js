@@ -1,5 +1,5 @@
 import * as typesWeb from '@firebase/firestore-types';
-import 'firebase-admin';
+import { firestore as typesCloud } from 'firebase-admin';
 
 export namespace firestore {
   export interface CollectionReference extends typesWeb.CollectionReference { }
@@ -11,6 +11,6 @@ export namespace firestore {
   export interface QuerySnapshot extends typesWeb.QuerySnapshot { }
   export interface WriteBatch extends typesWeb.WriteBatch { }
   export namespace cloud {
-    export interface CollectionReference extends FirebaseFirestore.CollectionReference { }
+    export interface CollectionReference extends typesCloud.Query {}
   }
 }

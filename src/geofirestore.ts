@@ -10,7 +10,7 @@ export class GeoFirestore {
   private _collectionRef: firestore.CollectionReference;
 
   /**
-   * @param _collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
+   * @param collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    */
   constructor(collectionRef: firestore.CollectionReference | firestore.cloud.CollectionReference) {
     if (Object.prototype.toString.call(collectionRef) !== '[object Object]') {
