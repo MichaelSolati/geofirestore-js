@@ -1,3 +1,40 @@
+### 2.1.0 (2018-08-07)
+
+##### Chores
+
+*  update dependencies ([346cd080](https://github.com/MichaelSolati/geofirestore/commit/346cd08088b92268097fb8467e4c51835725b06b))
+*  fix coveralls badge in README ([a1843f9e](https://github.com/MichaelSolati/geofirestore/commit/a1843f9ef151ae8672b8c34f8f22c5f80e7c215a))
+
+##### Documentation Changes
+
+* **GeoFirestoreQuery:**  add docs for `query` function of `GeoFirestoreQuery`'s `GeoFirestoreObj`, fixes [#8](https://github.com/MichaelSolati/geofirestore/pull/8) ([79976caf](https://github.com/MichaelSolati/geofirestore/commit/79976cafc45b40b826f929cc199f22efe571b86a))
+*  add example application as well as site deployment ([1192262a](https://github.com/MichaelSolati/geofirestore/commit/1192262a99ce2a8b68a869ba0ef05e007dca6119))
+
+##### New Features
+
+*  add support for firebase-admin sdk, fixes [#9](https://github.com/MichaelSolati/geofirestore/pull/9) ([8a763041](https://github.com/MichaelSolati/geofirestore/commit/8a763041591aed6836459c853ab6b927cf83298d))
+* **query:**  add ability to write custom query function for GeoFirestoreQuery ([05bccde5](https://github.com/MichaelSolati/geofirestore/commit/05bccde507f94a230c986cc8ea70240e8671e0fe))
+
+##### Bug Fixes
+
+* **test:**  fix a `remove` test for GeoFirestore ([521adabe](https://github.com/MichaelSolati/geofirestore/commit/521adabea0f4cb05ea821830655f05a4befc3463))
+* **validateCriteria:**  check QueryCriteria's query to ensure it is of a valid type ([4c299c80](https://github.com/MichaelSolati/geofirestore/commit/4c299c807d876970df36dde50d6b56286b5c78ab))
+
+##### Performance Improvements
+
+* **examples:**  throttle queries to Firestore ([be8ab9a5](https://github.com/MichaelSolati/geofirestore/commit/be8ab9a52af9dc075ec3f1e1c4acbd3cac6e73f8))
+
+##### Tests
+
+* **GeoFirestoreQuery:**
+  *  add tests for `_queryToString` and `_stringToQuery` ([44677f0c](https://github.com/MichaelSolati/geofirestore/commit/44677f0cacf1eed0572c51f0f52bbcc75fdcded5))
+  *  use consts for query comparisons ([72531203](https://github.com/MichaelSolati/geofirestore/commit/7253120398b1fa7d595e0980981d53d2d609a584))
+  *  add coverage for `query` function of QueryCriteria ([01cc594c](https://github.com/MichaelSolati/geofirestore/commit/01cc594c2051a3803de0b4673bc1c844e08f1d2a))
+*  expand coverage for util functions ([12b10e59](https://github.com/MichaelSolati/geofirestore/commit/12b10e593781fb64cc366f9a7ba6e20bbcfdfecb))
+* **GeoFirestore:**
+  *  write better `remove` function tests ([e6b77890](https://github.com/MichaelSolati/geofirestore/commit/e6b77890b474ea008c510717eed556d72071df7a))
+  *  add coverage for `remove` function ([da11c3b3](https://github.com/MichaelSolati/geofirestore/commit/da11c3b3e479d18e321aa031a9704f7ce880bb06))
+
 #### 2.0.2 (2018-07-23)
 
 ##### Build System / Dependencies
