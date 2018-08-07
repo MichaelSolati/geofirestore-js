@@ -5,6 +5,7 @@
   "scripts": {
     "build": "rm -rf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "tslint --project ./tslint.json 'src/**/*.ts'",
     "test": "nyc --reporter=html --reporter=text mocha",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
