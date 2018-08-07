@@ -1,11 +1,8 @@
-# GeoFirestore
+# geofirestore
+
 [![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/MichaelSolati/geofirestore.svg?branch=master)](https://travis-ci.org/MichaelSolati/geofirestore) [![Coverage Status](https://coveralls.io/repos/github/MichaelSolati/geofirestore/badge.svg?branch=dev)](https://coveralls.io/github/MichaelSolati/geofirestore?branch=dev)
 
-
-GeoFirestore is an open-source library that allows you to store and query a set of keys based on their
-geographic location. At its heart, GeoFirestore simply stores locations with string keys. Its main
-benefit, however, is the possibility of retrieving only those keys within a given geographic
-area - all in realtime.
+GeoFirestore is an open-source library that allows you to store and query a set of keys based on their geographic location. At its heart, GeoFirestore simply stores locations with string keys. Its main benefit, however, is the possibility of retrieving only those keys within a given geographic area - all in realtime.
 
 GeoFirestore uses the [Firebase Cloud Firestore](https://firebase.google.com/docs/firestore/) for data
 storage, allowing query results to be updated in realtime as they change. GeoFirestore *selectively loads
@@ -17,50 +14,50 @@ in its own format and its own location within your Firestore database. This allo
 format and Security Rules to remain unchanged while still providing you with an easy solution for geo
 queries.
 
-
 ## Table of Contents
 
- * [Downloading GeoFirestore](#downloading-geofirestore)
- * [Example Usage](#example-usage)
- * [Documentation](#documentation)
- * [Contributing](#contributing)
-
+* [Downloading GeoFirestore](#downloading-geofirestore)
+* [Example Usage](#example-usage)
+* [Documentation](#documentation)
+* [Contributing](#contributing)
 
 ## Downloading GeoFirestore
 
 You can install GeoFirestore via npm. You will have to install Firebase separately (because it is a peer dependency to GeoFirestore):
 
 ```bash
-$ npm install geofirestore firebase --save
+npm install geofirestore firebase --save
 ```
 
 ## Example Usage
 
 Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, and you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store each bar using GeoFirestore, using the location to build an easily queryable document. GeoFirestore then allows you to easily query which bars are nearby in a simalar fashion as `geofire` but will also return the bar information (not just the key or location).
 
-## Documentation
-### Table of Contents
- * [`GeoFirestore`](#geofirestore)
-   - [`new GeoFirestore(collectionRef)`](#new-geofirestorecollectionref)
-   - [`ref()`](#geofirestoreref)
-   - [`get(key)`](#geofirestoregetkey)
-   - [`add(document[, customKey])`](#geofirestoreadddocument-customkey)
-   - [`set(keyOrDocuments[, document, customKey])`](#geofirestoresetkeyordocuments-document-customkey)
-   - [`remove(key)`](#geofirestoreremovekey)
-   - [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
- * [`GeoFirestoreQuery`](#geofirestorequery)
-   - [`center()`](#geofirestorequerycenter)
-   - [`radius()`](#geofirestorequeryradius)
-   - [`updateCriteria(newQueryCriteria)`](#geofirestorequeryupdatecriterianewquerycriteria)
-   - [`on(eventType, callback)`](#geofirestorequeryoneventtype-callback)
-   - [`cancel()`](#geofirestorequerycancel)
- * [`GeoCallbackRegistration`](#geocallbackregistration)
-   - [`cancel()`](#geocallbackregistrationcancel)
- * [Helper Methods](#helper-methods)
-   - [`GeoFirestore.distance(location1, location2)`](#geofirestoredistancelocation1-location2)
- * [Promises](#promises)
- * [Examples](#examples)
+### Examples
 
+You can find a full list of our demos and view the code for each of them in the [examples directory](examples/) of this repository. The examples cover some of the common use cases for GeoFirestore.
+
+## Documentation
+
+* [`GeoFirestore`](#geofirestore)
+  * [`new GeoFirestore(collectionRef)`](#new-geofirestorecollectionref)
+  * [`ref()`](#geofirestoreref)
+  * [`get(key)`](#geofirestoregetkey)
+  * [`add(document[, customKey])`](#geofirestoreadddocument-customkey)
+  * [`set(keyOrDocuments[, document, customKey])`](#geofirestoresetkeyordocuments-document-customkey)
+  * [`remove(key)`](#geofirestoreremovekey)
+  * [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
+* [`GeoFirestoreQuery`](#geofirestorequery)
+  * [`center()`](#geofirestorequerycenter)
+  * [`radius()`](#geofirestorequeryradius)
+  * [`updateCriteria(newQueryCriteria)`](#geofirestorequeryupdatecriterianewquerycriteria)
+  * [`on(eventType, callback)`](#geofirestorequeryoneventtype-callback)
+  * [`cancel()`](#geofirestorequerycancel)
+* [`GeoCallbackRegistration`](#geocallbackregistration)
+  * [`cancel()`](#geocallbackregistrationcancel)
+* [Helper Methods](#helper-methods)
+  * [`GeoFirestore.distance(location1, location2)`](#geofirestoredistancelocation1-location2)
+* [Promises](#promises)
 
 ### GeoFirestore
 
@@ -184,10 +181,18 @@ The `queryCriteria` describe a circular query and must be an object with the fol
 * `center` - the center of this query, in the form of a Firestore GeoPoint
 * `radius` - the radius, in kilometers, from the center of this query in which to include results
 
+The `queryCriteria` optionally may include the following keys:
+
+* `query` - the query, a function created by building on the [firebase.firestore.CollectionReference](https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference).
+  * Any field you wish to query on your original Document will be a sub object of the  `GeoFirestoreObj` and should be prefixed with `d.` in order to query it. So if I was to want to query on the count of a Document I would refer to it as `'d.count'`.
+  * Firestore has [powerful querying syntax](https://firebase.google.com/docs/firestore/query-data/queries) and the `GeoFirestoreQuery`'s `QueryCriteria` provides a thin wrapper around it. This keeps you from having to learn two query syntax systems. If you know the [Firestore query API](https://firebase.google.com/docs/reference/js/firebase.firestore.Query) then you know how to query in GeoFirestore.
+  * GeoFirestore queries locations on the `g` (geohash) field of a Document, In order to be able to query on an aditional field you must index your collection. For the aditional field remember that the field will be stored in the sub-object `d` and so must be indexed as [seen here](https://github.com/MichaelSolati/geofirestore/blob/dev/firestore.indexes.json#L3)
+
 ```JavaScript
 const geoQuery = geoFirestore.query({
   center: new firebase.firestore.GeoPoint(10.38, 2.41),
-  radius: 10.5
+  radius: 10.5,
+  query: (ref) => ref.where('d.count', '==', 1)
 });
 ```
 
@@ -204,10 +209,25 @@ The returned `location` will be a Firestore GeoPoint.
 ```JavaScript
 const geoQuery = geoFirestore.query({
   center: new firebase.firestore.GeoPoint(10.38, 2.41),
-  radius: 10.5
+  radius: 10.5,
+  query: (ref) => ref.where('d.count', '==', 1)
 });
 
 const center = geoQuery.center(); // center === GeoPoint { _lat: 10.38, _long: 2.41 }
+```
+
+#### GeoFirestoreQuery.query()
+
+Returns a Firestore Query which you can read or listen to.
+
+```JavaScript
+const geoQuery = geoFirestore.query({
+  center: new firebase.firestore.GeoPoint(10.38, 2.41),
+  radius: 10.5,
+  query: (ref) => ref.where('d.count', '==', 1)
+});
+
+const query = geoQuery.query();  // A query object
 ```
 
 #### GeoFirestoreQuery.radius()
@@ -217,7 +237,8 @@ Returns the `radius` of this query, in kilometers.
 ```JavaScript
 const geoQuery = geoFirestore.query({
   center: new firebase.firestore.GeoPoint(10.38, 2.41),
-  radius: 10.5
+  radius: 10.5,
+  query: (ref) => ref.where('d.count', '==', 1)
 });
 
 const radius = geoQuery.radius();  // radius === 10.5
@@ -227,16 +248,18 @@ const radius = geoQuery.radius();  // radius === 10.5
 
 Updates the criteria for this query.
 
-`newQueryCriteria` must be an object containing `center`, `radius`, or both.
+`newQueryCriteria` must be an object containing `center`, `radius`, `query`, or all three.
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
   center: new firebase.firestore.GeoPoint(10.38, 2.41),
-  radius: 10.5
+  radius: 10.5,
+  query: (ref) => ref.where('d.count', '==', 1)
 });
 
 let center = geoQuery.center();  // center === GeoPoint { _lat: 10.38, _long: 2.41 }
 let radius = geoQuery.radius();  // radius === 10.5
+const query = geoQuery.query();  // Firestore Query
 
 geoQuery.updateCriteria({
   center: new firebase.firestore.GeoPoint(-50.83, 100.19),
@@ -245,13 +268,16 @@ geoQuery.updateCriteria({
 
 center = geoQuery.center();  // center === GeoPoint { _lat: -50.83, _long: 100.19 }
 radius = geoQuery.radius();  // radius === 5
+console.log(query.toString() === geoQuery.query().toString()); // true
 
 geoQuery.updateCriteria({
-  radius: 7
+  radius: 7,
+  query: (ref) => ref.where('d.count', '==', 2)
 });
 
 center = geoQuery.center();  // center === GeoPoint { _lat: -50.83, _long: 100.19 }
 radius = geoQuery.radius();  // radius === 7
+console.log(query.toString() === geoQuery.query().toString()); // false
 ```
 
 #### GeoFirestoreQuery.on(eventType, callback)
@@ -372,12 +398,6 @@ promise.then(function(result) {
   console.log('Promise was rejected with the following error: ' + error);
 })
 ```
-
-### Examples
-
-You can find a full list of our demos and view the code for each of them in the
-[examples directory](examples/) of this repository. The examples cover some of the common use
-cases for GeoFirestore.
 
 ## Contributing
 
