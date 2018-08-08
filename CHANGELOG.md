@@ -1,3 +1,13 @@
+#### 2.1.1 (2018-08-08)
+
+##### Build System / Dependencies
+
+*  add lint to travis ([8318f861](https://github.com/MichaelSolati/geofirestore/commit/8318f861ff349f669f44b846f65376c870330259))
+
+##### Bug Fixes
+
+*  resolve cloud typings, fixes [#22](https://github.com/MichaelSolati/geofirestore/pull/22) ([4496b16c](https://github.com/MichaelSolati/geofirestore/commit/4496b16cfe82bc9fd2bd08ba3d680af9376cdd12))
+
 ### 2.1.0 (2018-08-07)
 
 ##### Chores
