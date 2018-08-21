@@ -1,5 +1,6 @@
 import * as chai from 'chai';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 
 import { GeoFirestore, GeoFirestoreQuery } from '../src';
 
@@ -27,12 +28,11 @@ export let geoFirestoreRef: firebase.firestore.CollectionReference,
   geoFirestoreQueries: GeoFirestoreQuery[] = [];
 
 // Initialize Firebase
-const config = {
+firebase.initializeApp({
   apiKey: 'AIzaSyDFnedGL4qr_jenIpWYpbvot8s7Vuay_88',
   databaseURL: 'https://geofirestore.firebaseio.com',
   projectId: 'geofirestore',
-};
-firebase.initializeApp(config);
+});
 firebase.firestore().settings({ timestampsInSnapshots: true });
 
 /**********************/

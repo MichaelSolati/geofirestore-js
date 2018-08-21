@@ -484,17 +484,17 @@ export class GeoFirestoreQuery {
   /**
    * Removes the document/location from the local state and fires any events if necessary.
    *
-   * @param key The key to be removed.
+   * @param $key The key to be removed.
    * @param document The current Document from Firestore, or null if removed.
    */
-  private _removeLocation(key: string, document?: any): void {
-    const locationMap = this._locationsTracked.get(key);
-    this._locationsTracked.delete(key);
+  private _removeLocation($key: string, document?: any): void {
+    const locationMap = this._locationsTracked.get($key);
+    this._locationsTracked.delete($key);
     if (typeof locationMap !== 'undefined' && locationMap.isInQuery) {
       const locationKey = (document) ? findCoordinatesKey(document) : null;
       const location: firestore.GeoPoint | firestore.cloud.GeoPoint = (locationKey) ? document[locationKey] : null;
       const distanceFromCenter: number = (location) ? GeoFirestore.distance(location, this._center) : null;
-      this._fireCallbacksForKey('key_exited', key, document, distanceFromCenter);
+      this._fireCallbacksForKey('key_exited', $key, document, distanceFromCenter);
     }
   }
 

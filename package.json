@@ -46,6 +46,7 @@
     "README.md"
   ],
   "dependencies": {
+    "@types/node": "x.x.x",
     "@google-cloud/firestore": "0.x.x",
     "firebase": "5.x.x"
   },

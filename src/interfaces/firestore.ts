@@ -1,5 +1,6 @@
 import * as FirestoreWeb from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
+import '@types/node';
 export namespace firestore {
   export interface CollectionReference extends FirestoreWeb.CollectionReference { }
   export interface DocumentChange extends FirestoreWeb.DocumentChange { }
