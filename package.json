@@ -45,7 +45,8 @@
     "package.json",
     "README.md"
   ],
-  "peerDependencies": {
+  "dependencies": {
+    "@google-cloud/firestore": "0.x.x",
     "firebase": "5.x.x"
   },
   "devDependencies": {
@@ -53,8 +54,6 @@
     "@types/mocha": "^5.2.5",
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
-    "firebase": "5.x.x",
-    "firebase-admin": "5.x.x",
     "firebase-tools": "^4.0.2",
     "generate-changelog": "^1.7.1",
     "jsdom": "^11.12.0",

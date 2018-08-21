@@ -1,16 +1,23 @@
-import * as typesWeb from '@firebase/firestore-types';
-import { firestore as typesCloud } from 'firebase-admin';
-
+import * as FirestoreWeb from '@firebase/firestore-types';
+import '@google-cloud/firestore/types/firestore';
 export namespace firestore {
-  export interface CollectionReference extends typesWeb.CollectionReference { }
-  export interface DocumentChange extends typesWeb.DocumentChange { }
-  export interface DocumentReference extends typesWeb.DocumentReference { }
-  export interface DocumentSnapshot extends typesWeb.DocumentSnapshot { }
-  export interface GeoPoint extends typesWeb.GeoPoint { }
-  export interface Query extends typesWeb.Query { }
-  export interface QuerySnapshot extends typesWeb.QuerySnapshot { }
-  export interface WriteBatch extends typesWeb.WriteBatch { }
+  export interface CollectionReference extends FirestoreWeb.CollectionReference { }
+  export interface DocumentChange extends FirestoreWeb.DocumentChange { }
+  export interface DocumentReference extends FirestoreWeb.DocumentReference { }
+  export interface DocumentSnapshot extends FirestoreWeb.DocumentSnapshot { }
+  export interface GeoPoint extends FirestoreWeb.GeoPoint { }
+  export interface Query extends FirestoreWeb.Query { }
+  export interface QuerySnapshot extends FirestoreWeb.QuerySnapshot { }
+  export interface WriteBatch extends FirestoreWeb.WriteBatch { }
   export namespace cloud {
-    export interface CollectionReference extends typesCloud.Query {}
+    export interface CollectionReference extends FirebaseFirestore.CollectionReference {}
+    export interface DocumentChange extends FirebaseFirestore.DocumentChange { }
+    export interface DocumentReference extends FirebaseFirestore.DocumentReference { }
+    export interface DocumentSnapshot extends FirebaseFirestore.DocumentSnapshot { }
+    export interface GeoPoint extends FirebaseFirestore.GeoPoint { }
+    export interface Query extends FirebaseFirestore.Query { }
+    export interface QuerySnapshot extends FirebaseFirestore.QuerySnapshot { }
+    export interface WriteBatch extends FirebaseFirestore.WriteBatch { }
+    export interface WriteResult extends FirebaseFirestore.WriteResult { }
   }
 }
