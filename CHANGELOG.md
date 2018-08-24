@@ -1,3 +1,13 @@
+#### 2.1.2 (2018-08-24)
+
+##### Chores
+
+* **node:**  add node typings ([344602f0](https://github.com/MichaelSolati/geofirestore/commit/344602f0012bf49e873a7bae673ae438076c1acb))
+
+##### Bug Fixes
+
+* **firebase-admin:**  fix docChanges prop/method issue while adding more extensive typing ([8c1d77f5](https://github.com/MichaelSolati/geofirestore/commit/8c1d77f5c6bf6c87bebf2330863c9fe7619f3e35))
+
 #### 2.1.1 (2018-08-08)
 
 ##### Build System / Dependencies
