@@ -1,3 +1,9 @@
+### 2.2.0 (2018-09-17)
+
+##### New Features
+
+* **GeoFirestore:**  add ability to use  with persistence options, fixes [#31](https://github.com/MichaelSolati/geofirestore/pull/31) ([9e2a2e40](https://github.com/MichaelSolati/geofirestore/commit/9e2a2e403e9b22477fd879855352c6d4da7032bd))
+
 #### 2.1.2 (2018-08-24)
 
 ##### Chores

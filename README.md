@@ -106,9 +106,9 @@ const geoFirestore = new GeoFirestore(collectionRef);
 const ref = geoFirestore.ref();  // ref === collectionRef
 ```
 
-#### GeoFirestore.get(key)
+#### GeoFirestore.get(key[, options])
 
-Fetches the document stored for `key`.
+Fetches the document stored for `key`. If on web, by providing a `options` (GetOptions) object, this method can be configured to fetch results only from the server, only from the local cache or attempt to fetch results from the server and fall back to the cache (which is the default).
 
 Returns a promise fulfilled with the `document` corresponding to the provided `key`. If `key` does not exist, the returned promise is fulfilled with `null`.
 
