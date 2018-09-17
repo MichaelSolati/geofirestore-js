@@ -7,6 +7,7 @@ import { firestore, GeoFirestoreObj, QueryCriteria } from './interfaces';
  * Creates a GeoFirestore instance.
  */
 export class GeoFirestore {
+  private _isWeb: boolean;
   /**
    * @param collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    */
@@ -14,6 +15,8 @@ export class GeoFirestore {
     if (Object.prototype.toString.call(this._collectionRef) !== '[object Object]') {
       throw new Error('collectionRef must be an instance of a Firestore Collection');
     }
+
+    this._isWeb = Object.prototype.toString.call((this._collectionRef as firestore.CollectionReference).firestore.enablePersistence) === '[object Function]';
   }
 
   /********************/
@@ -43,11 +46,14 @@ export class GeoFirestore {
    * If the provided key does not exist, the returned promise is fulfilled with null.
    *
    * @param $key The key of the location to retrieve.
+   * @param options Describes whether we should get from server or cache.
    * @returns A promise that is fulfilled with the document of the given key.
    */
-  public get($key: string): Promise<any> {
+  public get($key: string, options: firestore.GetOptions = { source: 'default' }): Promise<any> {
     validateKey($key);
-    const promise = this._collectionRef.doc($key).get() as Promise<firestore.DocumentSnapshot>;
+    const documentReference: firestore.DocumentReference = this._collectionRef.doc($key) as firestore.DocumentReference;
+    const promise: Promise<firestore.DocumentSnapshot> = this._isWeb ? documentReference.get(options) : documentReference.get();
+
     return promise.then((documentSnapshot: firestore.DocumentSnapshot) => {
       if (!documentSnapshot.exists) {
         return null;
