@@ -430,7 +430,7 @@ export class GeoFirestoreQuery {
 
       // For every new matching geohash, determine if we should fire the 'key_entered' event
       const childCallback = firestoreQuery.onSnapshot((snapshot: firestore.QuerySnapshot | firestore.cloud.QuerySnapshot) => {
-        const docChanges: firestore.DocumentChange[] = (typeof snapshot.docChanges === 'function') ? snapshot.docChanges() : snapshot.docChanges as any[] as firestore.DocumentChange[];
+        const docChanges: firestore.DocumentChange[] = (typeof snapshot.docChanges === 'function') ? snapshot.docChanges() as firestore.DocumentChange[] : snapshot.docChanges as any[] as firestore.DocumentChange[];
         docChanges.forEach((change: firestore.DocumentChange | firestore.cloud.DocumentChange) => {
           if (change.type === 'added') {
             this._childAddedCallback(change.doc);
@@ -442,21 +442,20 @@ export class GeoFirestoreQuery {
             this._childRemovedCallback(change.doc);
           }
         });
-      });
+        // Once the current geohash to query is processed, see if it is the last one to be processed
+        // and, if so, mark the value event as fired.
+        // Note that Firebase fires the 'value' event after every 'added' event fires.
+        const valueCallback = firestoreQuery.onSnapshot(() => {
+          valueCallback();
+          this._geohashQueryReadyCallback(toQueryStr);
+        });
 
-      // Once the current geohash to query is processed, see if it is the last one to be processed
-      // and, if so, mark the value event as fired.
-      // Note that Firebase fires the 'value' event after every 'added' event fires.
-      const valueCallback = firestoreQuery.onSnapshot(() => {
-        valueCallback();
-        this._geohashQueryReadyCallback(toQueryStr);
-      });
-
-      // Add the geohash query to the current geohashes queried map and save its state
-      this._currentGeohashesQueried.set(toQueryStr, {
-        active: true,
-        childCallback,
-        valueCallback
+        // Add the geohash query to the current geohashes queried map and save its state
+        this._currentGeohashesQueried.set(toQueryStr, {
+          active: true,
+          childCallback,
+          valueCallback
+        });
       });
     });
     // Based upon the algorithm to calculate geohashes, it's possible that no 'new'
