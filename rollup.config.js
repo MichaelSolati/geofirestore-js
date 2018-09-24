@@ -1,5 +1,5 @@
 import commonjs from 'rollup-plugin-commonjs';
-import copy from 'rollup-plugin-copy';
+import rollupCopy from 'rollup-plugin-copy';
 import resolveModule from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 import { uglify } from 'rollup-plugin-uglify';
@@ -10,11 +10,12 @@ const plugins = [
   typescript({
     typescript: require('typescript')
   }),
-  commonjs(),
-  copy({
-    'src/interfaces': 'dist/interfaces'
-  })
+  commonjs()
 ];
+
+const copy = rollupCopy({
+  'src/interfaces': 'dist/interfaces'
+});
 
 const completeBuilds = [{
     input: 'src/index.ts',
@@ -37,8 +38,12 @@ const completeBuilds = [{
       name: 'window',
       extend: true
     },
-    plugins: [...plugins, uglify()]
-  },
+    plugins: [
+      ...plugins,
+      uglify(),
+      copy
+    ]
+  }
 ];
 
 export default [...completeBuilds];
