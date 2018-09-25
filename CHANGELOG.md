@@ -1,3 +1,13 @@
+#### 2.2.1 (2018-09-25)
+
+##### Chores
+
+*  update dependencies ([504d7e09](https://github.com/MichaelSolati/geofirestore/commit/504d7e094d297741e1710153db80f3ce4ab689f4))
+
+##### Refactors
+
+* **GeoFirestoreQuery:**  move around event firing and fix typing ([ff5fa228](https://github.com/MichaelSolati/geofirestore/commit/ff5fa22873ea42f341b0b8cf33caa9cba144dc05))
+
 ### 2.2.0 (2018-09-17)
 
 ##### New Features
