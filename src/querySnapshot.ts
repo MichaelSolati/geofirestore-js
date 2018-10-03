@@ -1,5 +1,5 @@
-import { FirestoreWeb, FirestoreCloud, GeoDocumentChange, GeoQueryDocumentSnapshot } from './interfaces';
-import { generateGeoQueryDocumentSnapshot } from './utils';
+import { FirestoreWeb, FirestoreCloud, GeoDocumentChange, GeoQueryDocumentSnapshot, GeoQueryCriteria } from './interfaces';
+import { generateGeoQueryDocumentSnapshot, validateQueryCriteria } from './utils';
 
 /**
  * A `GeoQuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects
@@ -9,11 +9,31 @@ import { generateGeoQueryDocumentSnapshot } from './utils';
  * properties.
  */
 export class GeoQuerySnapshot {
-  constructor(private _querySnapshot: FirestoreWeb.QuerySnapshot | FirestoreCloud.QuerySnapshot) { }
+  private _center: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
+  private _radius: number;
+
+  constructor(private _querySnapshot: FirestoreWeb.QuerySnapshot | FirestoreCloud.QuerySnapshot, geoQueryCriteria?: GeoQueryCriteria) {
+    if (geoQueryCriteria) {
+      // Validate and save the query criteria
+      validateQueryCriteria(geoQueryCriteria);
+      this._center = geoQueryCriteria.center;
+      this._radius = geoQueryCriteria.radius;
+    }
+  }
 
   /** An array of all the documents in the GeoQuerySnapshot. */
   get docs(): GeoQueryDocumentSnapshot[] {
-    return (this._querySnapshot as FirestoreWeb.QuerySnapshot).docs.map(snapshot => generateGeoQueryDocumentSnapshot(snapshot));
+    return (this._querySnapshot as FirestoreWeb.QuerySnapshot).docs.reduce((filtered: GeoQueryDocumentSnapshot[], snapshot: FirestoreWeb.QueryDocumentSnapshot) => {
+      const documentSnapshot = generateGeoQueryDocumentSnapshot(snapshot, this._center);
+      if (this._center && this._radius) {
+        if (this._radius >= documentSnapshot.distance) {
+          filtered.push(documentSnapshot);
+        }
+      } else {
+        filtered.push(documentSnapshot);
+      }
+      return filtered;
+    }, []);
   }
 
   /** The number of documents in the GeoQuerySnapshot. */
@@ -32,14 +52,22 @@ export class GeoQuerySnapshot {
    * changes.
    */
   public docChanges(): GeoDocumentChange[] {
-    return (this._querySnapshot.docChanges() as FirestoreWeb.DocumentChange[]).map((e: FirestoreWeb.DocumentChange) => {
-      return {
-        doc: generateGeoQueryDocumentSnapshot(e.doc),
-        newIndex: e.newIndex,
-        oldIndex: e.oldIndex,
-        type: e.type
+    return (this._querySnapshot.docChanges() as FirestoreWeb.DocumentChange[]).reduce((filtered: GeoDocumentChange[], change: FirestoreWeb.DocumentChange) => {
+      const documentChange = {
+        doc: generateGeoQueryDocumentSnapshot(change.doc, this._center),
+        newIndex: change.newIndex,
+        oldIndex: change.oldIndex,
+        type: change.type
       };
-    });
+      if (this._center && this._radius) {
+        if (this._radius >= documentChange.doc.distance) {
+          filtered.push(documentChange);
+        }
+      } else {
+        filtered.push(documentChange);
+      }
+      return filtered;
+    }, []);
   }
 
   /**

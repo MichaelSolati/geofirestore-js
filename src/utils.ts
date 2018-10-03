@@ -82,16 +82,43 @@ export function boundingBoxCoordinates(center: FirestoreCloud.GeoPoint | Firesto
 }
 
 /**
+ * Method which calculates the distance, in kilometers, between two locations,
+ * via the Haversine formula. Note that this is approximate due to the fact that the
+ * Earth's radius varies between 6356.752 km and 6378.137 km.
+ *
+ * @param location1 The GeoPoint of the first location.
+ * @param location2 The GeoPoint of the second location.
+ * @return The distance, in kilometers, between the inputted locations.
+ */
+export function calculateDistance(location1: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, location2: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint): number {
+  validateLocation(location1);
+  validateLocation(location2);
+
+  const radius = 6371; // Earth's radius in kilometers
+  const latDelta = degreesToRadians(location2.latitude - location1.latitude);
+  const lonDelta = degreesToRadians(location2.longitude - location1.longitude);
+
+  const a = (Math.sin(latDelta / 2) * Math.sin(latDelta / 2)) +
+    (Math.cos(degreesToRadians(location1.latitude)) * Math.cos(degreesToRadians(location2.latitude)) *
+      Math.sin(lonDelta / 2) * Math.sin(lonDelta / 2));
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return radius * c;
+}
+
+/**
  * Decodes the GeoDocument data. Returns non-decoded data if decoding fails.
  *
  * @param data The data encoded as a GeoDocument object.
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
-export function decodeGeoQueryDocumentSnapshotData(data: GeoDocument): DocumentData {
+export function decodeGeoQueryDocumentSnapshotData(data: GeoDocument, center?: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint): { data: DocumentData; distance: number; } {
   if (validateGeoDocument(data, true)) {
-    return data.d;
+    const distance = (center) ? calculateDistance(data.l, center) : null;
+    return { data: data.d, distance };
   } else {
-    return data;
+    return { data, distance: null };
   }
 }
 
@@ -217,12 +244,14 @@ export function findCoordinatesKey(document: DocumentData, customKey?: string): 
 }
 
 export function generateGeoQueryDocumentSnapshot(
-  snapshot: FirestoreWeb.QueryDocumentSnapshot | FirestoreCloud.QueryDocumentSnapshot
+  snapshot: FirestoreWeb.QueryDocumentSnapshot | FirestoreCloud.QueryDocumentSnapshot,
+  center?: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint
 ): GeoQueryDocumentSnapshot {
+  const decoded = decodeGeoQueryDocumentSnapshotData(snapshot.data() as GeoDocument, center);
   return {
     exists: snapshot.exists,
     id: snapshot.id,
-    data: decodeGeoQueryDocumentSnapshotData(snapshot.data() as GeoDocument)
+    ...decoded
   };
 }
 

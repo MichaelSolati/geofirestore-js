@@ -12,10 +12,10 @@ export class GeoQuery {
   private _isWeb: boolean;
 
   constructor(private _query: FirestoreCloud.Query | FirestoreWeb.Query, geoQueryCriteria?: GeoQueryCriteria) {
-    if (Object.prototype.toString.call(this._query) !== '[object Object]') {
+    if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
     }
-    this._isWeb = Object.prototype.toString.call((this._query as FirestoreWeb.CollectionReference).firestore.enablePersistence) === '[object Function]';
+    this._isWeb = Object.prototype.toString.call((_query as FirestoreWeb.CollectionReference).firestore.enablePersistence) === '[object Function]';
     if (geoQueryCriteria) {
       // Validate and save the query criteria
       validateQueryCriteria(geoQueryCriteria);
@@ -79,7 +79,7 @@ export class GeoQuery {
   public get(options: FirestoreWeb.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
-      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value)));
+      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this.geoQueryCriteria));
     } else {
       const promise = this._isWeb ? (this._query as FirestoreWeb.Query).get(options) : (this._query as FirestoreWeb.Query).get();
       return promise.then((snapshot) => new GeoQuerySnapshot(snapshot));
@@ -98,7 +98,7 @@ export class GeoQuery {
       const subscriptions: Array<() => void> = [];
       this._generateQuery().forEach((value: FirestoreWeb.Query) => {
         const subscription = value.onSnapshot((snapshot) => {
-          onNext(new GeoQuerySnapshot(snapshot));
+          onNext(new GeoQuerySnapshot(snapshot, this.geoQueryCriteria));
         }, (error) => {
           if (onError) {
             onError(error);
