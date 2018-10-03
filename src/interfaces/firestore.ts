@@ -17,10 +17,12 @@ export namespace GeoFirestoreTypes {
     export interface DocumentChange extends FirestoreTypes.DocumentChange { }
     export interface DocumentData extends FirestoreTypes.DocumentData { }
     export interface DocumentReference extends FirestoreTypes.DocumentReference { }
+    export interface DocumentSnapshot extends FirestoreTypes.DocumentSnapshot { }
     export interface Firestore extends FirestoreTypes.FirebaseFirestore { }
     export interface FieldPath extends FirestoreTypes.FieldPath { }
     export interface GetOptions extends FirestoreTypes.GetOptions { }
     export interface GeoPoint extends FirestoreTypes.GeoPoint { }
+    export type OrderByDirection = FirestoreTypes.OrderByDirection;
     export interface Query extends FirestoreTypes.Query { }
     export interface QuerySnapshot extends FirestoreTypes.QuerySnapshot { }
     export interface QueryDocumentSnapshot extends FirestoreTypes.QueryDocumentSnapshot { }
@@ -35,9 +37,11 @@ export namespace GeoFirestoreTypes {
     export interface DocumentChange extends FirebaseFirestore.DocumentChange { }
     export interface DocumentData extends FirebaseFirestore.DocumentData { }
     export interface DocumentReference extends FirebaseFirestore.DocumentReference { }
+    export interface DocumentSnapshot extends FirebaseFirestore.DocumentSnapshot { }
     export interface Firestore extends FirebaseFirestore.Firestore { }
     export interface FieldPath extends FirebaseFirestore.FieldPath { }
     export interface GeoPoint extends FirebaseFirestore.GeoPoint { }
+    export type OrderByDirection = FirebaseFirestore.OrderByDirection;
     export interface Query extends FirebaseFirestore.Query { }
     export interface QuerySnapshot extends FirebaseFirestore.QuerySnapshot { }
     export interface QueryDocumentSnapshot extends FirebaseFirestore.QueryDocumentSnapshot { }
