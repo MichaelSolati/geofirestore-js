@@ -135,6 +135,21 @@ export function degreesToRadians(degrees: number): number {
   return (degrees * Math.PI / 180);
 }
 
+export function encodeBatchDocument(data: DocumentData, customKey?: string): GeoDocument {
+  if (Object.prototype.toString.call(data) === '[object Object]') {
+    const unparsed: DocumentData = ('d' in data) ? data.d : data;
+    const locationKey: string = findCoordinatesKey(unparsed, customKey, true);
+    if (locationKey) {
+      const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = unparsed[locationKey];
+      const geohash: string = encodeGeohash(location);
+      return encodeGeoDocument(location, geohash, unparsed);
+    }
+    return { d: unparsed } as GeoDocument;
+  } else {
+    throw new Error('document must be an object');
+  }
+}
+
 /**
  * Generates a geohash of the specified precision/string length from the inputted GeoPoint.
  *

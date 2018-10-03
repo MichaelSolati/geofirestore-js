@@ -16,6 +16,14 @@ export class GeoFirestore {
   }
 
   /**
+   * Creates a write batch, used for performing multiple writes as a single
+   * atomic operation.
+   */
+  public batch(): GeoWriteBatch {
+    return new GeoWriteBatch(this._firestore.batch());
+  }
+
+  /**
    * Gets a `GeoCollectionReference` instance that refers to the collection at
    * the specified path.
    *
