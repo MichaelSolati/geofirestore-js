@@ -1,4 +1,4 @@
-export { GeoCallbackRegistration } from './callbackRegistration'; 
-export { GeoFirestore } from './geofirestore'; 
-export { GeoFirestoreObj, QueryCriteria } from './interfaces'; 
-export { GeoFirestoreQuery } from './query';
+export * from './collection';
+export * from './firestore';
+export * from './query';
+export * from './querySnapshot';

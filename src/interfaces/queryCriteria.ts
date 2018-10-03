@@ -1,7 +1,6 @@
-import { firestore } from './firestore';
+import { FirestoreCloud, FirestoreWeb } from './firestore';
 
-export interface QueryCriteria {
-  center?: firestore.GeoPoint | firestore.cloud.GeoPoint;
+export interface GeoQueryCriteria {
+  center?: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
   radius?: number;
-  query?: (ref: firestore.CollectionReference | firestore.cloud.CollectionReference) => firestore.Query | firestore.cloud.Query;
 }
