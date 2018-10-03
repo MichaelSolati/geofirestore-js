@@ -1,5 +1,6 @@
-import { FirestoreWeb, FirestoreCloud } from './interfaces';
+import { GeoFirestoreTypes } from './interfaces';
 import { GeoCollectionReference } from './collection';
+import { GeoWriteBatch } from './writeBatch';
 
 /**
  * Creates a GeoFirestore instance.
@@ -8,7 +9,7 @@ export class GeoFirestore {
   /**
    * @param _firestore Firestore represents a Firestore Database and is the entry point for all Firestore operations.
    */
-  constructor(private _firestore: FirestoreWeb.Firestore | FirestoreCloud.Firestore) {
+  constructor(private _firestore: GeoFirestoreTypes.web.Firestore | GeoFirestoreTypes.cloud.Firestore) {
     if (Object.prototype.toString.call(_firestore) !== '[object Object]') {
       throw new Error('Firestore must be an instance of a Firestore');
     }

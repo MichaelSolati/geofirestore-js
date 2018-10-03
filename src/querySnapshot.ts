@@ -1,4 +1,4 @@
-import { FirestoreWeb, FirestoreCloud, GeoDocumentChange, GeoQueryDocumentSnapshot, GeoQueryCriteria } from './interfaces';
+import { GeoFirestoreTypes } from './interfaces';
 import { generateGeoQueryDocumentSnapshot, validateQueryCriteria } from './utils';
 
 /**
@@ -9,10 +9,10 @@ import { generateGeoQueryDocumentSnapshot, validateQueryCriteria } from './utils
  * properties.
  */
 export class GeoQuerySnapshot {
-  private _center: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
+  private _center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
   private _radius: number;
 
-  constructor(private _querySnapshot: FirestoreWeb.QuerySnapshot | FirestoreCloud.QuerySnapshot, geoQueryCriteria?: GeoQueryCriteria) {
+  constructor(private _querySnapshot: GeoFirestoreTypes.web.QuerySnapshot | GeoFirestoreTypes.cloud.QuerySnapshot, geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria) {
     if (geoQueryCriteria) {
       // Validate and save the query criteria
       validateQueryCriteria(geoQueryCriteria);
@@ -22,8 +22,8 @@ export class GeoQuerySnapshot {
   }
 
   /** An array of all the documents in the GeoQuerySnapshot. */
-  get docs(): GeoQueryDocumentSnapshot[] {
-    return (this._querySnapshot as FirestoreWeb.QuerySnapshot).docs.reduce((filtered: GeoQueryDocumentSnapshot[], snapshot: FirestoreWeb.QueryDocumentSnapshot) => {
+  get docs(): GeoFirestoreTypes.QueryDocumentSnapshot[] {
+    return (this._querySnapshot as GeoFirestoreTypes.web.QuerySnapshot).docs.reduce((filtered: GeoFirestoreTypes.QueryDocumentSnapshot[], snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot) => {
       const documentSnapshot = generateGeoQueryDocumentSnapshot(snapshot, this._center);
       if (this._center && this._radius) {
         if (this._radius >= documentSnapshot.distance) {
@@ -51,8 +51,8 @@ export class GeoQuerySnapshot {
    * this is the first snapshot, all documents will be in the list as added
    * changes.
    */
-  public docChanges(): GeoDocumentChange[] {
-    return (this._querySnapshot.docChanges() as FirestoreWeb.DocumentChange[]).reduce((filtered: GeoDocumentChange[], change: FirestoreWeb.DocumentChange) => {
+  public docChanges(): GeoFirestoreTypes.DocumentChange[] {
+    return (this._querySnapshot.docChanges() as GeoFirestoreTypes.web.DocumentChange[]).reduce((filtered: GeoFirestoreTypes.DocumentChange[], change: GeoFirestoreTypes.web.DocumentChange) => {
       const documentChange = {
         doc: generateGeoQueryDocumentSnapshot(change.doc, this._center),
         newIndex: change.newIndex,
@@ -77,7 +77,7 @@ export class GeoQuerySnapshot {
    * each document in the snapshot.
    * @param thisArg The `this` binding for the callback.
    */
-  public forEach(callback: (result: GeoQueryDocumentSnapshot) => void, thisArg?: any): void {
+  public forEach(callback: (result: GeoFirestoreTypes.QueryDocumentSnapshot) => void, thisArg?: any): void {
     this.docs.forEach(callback, thisArg);
   }
 }

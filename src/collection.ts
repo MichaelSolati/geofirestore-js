@@ -1,4 +1,4 @@
-import { DocumentData, FirestoreCloud, FirestoreWeb } from './interfaces';
+import { GeoFirestoreTypes, DocumentData } from './interfaces';
 import { GeoQuery } from './query';
 import { findCoordinatesKey, encodeGeohash, encodeGeoDocument } from './utils';
 
@@ -11,7 +11,7 @@ export class GeoCollectionReference extends GeoQuery {
   /**
    * @param _collection The `CollectionReference` instance.
    */
-  constructor(private _collection: FirestoreCloud.CollectionReference | FirestoreWeb.CollectionReference) {
+  constructor(private _collection: GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference) {
     super(_collection);
     if (Object.prototype.toString.call(_collection) !== '[object Object]') {
       throw new Error('CollectionReference must be an instance of a Firestore CollectionReference');
@@ -25,7 +25,7 @@ export class GeoCollectionReference extends GeoQuery {
    *
    * @return The `CollectionReference` instance.
    */
-  get collection(): FirestoreCloud.CollectionReference | FirestoreWeb.CollectionReference {
+  get collection(): GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference {
     return this._collection;
   }
 
@@ -38,10 +38,10 @@ export class GeoCollectionReference extends GeoQuery {
    * @return A Promise resolved with a `DocumentReference` pointing to the
    * newly created document after it has been written to the backend.
    */
-  public add(data: DocumentData, customKey?: string): Promise<FirestoreCloud.DocumentReference> | Promise<FirestoreWeb.DocumentReference> {
+  public add(data: DocumentData, customKey?: string): Promise<GeoFirestoreTypes.cloud.DocumentReference> | Promise<GeoFirestoreTypes.web.DocumentReference> {
     if (Object.prototype.toString.call(data) === '[object Object]') {
       const locationKey: string = findCoordinatesKey(data, customKey);
-      const location: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint = data[locationKey];
+      const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = data[locationKey];
       const geohash: string = encodeGeohash(location);
       return this._collection.add(encodeGeoDocument(location, geohash, data));
     } else {

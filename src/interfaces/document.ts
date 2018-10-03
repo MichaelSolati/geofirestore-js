@@ -1,8 +1,8 @@
 import { DocumentData } from './documentData';
-import { FirestoreWeb, FirestoreCloud } from './firestore';
+import { GeoFirestoreTypes } from './firestore';
 
 export interface GeoDocument {
   g: string;
-  l: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint;
+  l: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint;
   d: DocumentData;
 }

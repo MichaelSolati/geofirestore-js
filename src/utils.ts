@@ -1,7 +1,6 @@
 import { GeoDocument } from './interfaces/document';
 import { DocumentData } from './interfaces/documentData';
-import { FirestoreCloud, FirestoreWeb } from './interfaces/firestore';
-import { GeoQueryDocumentSnapshot, GeoQueryCriteria } from './interfaces';
+import { GeoFirestoreTypes } from './interfaces';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -42,7 +41,7 @@ export const METERS_PER_DEGREE_LATITUDE = 110574;
  * @param size The size of the bounding box.
  * @return The number of bits necessary for the geohash.
  */
-export function boundingBoxBits(coordinate: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, size: number): number {
+export function boundingBoxBits(coordinate: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, size: number): number {
   const latDeltaDegrees = size / METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, coordinate.latitude + latDeltaDegrees);
   const latitudeSouth = Math.max(-90, coordinate.latitude - latDeltaDegrees);
@@ -61,7 +60,7 @@ export function boundingBoxBits(coordinate: FirestoreCloud.GeoPoint | FirestoreW
  * @param radius The radius of the circle.
  * @return The eight bounding box points.
  */
-export function boundingBoxCoordinates(center: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, radius: number): FirestoreCloud.GeoPoint[] | FirestoreWeb.GeoPoint[] {
+export function boundingBoxCoordinates(center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, radius: number): GeoFirestoreTypes.cloud.GeoPoint[] | GeoFirestoreTypes.web.GeoPoint[] {
   const latDegrees = radius / METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, center.latitude + latDegrees);
   const latitudeSouth = Math.max(-90, center.latitude - latDegrees);
@@ -90,7 +89,7 @@ export function boundingBoxCoordinates(center: FirestoreCloud.GeoPoint | Firesto
  * @param location2 The GeoPoint of the second location.
  * @return The distance, in kilometers, between the inputted locations.
  */
-export function calculateDistance(location1: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, location2: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint): number {
+export function calculateDistance(location1: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, location2: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint): number {
   validateLocation(location1);
   validateLocation(location2);
 
@@ -113,7 +112,7 @@ export function calculateDistance(location1: FirestoreCloud.GeoPoint | Firestore
  * @param data The data encoded as a GeoDocument object.
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
-export function decodeGeoQueryDocumentSnapshotData(data: GeoDocument, center?: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint): { data: DocumentData; distance: number; } {
+export function decodeGeoQueryDocumentSnapshotData(data: GeoDocument, center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint): { data: DocumentData; distance: number; } {
   if (validateGeoDocument(data, true)) {
     const distance = (center) ? calculateDistance(data.l, center) : null;
     return { data: data.d, distance };
@@ -144,7 +143,7 @@ export function degreesToRadians(degrees: number): number {
  * global default is used.
  * @return The geohash of the inputted location.
  */
-export function encodeGeohash(location: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, precision: number = GEOHASH_PRECISION): string {
+export function encodeGeohash(location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, precision: number = GEOHASH_PRECISION): string {
   validateLocation(location);
   if (typeof precision === 'number' && !isNaN(precision)) {
     if (precision <= 0) {
@@ -204,7 +203,7 @@ export function encodeGeohash(location: FirestoreCloud.GeoPoint | FirestoreWeb.G
  * @param geohash The geohash of the location.
  * @returns The location encoded as GeoDocument object.
  */
-export function encodeGeoDocument(location: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, geohash: string, document: DocumentData): GeoDocument {
+export function encodeGeoDocument(location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, geohash: string, document: DocumentData): GeoDocument {
   validateLocation(location);
   validateGeohash(geohash);
   return { g: geohash, l: location, d: document };
@@ -213,10 +212,12 @@ export function encodeGeoDocument(location: FirestoreCloud.GeoPoint | FirestoreW
 /**
  * Returns the key of a document that is a GeoPoint.
  *
- * @param document A GeoFirestore document.
- * @returns The key for the location field of a document. 
+ * @param document A Firestore document.
+ * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+ * @param flag Tells function supress error.
+ * @return The key for the location field of a document. 
  */
-export function findCoordinatesKey(document: DocumentData, customKey?: string): string {
+export function findCoordinatesKey(document: DocumentData, customKey?: string, flag = false): string {
   let error: string;
   let key: string;
 
@@ -236,7 +237,7 @@ export function findCoordinatesKey(document: DocumentData, customKey?: string): 
     error = key + ' is not a valid GeoPoint';
   }
 
-  if (error) {
+  if (error && !flag) {
     throw new Error('Invalid GeoFirestore document: ' + error);
   }
 
@@ -244,9 +245,9 @@ export function findCoordinatesKey(document: DocumentData, customKey?: string): 
 }
 
 export function generateGeoQueryDocumentSnapshot(
-  snapshot: FirestoreWeb.QueryDocumentSnapshot | FirestoreCloud.QueryDocumentSnapshot,
-  center?: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint
-): GeoQueryDocumentSnapshot {
+  snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot | GeoFirestoreTypes.cloud.QueryDocumentSnapshot,
+  center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
+): GeoFirestoreTypes.QueryDocumentSnapshot {
   const decoded = decodeGeoQueryDocumentSnapshotData(snapshot.data() as GeoDocument, center);
   return {
     exists: snapshot.exists,
@@ -263,7 +264,7 @@ export function generateGeoQueryDocumentSnapshot(
  * @param radius The radius of the circle.
  * @return An array of geohashes containing a GeoPoint.
  */
-export function geohashQueries(center: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint, radius: number): string[][] {
+export function geohashQueries(center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, radius: number): string[][] {
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
   const geohashPrecision = Math.ceil(queryBits / BITS_PER_CHAR);
@@ -367,8 +368,8 @@ export function metersToLongitudeDegrees(distance: number, latitude: number): nu
  * @param longitude Longitude for GeoPoint.
  * @return Firestore "GeoPoint"
  */
-export function toGeoPoint(latitude: number, longitude: number): FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint {
-  const fakeGeoPoint: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint = { latitude, longitude } as FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
+export function toGeoPoint(latitude: number, longitude: number): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
+  const fakeGeoPoint: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = { latitude, longitude } as GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
   validateLocation(fakeGeoPoint);
   return fakeGeoPoint;
 }
@@ -433,7 +434,7 @@ export function validateGeohash(geohash: string, flag = false): boolean {
  * @param location The Firestore GeoPoint to be verified.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: FirestoreWeb.GeoPoint | FirestoreCloud.GeoPoint, flag = false): boolean {
+export function validateLocation(location: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint, flag = false): boolean {
   let error: string;
 
   if (!location) {
@@ -470,7 +471,7 @@ export function validateLocation(location: FirestoreWeb.GeoPoint | FirestoreClou
  * @param newQueryCriteria The criteria which specifies the query's center and/or radius.
  * @param requireCenterAndRadius The criteria which center and radius required.
  */
-export function validateQueryCriteria(newQueryCriteria: GeoQueryCriteria, requireCenterAndRadius = false): void {
+export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('QueryCriteria must be an object');
   } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {

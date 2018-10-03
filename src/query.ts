@@ -1,4 +1,4 @@
-import { FirestoreCloud, FirestoreWeb, GeoQueryCriteria } from './interfaces';
+import { GeoFirestoreTypes } from './interfaces';
 import { GeoQuerySnapshot } from './querySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
@@ -7,15 +7,15 @@ import { validateQueryCriteria, geohashQueries } from './utils';
  * construct refined `GeoQuery` objects by adding filters and ordering.
  */
 export class GeoQuery {
-  private _center: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
+  private _center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
   private _radius: number;
   private _isWeb: boolean;
 
-  constructor(private _query: FirestoreCloud.Query | FirestoreWeb.Query, geoQueryCriteria?: GeoQueryCriteria) {
+  constructor(private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query, geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
     }
-    this._isWeb = Object.prototype.toString.call((_query as FirestoreWeb.CollectionReference).firestore.enablePersistence) === '[object Function]';
+    this._isWeb = Object.prototype.toString.call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
     if (geoQueryCriteria) {
       // Validate and save the query criteria
       validateQueryCriteria(geoQueryCriteria);
@@ -29,18 +29,18 @@ export class GeoQuery {
    *
    * @return The GeoPoint signifying the center of this query.
    */
-  get center(): FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint {
+  get center(): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
     return this._center;
   }
 
-  get geoQueryCriteria(): GeoQueryCriteria {
+  get geoQueryCriteria(): GeoFirestoreTypes.QueryCriteria {
     return {
       center: this._center,
       radius: this._radius
     };
   }
 
-  get firestore(): FirestoreCloud.Firestore | FirestoreWeb.Firestore {
+  get firestore(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
     return this._query.firestore;
   }
 
@@ -51,7 +51,7 @@ export class GeoQuery {
    *
    * @return The `Query` instance.
    */
-  get query(): FirestoreCloud.Query | FirestoreWeb.Query {
+  get query(): GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query {
     return this._query;
   }
 
@@ -76,12 +76,12 @@ export class GeoQuery {
    * @param options An object to configure the get behavior.
    * @return A Promise that will be resolved with the results of the GeoQuery.
    */
-  public get(options: FirestoreWeb.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
+  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
       return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this.geoQueryCriteria));
     } else {
-      const promise = this._isWeb ? (this._query as FirestoreWeb.Query).get(options) : (this._query as FirestoreWeb.Query).get();
+      const promise = this._isWeb ? (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
       return promise.then((snapshot) => new GeoQuerySnapshot(snapshot));
     }
   }
@@ -96,7 +96,7 @@ export class GeoQuery {
   public onSnapshot(onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void): () => void {
     if (this._center && this._radius) {
       const subscriptions: Array<() => void> = [];
-      this._generateQuery().forEach((value: FirestoreWeb.Query) => {
+      this._generateQuery().forEach((value: GeoFirestoreTypes.web.Query) => {
         const subscription = value.onSnapshot((snapshot) => {
           onNext(new GeoQuerySnapshot(snapshot, this.geoQueryCriteria));
         }, (error) => {
@@ -108,7 +108,7 @@ export class GeoQuery {
       });
       return () => subscriptions.forEach(subscription => subscription());
     } else {
-      return (this._query as FirestoreWeb.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
+      return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
     }
   }
 
@@ -117,7 +117,7 @@ export class GeoQuery {
    *
    * @param newQueryCriteria The criteria which specifies the query's center and radius.
    */
-  public updateCriteria(newGeoQueryCriteria: GeoQueryCriteria): void {
+  public updateCriteria(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): void {
     // Validate and save the new query criteria
     validateQueryCriteria(newGeoQueryCriteria);
     this._center = newGeoQueryCriteria.center || this._center;
@@ -138,14 +138,14 @@ export class GeoQuery {
    * @return The created GeoQuery.
    */
   public where(
-    fieldPath: string | FirestoreCloud.FieldPath | FirestoreWeb.FieldPath,
-    opStr: FirestoreCloud.WhereFilterOp | FirestoreWeb.WhereFilterOp,
+    fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
+    opStr: GeoFirestoreTypes.cloud.WhereFilterOp | GeoFirestoreTypes.web.WhereFilterOp,
     value: any
   ): GeoQuery {
     return new GeoQuery(this._query.where(fieldPath, opStr, value), this.geoQueryCriteria);
   }
 
-  private _generateQuery(): FirestoreWeb.Query[] {
+  private _generateQuery(): GeoFirestoreTypes.web.Query[] {
     // Get the list of geohashes to query
     let geohashesToQuery: string[] = geohashQueries(this._center, this._radius * 1000).map(this._queryToString);
     // Filter out duplicate geohashes
@@ -155,16 +155,16 @@ export class GeoQuery {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
-      return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as FirestoreWeb.Query;
+      return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as GeoFirestoreTypes.web.Query;
     });
   }
 
-  private _joinQueries(results: FirestoreWeb.QuerySnapshot[]): FirestoreWeb.QuerySnapshot {
+  private _joinQueries(results: GeoFirestoreTypes.web.QuerySnapshot[]): GeoFirestoreTypes.web.QuerySnapshot {
     const docs = [];
     let size = 0;
     const docChanges = [];
 
-    results.forEach((value: FirestoreWeb.QuerySnapshot) => {
+    results.forEach((value: GeoFirestoreTypes.web.QuerySnapshot) => {
       docs.concat(value.docs);
       size += value.size;
       docChanges.concat(value.docChanges());
@@ -175,7 +175,7 @@ export class GeoQuery {
       size,
       empty: Boolean(size),
       docChanges: () => docChanges
-    } as FirestoreWeb.QuerySnapshot;
+    } as GeoFirestoreTypes.web.QuerySnapshot;
   }
 
   /**

@@ -1,6 +1,6 @@
-import { FirestoreCloud, FirestoreWeb } from './firestore';
+import { GeoFirestoreTypes } from './firestore';
 
 export interface GeoQueryCriteria {
-  center?: FirestoreCloud.GeoPoint | FirestoreWeb.GeoPoint;
+  center?: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
   radius?: number;
 }
