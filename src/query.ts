@@ -3,19 +3,27 @@ import { GeoQuerySnapshot } from './querySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
 /**
- * A `GeoQuery` refers to a Query which you can read or listen to. You can also
- * construct refined `GeoQuery` objects by adding filters and ordering.
+ * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
+ * ordering.
  */
 export class GeoQuery {
   private _center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
   private _radius: number;
   private _isWeb: boolean;
 
-  constructor(private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query, geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria) {
+  /**
+   * @param _query The `Query` instance.
+   * @param geoQueryCriteria The center and radius of geo based queries.
+   */
+  constructor(
+    private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query,
+    geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria
+  ) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
     }
-    this._isWeb = Object.prototype.toString.call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
+    this._isWeb = Object.prototype.toString
+      .call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
     if (geoQueryCriteria) {
       // Validate and save the query criteria
       validateQueryCriteria(geoQueryCriteria);
@@ -26,13 +34,21 @@ export class GeoQuery {
 
   /**
    * Returns the location signifying the center of this query.
-   *
-   * @return The GeoPoint signifying the center of this query.
    */
   get center(): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
     return this._center;
   }
 
+  /**
+   * The `Firestore` for the Firestore database (useful for performing transactions, etc.).
+   */
+  get firestore(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
+    return this._query.firestore;
+  }
+
+  /**
+   * Returns the center and radius of geo based queries as a QueryCriteria object.
+   */
   get geoQueryCriteria(): GeoFirestoreTypes.QueryCriteria {
     return {
       center: this._center,
@@ -40,16 +56,9 @@ export class GeoQuery {
     };
   }
 
-  get firestore(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
-    return this._query.firestore;
-  }
-
   /**
-   * Gets a `Query`, which you can read or listen to, used by the GeoQuery.
-   * Using this object for queries and other commands WILL NOT take
+   * Gets a `Query`, which you can read or listen to, used by the GeoQuery. Using this object for queries and other commands WILL NOT take
    * advantage of GeoFirestore's geo based logic.
-   *
-   * @return The `Query` instance.
    */
   get query(): GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query {
     return this._query;
@@ -57,8 +66,6 @@ export class GeoQuery {
 
   /**
    * Returns the radius of this query, in kilometers.
-   *
-   * @return The radius of this query, in kilometers.
    */
   get radius(): number {
     return this._radius;
@@ -68,10 +75,8 @@ export class GeoQuery {
    * Executes the query and returns the results as a GeoQuerySnapshot.
    *
    * WEB CLIENT ONLY
-   * Note: By default, get() attempts to provide up-to-date data when possible
-   * by waiting for data from the server, but it may return cached data or fail
-   * if you are offline and the server cannot be reached. This behavior can be
-   * altered via the `GetOptions` parameter.
+   * Note: By default, get() attempts to provide up-to-date data when possible by waiting for data from the server, but it may return
+   * cached data or fail if you are offline and the server cannot be reached. This behavior can be altered via the `GetOptions` parameter.
    *
    * @param options An object to configure the get behavior.
    * @return A Promise that will be resolved with the results of the GeoQuery.
@@ -81,7 +86,8 @@ export class GeoQuery {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
       return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this.geoQueryCriteria));
     } else {
-      const promise = this._isWeb ? (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
+      const promise = this._isWeb ?
+        (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
       return promise.then((snapshot) => new GeoQuerySnapshot(snapshot));
     }
   }
@@ -90,7 +96,8 @@ export class GeoQuery {
    * Attaches a listener for `GeoQuerySnapshot` events.
    *
    * @param onNext A callback to be called every time a new `GeoQuerySnapshot` is available.
-   * @param onError A callback to be called if the listen fails or is cancelled. Since multuple queries occur only the failed query will cease.
+   * @param onError A callback to be called if the listen fails or is cancelled. Since multuple queries occur only the failed query will
+   * cease.
    * @return An unsubscribe function that can be called to cancel the snapshot listener.
    */
   public onSnapshot(onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void): () => void {
@@ -125,12 +132,10 @@ export class GeoQuery {
   }
 
   /**
-   * Creates and returns a new GeoQuery with the additional filter that documents
-   * must contain the specified field and that its value should satisfy the
-   * relation constraint provided.
+   * Creates and returns a new GeoQuery with the additional filter that documents must contain the specified field and that its value
+   * should satisfy the relation constraint provided.
    *
-   * This function returns a new (immutable) instance of the GeoQuery (rather
-   * than modify the existing instance) to impose the filter.
+   * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the filter.
    *
    * @param fieldPath The path to compare
    * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=").
@@ -145,6 +150,11 @@ export class GeoQuery {
     return new GeoQuery(this._query.where(fieldPath, opStr, value), this.geoQueryCriteria);
   }
 
+  /**
+   * Creates an array of `Query` objects that query the appropriate geohashes based on the radius and center GeoPoint of the query criteria.
+   *
+   * @return Array of Queries to search against.
+   */
   private _generateQuery(): GeoFirestoreTypes.web.Query[] {
     // Get the list of geohashes to query
     let geohashesToQuery: string[] = geohashQueries(this._center, this._radius * 1000).map(this._queryToString);
@@ -159,21 +169,23 @@ export class GeoQuery {
     });
   }
 
+  /**
+   * Merges the results of an array of QuerySnapshots into one QuerySnapshot (like) object.
+   *
+   * @param results An array of QuerySnapshots from multiple queries.
+   * @return A single QuerySnapshot from an array of QuerySnapshots.
+   */
   private _joinQueries(results: GeoFirestoreTypes.web.QuerySnapshot[]): GeoFirestoreTypes.web.QuerySnapshot {
     const docs = [];
-    let size = 0;
     const docChanges = [];
 
     results.forEach((value: GeoFirestoreTypes.web.QuerySnapshot) => {
       docs.concat(value.docs);
-      size += value.size;
       docChanges.concat(value.docChanges());
     });
 
     return {
       docs,
-      size,
-      empty: Boolean(size),
       docChanges: () => docChanges
     } as GeoFirestoreTypes.web.QuerySnapshot;
   }

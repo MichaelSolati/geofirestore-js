@@ -3,7 +3,7 @@ import { GeoCollectionReference } from './collection';
 import { GeoWriteBatch } from './writeBatch';
 
 /**
- * Creates a GeoFirestore instance.
+ * `GeoFirestore` represents a Firestore Database and is the entry point for all GeoFirestore operations.
  */
 export class GeoFirestore {
   /**
@@ -16,19 +16,19 @@ export class GeoFirestore {
   }
 
   /**
-   * Creates a write batch, used for performing multiple writes as a single
-   * atomic operation.
+   * Creates a write batch, used for performing multiple writes as a single atomic operation.
+   * 
+   * @return A new `GeoWriteBatch` instance.
    */
   public batch(): GeoWriteBatch {
     return new GeoWriteBatch(this._firestore.batch());
   }
 
   /**
-   * Gets a `GeoCollectionReference` instance that refers to the collection at
-   * the specified path.
+   * Gets a `GeoCollectionReference` instance that refers to the collection at the specified path.
    *
    * @param collectionPath A slash-separated path to a collection.
-   * @return The `GeoCollectionReference` instance.
+   * @return A new `GeoCollectionReference` instance.
    */
   public collection(collectionPath: string): GeoCollectionReference {
     return new GeoCollectionReference(this._firestore.collection(collectionPath));
