@@ -1,4 +1,5 @@
 import { GeoFirestoreTypes } from './interfaces';
+import { GeoDocumentSnapshot } from './documentSnapshot';
 import { GeoFirestore } from './firestore';
 import { GeoQuerySnapshot } from './querySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
@@ -98,7 +99,7 @@ export class GeoQuery {
    * @param snapshot The snapshot of the document to end at.
    * @return The created GeoQuery.
    */
-  public endAt(snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
+  public endAt(snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
 
   /**
    * Creates and returns a new GeoQuery that ends at the provided fields relative to the order of the query. The order of the field values
@@ -110,6 +111,9 @@ export class GeoQuery {
   public endAt(...fieldValues: any[]): GeoQuery;
 
   public endAt(): GeoQuery {
+    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
+      return new GeoQuery(this._query.endAt(arguments[0]['_snapshot']), this.geoQueryCriteria);
+    }
     return new GeoQuery(this._query.endAt(...Array.from(arguments)), this.geoQueryCriteria);
   }
 
@@ -120,7 +124,9 @@ export class GeoQuery {
    * @param snapshot The snapshot of the document to end before.
    * @return The created GeoQuery.
    */
-  public endBefore(snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
+  public endBefore(
+    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
+  ): GeoQuery;
 
   /**
    * Creates and returns a new GeoQuery that ends before the provided fields relative to the order of the query. The order of the field
@@ -132,6 +138,9 @@ export class GeoQuery {
   public endBefore(...fieldValues: any[]): GeoQuery;
 
   public endBefore(): GeoQuery {
+    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
+      return new GeoQuery(this._query.endBefore(arguments[0]['_snapshot']), this.geoQueryCriteria);
+    }
     return new GeoQuery(this._query.endBefore(...Array.from(arguments)), this.geoQueryCriteria);
   }
 
@@ -192,7 +201,9 @@ export class GeoQuery {
    * @param snapshot The snapshot of the document to start after.
    * @return The created GeoQuery.
    */
-  public startAfter(snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
+  public startAfter(
+    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
+  ): GeoQuery;
 
   /**
    * Creates and returns a new GeoQuery that starts after the provided fields relative to the order of the query. The order of the field
@@ -204,6 +215,9 @@ export class GeoQuery {
   public startAfter(...fieldValues: any[]): GeoQuery;
 
   public startAfter(): GeoQuery {
+    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
+      return new GeoQuery(this._query.startAfter(arguments[0]['_snapshot']), this.geoQueryCriteria);
+    }
     return new GeoQuery(this._query.startAfter(...Array.from(arguments)), this.geoQueryCriteria);
   }
 
@@ -214,7 +228,9 @@ export class GeoQuery {
    * @param snapshot The snapshot of the document to start after.
    * @return The created GeoQuery.
    */
-  public startAt(snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
+  public startAt(
+    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
+  ): GeoQuery;
 
   /**
    * Creates and returns a new GeoQuery that starts at the provided fields relative to the order of the query. The order of the field
@@ -226,6 +242,9 @@ export class GeoQuery {
   public startAt(...fieldValues: any[]): GeoQuery;
 
   public startAt(): GeoQuery {
+    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
+      return new GeoQuery(this._query.startAt(arguments[0]['_snapshot']), this.geoQueryCriteria);
+    }
     return new GeoQuery(this._query.startAt(...Array.from(arguments)), this.geoQueryCriteria);
   }
 

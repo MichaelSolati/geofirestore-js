@@ -31,6 +31,7 @@ export namespace GeoFirestoreTypes {
     export interface SetOptions extends FirestoreTypes.SetOptions {
       customKey?: string;
     }
+    export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
     export type WhereFilterOp = FirestoreTypes.WhereFilterOp;
     export interface WriteBatch extends FirestoreTypes.WriteBatch { }
   }

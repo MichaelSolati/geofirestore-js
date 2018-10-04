@@ -1,6 +1,7 @@
 import { GeoFirestoreTypes } from './interfaces';
 import { encodeSetUpdateDocument } from './utils';
 import { GeoCollectionReference } from './collection';
+import { GeoDocumentSnapshot } from './documentSnapshot';
 import { GeoFirestore } from './firestore';
 
 /**
@@ -35,22 +36,16 @@ export class GeoDocumentReference {
   }
 
   /**
-   * Attaches a listener for DocumentSnapshot events. You may either pass individual `onNext` and `onError` callbacks.
+   * Attaches a listener for GeoDocumentSnapshot events. You may either pass individual `onNext` and `onError` callbacks.
    *
-   * @param onNext A callback to be called every time a new `DocumentSnapshot` is available.
+   * @param onNext A callback to be called every time a new `GeoDocumentSnapshot` is available.
    * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
    * @return An unsubscribe function that can be called to cancel the snapshot listener.
    */
-  get onSnapshot(): (
-    onNext?: (snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot) => void,
-    onError?: (error: Error) => void,
-  ) => void {
-    return (
-      onNext?: (snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot) => void,
-      onError?: (error: Error) => void,
-    ) => {
+  get onSnapshot(): (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => void {
+    return (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => {
       return (this._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot((snapshot) => {
-        if (onNext) { onNext(snapshot); }
+        if (onNext) { onNext(new GeoDocumentSnapshot(snapshot)); }
       }, (error) => {
         if (onError) { onError(error); }
       });
@@ -145,13 +140,11 @@ export class GeoDocumentReference {
    * cached data or fail if you are offline and the server cannot be reached. This behavior can be altered via the `GetOptions` parameter.
    *
    * @param options An object to configure the get behavior.
-   * @return A Promise resolved with a DocumentSnapshot containing the current document contents.
+   * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
    */
-  public get(
-    options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }
-  ): Promise<GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot> {
+  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
     return this._isWeb ?
-      (this._document as GeoFirestoreTypes.web.DocumentReference).get(options) :
-      this._document.get();
+      (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
+      (this._document as GeoFirestoreTypes.web.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 }
