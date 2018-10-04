@@ -1,6 +1,6 @@
-import { GeoFirestoreTypes } from './interfaces';
+import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { encodeSetUpdateDocument } from './utils';
-import { GeoDocumentReference } from './documentReference';
+import { GeoDocumentReference } from './GeoDocumentReference';
 
 /**
  * A write batch, used to perform multiple writes as a single atomic unit.

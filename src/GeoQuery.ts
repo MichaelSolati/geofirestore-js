@@ -1,7 +1,7 @@
-import { GeoFirestoreTypes } from './interfaces';
-import { GeoDocumentSnapshot } from './documentSnapshot';
-import { GeoFirestore } from './firestore';
-import { GeoQuerySnapshot } from './querySnapshot';
+import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
+import { GeoFirestore } from './GeoFirestore';
+import { GeoQuerySnapshot } from './GeoQuerySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
 /**

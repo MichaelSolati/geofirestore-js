@@ -2,7 +2,7 @@ import * as chai from 'chai';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
-import { GeoFirestoreTypes } from '../src/interfaces';
+import { GeoFirestoreTypes } from '../src/GeoFirestoreTypes';
 
 /*************/
 /*  GLOBALS  */

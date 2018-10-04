@@ -1,7 +1,9 @@
 ## Folders
+.firebase/
 .nyc_output/
 .rpt2_cache/
 coverage/
+docs/
 examples/
 functions/
 src/

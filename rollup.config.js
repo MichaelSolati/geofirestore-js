@@ -14,7 +14,7 @@ const plugins = [
 ];
 
 const copy = rollupCopy({
-  'src/interfaces': 'dist/interfaces'
+  'src/GeoFirestoreTypes.ts': 'dist/GeoFirestoreTypes.ts'
 });
 
 const completeBuilds = [{

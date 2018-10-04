@@ -2,19 +2,30 @@ import * as FirestoreTypes from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
 import '@types/node';
 
-import { GeoDocument as IGeoDocument } from './document';
-import { GeoDocumentChange as IGeoDocumentChange } from './documentChange';
-import { DocumentData as IDocumentData } from './documentData';
-import { GeoQueryCriteria as IGeoQueryCriteria } from './queryCriteria';
-import { GeoQueryDocumentSnapshot as IGeoQueryDocumentSnapshot } from './queryDocumentSnapshot';
-
 export namespace GeoFirestoreTypes {
-  export interface Document extends IGeoDocument { }
-  export interface DocumentData extends IDocumentData { }
-  export interface DocumentChange extends IGeoDocumentChange { }
-  export interface QueryCriteria extends IGeoQueryCriteria { }
-  export interface QueryDocumentSnapshot extends IGeoQueryDocumentSnapshot { }
-  export interface UpdateData extends IDocumentData { }
+  export interface Document {
+    g: string;
+    l: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint;
+    d: DocumentData;
+  }
+  export type DocumentData = { [field: string]: any } | undefined;
+  export interface DocumentChange {
+    doc: DocumentData;
+    newIndex: number;
+    oldIndex: number;
+    type: any;
+  }
+  export interface QueryCriteria {
+    center?: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+    radius?: number;
+  }
+  export interface QueryDocumentSnapshot {
+    exists: boolean;
+    id: string;
+    data: DocumentData | any;
+    distance: number;
+  }
+  export type UpdateData = { [field: string]: any } | undefined;
   export namespace web {
     export interface CollectionReference extends FirestoreTypes.CollectionReference { }
     export interface DocumentChange extends FirestoreTypes.DocumentChange { }

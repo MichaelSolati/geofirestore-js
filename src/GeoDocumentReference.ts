@@ -1,8 +1,8 @@
-import { GeoFirestoreTypes } from './interfaces';
+import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { encodeSetUpdateDocument } from './utils';
-import { GeoCollectionReference } from './collectionReference';
-import { GeoDocumentSnapshot } from './documentSnapshot';
-import { GeoFirestore } from './firestore';
+import { GeoCollectionReference } from './GeoCollectionReference';
+import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
+import { GeoFirestore } from './GeoFirestore';
 
 /**
  * A `GeoDocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen to the

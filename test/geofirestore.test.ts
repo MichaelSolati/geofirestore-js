@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 
-import { GeoFirestore } from '../src';
+import { GeoFirestore } from '../src/GeoFirestore';
 import { afterEachHelper, beforeEachHelper, firestoreRef, invalidFirestores, testCollectionName } from './common';
 
 const expect = chai.expect;

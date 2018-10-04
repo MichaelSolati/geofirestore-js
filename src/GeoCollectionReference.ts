@@ -1,6 +1,6 @@
-import { GeoFirestoreTypes } from './interfaces';
-import { GeoDocumentReference } from './documentReference';
-import { GeoQuery } from './query';
+import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+import { GeoDocumentReference } from './GeoDocumentReference';
+import { GeoQuery } from './GeoQuery';
 import { findCoordinatesKey, encodeGeohash, encodeGeoDocument } from './utils';
 
 /**

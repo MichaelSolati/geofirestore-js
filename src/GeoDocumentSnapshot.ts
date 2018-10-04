@@ -1,5 +1,5 @@
-import { GeoFirestoreTypes } from './interfaces';
-import { GeoDocumentReference } from './documentReference';
+import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+import { GeoDocumentReference } from './GeoDocumentReference';
 import { decodeGeoDocumentData } from './utils';
 
 /**
