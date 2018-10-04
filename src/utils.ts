@@ -377,7 +377,7 @@ export function latitudeBitsForResolution(resolution: number): number {
  * @param x A number
  * @return The base 2 logarithm of a number
  */
-function log2(x: number): number {
+export function log2(x: number): number {
   return Math.log(x) / Math.log(2);
 }
 

@@ -1,6 +1,6 @@
 import { GeoFirestoreTypes } from './interfaces';
 import { encodeSetUpdateDocument } from './utils';
-import { GeoCollectionReference } from './collection';
+import { GeoCollectionReference } from './collectionReference';
 import { GeoDocumentSnapshot } from './documentSnapshot';
 import { GeoFirestore } from './firestore';
 

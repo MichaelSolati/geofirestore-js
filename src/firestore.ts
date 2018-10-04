@@ -1,5 +1,5 @@
 import { GeoFirestoreTypes } from './interfaces';
-import { GeoCollectionReference } from './collection';
+import { GeoCollectionReference } from './collectionReference';
 import { GeoWriteBatch } from './writeBatch';
 
 /**
@@ -11,7 +11,7 @@ export class GeoFirestore {
    */
   constructor(private _firestore: GeoFirestoreTypes.web.Firestore | GeoFirestoreTypes.cloud.Firestore) {
     if (Object.prototype.toString.call(_firestore) !== '[object Object]') {
-      throw new Error('Firestore must be an instance of a Firestore');
+      throw new Error('Firestore must be an instance of Firestore');
     }
   }
 
