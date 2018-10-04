@@ -1,4 +1,5 @@
 import { GeoFirestoreTypes } from './interfaces';
+import { GeoFirestore } from './firestore';
 import { GeoQuerySnapshot } from './querySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
@@ -42,8 +43,8 @@ export class GeoQuery {
   /**
    * The `Firestore` for the Firestore database (useful for performing transactions, etc.).
    */
-  get firestore(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
-    return this._query.firestore;
+  get firestore(): GeoFirestore {
+    return new GeoFirestore(this._query.firestore);
   }
 
   /**
@@ -70,11 +71,9 @@ export class GeoQuery {
         const subscriptions: Array<() => void> = [];
         this._generateQuery().forEach((value: GeoFirestoreTypes.web.Query) => {
           const subscription = value.onSnapshot((snapshot) => {
-            onNext(new GeoQuerySnapshot(snapshot, this.geoQueryCriteria));
+            if (onNext) { onNext(new GeoQuerySnapshot(snapshot, this.geoQueryCriteria)); }
           }, (error) => {
-            if (onError) {
-              onError(error);
-            }
+            if (onError) { onError(error); }
           });
           subscriptions.push(subscription);
         });
@@ -83,14 +82,6 @@ export class GeoQuery {
         return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
       }
     };
-  }
-
-  /**
-   * Gets a `Query`, which you can read or listen to, used by the GeoQuery. Using this object for queries and other commands WILL NOT take
-   * advantage of GeoFirestore's geo based logic.
-   */
-  get query(): GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query {
-    return this._query;
   }
 
   /**

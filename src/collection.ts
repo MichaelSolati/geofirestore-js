@@ -1,4 +1,5 @@
-import { GeoFirestoreTypes, DocumentData } from './interfaces';
+import { GeoFirestoreTypes } from './interfaces';
+import { GeoDocumentReference } from './documentReference';
 import { GeoQuery } from './query';
 import { findCoordinatesKey, encodeGeohash, encodeGeoDocument } from './utils';
 
@@ -17,12 +18,24 @@ export class GeoCollectionReference extends GeoQuery {
     }
   }
 
+  /** The identifier of the collection. */
+  get id(): string {
+    return this._collection.id;
+  }
+
   /**
-   * Gets a `CollectionReference` instance of the collection used by the GeoCollectionReference. Using this object for queries and other
-   * commands WILL NOT take advantage of GeoFirestore's geo based logic.
+   * A reference to the containing Document if this is a subcollection, else null.
    */
-  get collection(): GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference {
-    return this._collection;
+  get parent(): GeoDocumentReference | null {
+    return this._collection.parent ? new GeoDocumentReference(this._collection.parent) : null;
+  }
+
+  /**
+   * A string representing the path of the referenced collection (relative
+   * to the root of the database).
+   */
+  get path(): string {
+    return this._collection.path;
   }
 
   /**
@@ -30,19 +43,32 @@ export class GeoCollectionReference extends GeoQuery {
    *
    * @param data An Object containing the data for the new document.
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
-   * @return A Promise resolved with a `DocumentReference` pointing to the newly created document after it has been written to the backend.
+   * @return A Promise resolved with a `GeoDocumentReference` pointing to the newly created document after it has been written to the
+   * backend.
    */
   public add(
-    data: DocumentData,
+    data: GeoFirestoreTypes.DocumentData,
     customKey?: string
-  ): Promise<GeoFirestoreTypes.cloud.DocumentReference> | Promise<GeoFirestoreTypes.web.DocumentReference> {
+  ): Promise<GeoDocumentReference> {
     if (Object.prototype.toString.call(data) === '[object Object]') {
       const locationKey: string = findCoordinatesKey(data, customKey);
       const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = data[locationKey];
       const geohash: string = encodeGeohash(location);
-      return this._collection.add(encodeGeoDocument(location, geohash, data));
+      return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
+        .add(encodeGeoDocument(location, geohash, data)).then(doc => new GeoDocumentReference(doc));
     } else {
       throw new Error('document must be an object');
     }
+  }
+
+  /**
+   * Get a `GeoDocumentReference` for the document within the collection at the specified path. If no path is specified, an
+   * automatically-generated unique ID will be used for the returned GeoDocumentReference.
+   *
+   * @param documentPath A slash-separated path to a document.
+   * @return The `GeoDocumentReference` instance.
+   */
+  public doc(documentPath?: string): GeoDocumentReference {
+    return new GeoDocumentReference(this._collection.doc(documentPath));
   }
 }

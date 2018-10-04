@@ -2,20 +2,22 @@ import * as FirestoreTypes from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
 import '@types/node';
 
-import { GeoDocument } from './document';
-import { GeoDocumentChange } from './documentChange';
-import { GeoQueryCriteria } from './queryCriteria';
-import { GeoQueryDocumentSnapshot } from './queryDocumentSnapshot';
+import { GeoDocument as IGeoDocument } from './document';
+import { GeoDocumentChange as IGeoDocumentChange } from './documentChange';
+import { DocumentData as IDocumentData } from './documentData';
+import { GeoQueryCriteria as IGeoQueryCriteria } from './queryCriteria';
+import { GeoQueryDocumentSnapshot as IGeoQueryDocumentSnapshot } from './queryDocumentSnapshot';
 
 export namespace GeoFirestoreTypes {
-  export interface Document extends GeoDocument { }
-  export interface DocumentChange extends GeoDocumentChange { }
-  export interface QueryCriteria extends GeoQueryCriteria { }
-  export interface QueryDocumentSnapshot extends GeoQueryDocumentSnapshot { }
+  export interface Document extends IGeoDocument { }
+  export interface DocumentData extends IDocumentData { }
+  export interface DocumentChange extends IGeoDocumentChange { }
+  export interface QueryCriteria extends IGeoQueryCriteria { }
+  export interface QueryDocumentSnapshot extends IGeoQueryDocumentSnapshot { }
+  export interface UpdateData extends IDocumentData { }
   export namespace web {
     export interface CollectionReference extends FirestoreTypes.CollectionReference { }
     export interface DocumentChange extends FirestoreTypes.DocumentChange { }
-    export interface DocumentData extends FirestoreTypes.DocumentData { }
     export interface DocumentReference extends FirestoreTypes.DocumentReference { }
     export interface DocumentSnapshot extends FirestoreTypes.DocumentSnapshot { }
     export interface Firestore extends FirestoreTypes.FirebaseFirestore { }
@@ -35,7 +37,6 @@ export namespace GeoFirestoreTypes {
   export namespace cloud {
     export interface CollectionReference extends FirebaseFirestore.CollectionReference { }
     export interface DocumentChange extends FirebaseFirestore.DocumentChange { }
-    export interface DocumentData extends FirebaseFirestore.DocumentData { }
     export interface DocumentReference extends FirebaseFirestore.DocumentReference { }
     export interface DocumentSnapshot extends FirebaseFirestore.DocumentSnapshot { }
     export interface Firestore extends FirebaseFirestore.Firestore { }
