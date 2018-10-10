@@ -49,6 +49,7 @@ You can find a full list of our demos and view the code for each of them in the 
   * [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
 * [`GeoFirestoreQuery`](#geofirestorequery)
   * [`center()`](#geofirestorequerycenter)
+  * [`query()`](#geofirestorequeryquery)
   * [`radius()`](#geofirestorequeryradius)
   * [`updateCriteria(newQueryCriteria)`](#geofirestorequeryupdatecriterianewquerycriteria)
   * [`on(eventType, callback)`](#geofirestorequeryoneventtype-callback)
@@ -405,4 +406,4 @@ promise.then(function(result) {
 
 ## Contributing
 
-All code should pass tests, as well as be well documented. Please open PRs into the `dev` branch. [Please also see the Commit Message Guidelines](COMMITS.md) for how commit messages should be structured.
+All code should pass tests, as well as be well documented. Please open PRs into the `dev` branch. [Please also see the Commit Message Guidelines](CONTRIBUTING.md) for how commit messages should be structured.
