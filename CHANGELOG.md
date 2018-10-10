@@ -1,3 +1,9 @@
+#### 2.2.2 (2018-10-10)
+
+##### Documentation Changes
+
+*  update docs around query functions ([073991f4](https://github.com/MichaelSolati/geofirestore/commit/073991f4b5d4fe72e93a5125ab202c7ab2d4cfe5))
+
 #### 2.2.1 (2018-09-25)
 
 ##### Chores
