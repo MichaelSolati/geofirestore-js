@@ -9,3 +9,5 @@ node_modules/
 
 # Files
 .DS_Store
+
+.firebase

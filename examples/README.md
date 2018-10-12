@@ -25,4 +25,4 @@ methods.
 It also shows you how to create a `GeoFirestoreQuery` and respond to keys moving into,
 out of, and within the query.
 
-You can check out a live demo of this example [here](https://geofirestore.firebaseapp.com/viewers/index.html).
+You can check out a live demo of this example [here](https://geofirestore.com/viewers).

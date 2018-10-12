@@ -48,8 +48,7 @@
   "dependencies": {
     "@google-cloud/firestore": "0.x.x",
     "@types/node": "x.x.x",
-    "firebase": "5.x.x",
-    "rollup-plugin-copy": "^0.2.3"
+    "firebase": "5.x.x"
   },
   "devDependencies": {
     "@types/chai": "^4.1.5",
@@ -64,6 +63,7 @@
     "nyc": "^13.0.1",
     "rollup": "^0.66.2",
     "rollup-plugin-commonjs": "^9.1.8",
+    "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-typescript2": "^0.17.0",
     "rollup-plugin-uglify": "^6.0.0",
