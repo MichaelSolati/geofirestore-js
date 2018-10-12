@@ -11,6 +11,7 @@ test/
 
 
 ## Files
+.firebase
 .firebaserc
 .gitignore
 firebase.json

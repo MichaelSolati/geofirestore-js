@@ -49,6 +49,7 @@ You can find a full list of our demos and view the code for each of them in the 
   * [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
 * [`GeoFirestoreQuery`](#geofirestorequery)
   * [`center()`](#geofirestorequerycenter)
+  * [`query()`](#geofirestorequeryquery)
   * [`radius()`](#geofirestorequeryradius)
   * [`updateCriteria(newQueryCriteria)`](#geofirestorequeryupdatecriterianewquerycriteria)
   * [`on(eventType, callback)`](#geofirestorequeryoneventtype-callback)
@@ -187,6 +188,10 @@ The `queryCriteria` optionally may include the following keys:
   * Any field you wish to query on your original Document will be a sub object of the  `GeoFirestoreObj` and should be prefixed with `d.` in order to query it. So if I was to want to query on the count of a Document I would refer to it as `'d.count'`.
   * Firestore has [powerful querying syntax](https://firebase.google.com/docs/firestore/query-data/queries) and the `GeoFirestoreQuery`'s `QueryCriteria` provides a thin wrapper around it. This keeps you from having to learn two query syntax systems. If you know the [Firestore query API](https://firebase.google.com/docs/reference/js/firebase.firestore.Query) then you know how to query in GeoFirestore.
   * GeoFirestore queries locations on the `g` (geohash) field of a Document, In order to be able to query on an aditional field you must index your collection. For the aditional field remember that the field will be stored in the sub-object `d` and so must be indexed as [seen here](https://github.com/MichaelSolati/geofirestore/blob/dev/firestore.indexes.json#L3)
+  * Updating your `query` function WILL NOT filter our documents by triggering the `key_exited` event. I'd read over this [issue](https://github.com/MichaelSolati/geofirestore/issues/35) to better understand this specific situation as well as [the full answer here.](https://github.com/MichaelSolati/geofirestore/issues/35#issuecomment-423521341)
+  * The only query modifier that will work properly is the `where`s query modifier:
+    * `orderBy` and related modifiers (`startAt`, `startAfter`, `endBefore`, `endAt`) will not work in any way, and will never return anything. As per [Michael Bleigh from the Firebase Team](https://stackoverflow.com/users/226391/michael-bleigh), "Because Cloud Firestore [doesn't support ordering by a different field than the supplied inequality](https://firebase.google.com/docs/firestore/query-data/order-limit-data), you won't be able to sort by name directly from the query. Instead you'd need to sort client-side once you've fetched the data." ([source](https://stackoverflow.com/a/47541800/5076023)
+    * `limit` does not work because `geofirestore` wraps/scans hashes around the hash of your inputed center. That way if you're point is by the borderline of where a hash could be we don't miss areas right outside of the query. So if we're doing multiple queries in order to ensure that we have the full area covered then we will hit the `ref.limit` for each query (which will obvs be more than the initial `x` that you wanted).
 
 ```JavaScript
 const geoQuery = geoFirestore.query({
@@ -401,4 +406,4 @@ promise.then(function(result) {
 
 ## Contributing
 
-All code should pass tests, as well as be well documented. Please open PRs into the `dev` branch. [Please also see the Commit Message Guidelines](COMMITS.md) for how commit messages should be structured.
+All code should pass tests, as well as be well documented. Please open PRs into the `dev` branch. [Please also see the Commit Message Guidelines](CONTRIBUTING.md) for how commit messages should be structured.
