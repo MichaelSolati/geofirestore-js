@@ -15,30 +15,23 @@ export class GeoQuery {
 
   /**
    * @param _query The `Query` instance.
-   * @param geoQueryCriteria The center and radius of geo based queries.
+   * @param near The center and radius of geo based queries.
    */
   constructor(
     private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query,
-    geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria
+    near?: GeoFirestoreTypes.QueryCriteria
   ) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
     }
     this._isWeb = Object.prototype.toString
       .call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
-    if (geoQueryCriteria) {
+    if (near) {
       // Validate and save the query criteria
-      validateQueryCriteria(geoQueryCriteria);
-      this._center = geoQueryCriteria.center;
-      this._radius = geoQueryCriteria.radius;
+      validateQueryCriteria(near);
+      this._center = near.center;
+      this._radius = near.radius;
     }
-  }
-
-  /**
-   * Returns the location signifying the center of this query.
-   */
-  get center(): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
-    return this._center;
   }
 
   /**
@@ -46,16 +39,6 @@ export class GeoQuery {
    */
   get firestore(): GeoFirestore {
     return new GeoFirestore(this._query.firestore);
-  }
-
-  /**
-   * Returns the center and radius of geo based queries as a QueryCriteria object.
-   */
-  get geoQueryCriteria(): GeoFirestoreTypes.QueryCriteria {
-    return {
-      center: this._center,
-      radius: this._radius
-    };
   }
 
   /**
@@ -72,7 +55,7 @@ export class GeoQuery {
         const subscriptions: Array<() => void> = [];
         this._generateQuery().forEach((value: GeoFirestoreTypes.web.Query) => {
           const subscription = value.onSnapshot((snapshot) => {
-            if (onNext) { onNext(new GeoQuerySnapshot(snapshot, this.geoQueryCriteria)); }
+            if (onNext) { onNext(new GeoQuerySnapshot(snapshot, this._near)); }
           }, (error) => {
             if (onError) { onError(error); }
           });
@@ -83,65 +66,6 @@ export class GeoQuery {
         return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
       }
     };
-  }
-
-  /**
-   * Returns the radius of this query, in kilometers.
-   */
-  get radius(): number {
-    return this._radius;
-  }
-
-  /**
-   * Creates and returns a new GeoQuery that ends at the provided document (inclusive). The end position is relative to the order of the
-   * query. The document must contain all of the fields provided in the orderBy of this query.
-   *
-   * @param snapshot The snapshot of the document to end at.
-   * @return The created GeoQuery.
-   */
-  public endAt(snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): GeoQuery;
-
-  /**
-   * Creates and returns a new GeoQuery that ends at the provided fields relative to the order of the query. The order of the field values
-   * must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to end this query at, in order of the query's order by.
-   * @return The created GeoQuery.
-   */
-  public endAt(...fieldValues: any[]): GeoQuery;
-
-  public endAt(): GeoQuery {
-    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
-      return new GeoQuery(this._query.endAt(arguments[0]['_snapshot']), this.geoQueryCriteria);
-    }
-    return new GeoQuery(this._query.endAt(...Array.from(arguments)), this.geoQueryCriteria);
-  }
-
-  /**
-   * Creates and returns a new GeoQuery that ends before the provided document (exclusive). The end position is relative to the order of
-   * the query. The document must contain all of the fields provided in the orderBy of this query.
-   *
-   * @param snapshot The snapshot of the document to end before.
-   * @return The created GeoQuery.
-   */
-  public endBefore(
-    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
-  ): GeoQuery;
-
-  /**
-   * Creates and returns a new GeoQuery that ends before the provided fields relative to the order of the query. The order of the field
-   * values must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to end this query before, in order of the query's order by.
-   * @return The created GeoQuery.
-   */
-  public endBefore(...fieldValues: any[]): GeoQuery;
-
-  public endBefore(): GeoQuery {
-    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
-      return new GeoQuery(this._query.endBefore(arguments[0]['_snapshot']), this.geoQueryCriteria);
-    }
-    return new GeoQuery(this._query.endBefore(...Array.from(arguments)), this.geoQueryCriteria);
   }
 
   /**
@@ -157,7 +81,7 @@ export class GeoQuery {
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
-      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this.geoQueryCriteria));
+      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this._near));
     } else {
       const promise = this._isWeb ?
         (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
@@ -166,98 +90,20 @@ export class GeoQuery {
   }
 
   /**
-   * Creates and returns a new GeoQuery that's additionally limited to only return up to the specified number of documents.
+   * Creates and returns a new GeoQuery with the geoquery filter where `get` and `onSnapshot` will query around.
    *
-   * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the limit.
-   *
-   * @param limit The maximum number of items to return.
-   * @return The created GeoQuery.
-   */
-  public limit(limit: number): GeoQuery {
-    return new GeoQuery(this._query.limit(limit), this.geoQueryCriteria);
-  }
-
-  /**
-   * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of
-   * ascending.
-   *
-   * This function returns a new (immutable) instance of the Query (rather than modify the existing instance) to impose the order.
-   *
-   * @param fieldPath The field to sort by.
-   * @param directionStr Optional direction to sort by ('asc' or 'desc'). If not specified, order will be ascending.
-   * @return The created Query.
-   */
-  public orderBy(
-    fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
-    directionStr?: GeoFirestoreTypes.cloud.OrderByDirection | GeoFirestoreTypes.web.OrderByDirection
-  ): GeoQuery {
-    return new GeoQuery(this._query.orderBy(fieldPath, directionStr), this.geoQueryCriteria);
-  }
-
-  /**
-   * Creates and returns a new GeoQuery that starts after the provided document (exclusive). The starting position is relative to the order
-   * of the query. The document must contain all of the fields provided in the orderBy of this query.
-   *
-   * @param snapshot The snapshot of the document to start after.
-   * @return The created GeoQuery.
-   */
-  public startAfter(
-    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
-  ): GeoQuery;
-
-  /**
-   * Creates and returns a new GeoQuery that starts after the provided fields relative to the order of the query. The order of the field
-   * values must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to start this query after, in order of the query's order by.
-   * @return The created GeoQuery.
-   */
-  public startAfter(...fieldValues: any[]): GeoQuery;
-
-  public startAfter(): GeoQuery {
-    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
-      return new GeoQuery(this._query.startAfter(arguments[0]['_snapshot']), this.geoQueryCriteria);
-    }
-    return new GeoQuery(this._query.startAfter(...Array.from(arguments)), this.geoQueryCriteria);
-  }
-
-  /**
-   * Creates and returns a new GeoQuery that starts at the provided document (inclusive). The starting position is relative to the order of
-   * the query. The document must contain all of the fields provided in the orderBy of this query.
-   *
-   * @param snapshot The snapshot of the document to start after.
-   * @return The created GeoQuery.
-   */
-  public startAt(
-    snapshot: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot
-  ): GeoQuery;
-
-  /**
-   * Creates and returns a new GeoQuery that starts at the provided fields relative to the order of the query. The order of the field
-   * values must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to start this query at, in order of the query's order by.
-   * @return The created GeoQuery.
-   */
-  public startAt(...fieldValues: any[]): GeoQuery;
-
-  public startAt(): GeoQuery {
-    if (arguments.length === 1 && arguments[0] instanceof GeoDocumentSnapshot) {
-      return new GeoQuery(this._query.startAt(arguments[0]['_snapshot']), this.geoQueryCriteria);
-    }
-    return new GeoQuery(this._query.startAt(...Array.from(arguments)), this.geoQueryCriteria);
-  }
-
-  /**
-   * Updates the criteria for this query.
+   * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the filter.
    *
    * @param newQueryCriteria The criteria which specifies the query's center and radius.
+   * @return The created GeoQuery.
    */
-  public updateCriteria(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): void {
+  public near(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
     // Validate and save the new query criteria
     validateQueryCriteria(newGeoQueryCriteria);
     this._center = newGeoQueryCriteria.center || this._center;
     this._radius = newGeoQueryCriteria.radius || this._radius;
+
+    return new GeoQuery(this._query, this._near);
   }
 
   /**
@@ -273,10 +119,10 @@ export class GeoQuery {
    */
   public where(
     fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
-    opStr: GeoFirestoreTypes.cloud.WhereFilterOp | GeoFirestoreTypes.web.WhereFilterOp,
+    opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {
-    return new GeoQuery(this._query.where(fieldPath, opStr, value), this.geoQueryCriteria);
+    return new GeoQuery(this._query.where(fieldPath, opStr, value), this._near);
   }
 
   /**
@@ -296,6 +142,16 @@ export class GeoQuery {
       // Create the Firebase query
       return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as GeoFirestoreTypes.web.Query;
     });
+  }
+
+  /**
+   * Returns the center and radius of geo based queries as a QueryCriteria object.
+   */
+  private get _near(): GeoFirestoreTypes.QueryCriteria {
+    return {
+      center: this._center,
+      radius: this._radius
+    };
   }
 
   /**

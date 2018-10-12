@@ -102,7 +102,7 @@ export class GeoDocumentReference {
    */
   public set(
     data: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.cloud.SetOptions | GeoFirestoreTypes.web.SetOptions
+    options?: GeoFirestoreTypes.SetOptions
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
       encodeSetUpdateDocument(data, (options) ? options.customKey : null),

@@ -5,7 +5,7 @@ import '@types/node';
 export namespace GeoFirestoreTypes {
   export interface Document {
     g: string;
-    l: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint;
+    l: web.GeoPoint | cloud.GeoPoint;
     d: DocumentData;
   }
   export type DocumentData = { [field: string]: any } | undefined;
@@ -16,7 +16,7 @@ export namespace GeoFirestoreTypes {
     type: any;
   }
   export interface QueryCriteria {
-    center?: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+    center?: cloud.GeoPoint | web.GeoPoint;
     radius?: number;
   }
   export interface QueryDocumentSnapshot {
@@ -25,7 +25,13 @@ export namespace GeoFirestoreTypes {
     data: DocumentData | any;
     distance: number;
   }
-  export type UpdateData = { [field: string]: any } | undefined;
+  export interface SetOptions {
+    customKey?: string;
+    merge?: boolean;
+    mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
+  }
+  export type UpdateData = DocumentData;
+  export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
   export namespace web {
     export interface CollectionReference extends FirestoreTypes.CollectionReference { }
     export interface DocumentChange extends FirestoreTypes.DocumentChange { }
@@ -35,15 +41,10 @@ export namespace GeoFirestoreTypes {
     export interface FieldPath extends FirestoreTypes.FieldPath { }
     export interface GetOptions extends FirestoreTypes.GetOptions { }
     export interface GeoPoint extends FirestoreTypes.GeoPoint { }
-    export type OrderByDirection = FirestoreTypes.OrderByDirection;
     export interface Query extends FirestoreTypes.Query { }
     export interface QuerySnapshot extends FirestoreTypes.QuerySnapshot { }
     export interface QueryDocumentSnapshot extends FirestoreTypes.QueryDocumentSnapshot { }
-    export interface SetOptions extends FirestoreTypes.SetOptions {
-      customKey?: string;
-    }
     export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
-    export type WhereFilterOp = FirestoreTypes.WhereFilterOp;
     export interface WriteBatch extends FirestoreTypes.WriteBatch { }
   }
   export namespace cloud {
@@ -54,14 +55,9 @@ export namespace GeoFirestoreTypes {
     export interface Firestore extends FirebaseFirestore.Firestore { }
     export interface FieldPath extends FirebaseFirestore.FieldPath { }
     export interface GeoPoint extends FirebaseFirestore.GeoPoint { }
-    export type OrderByDirection = FirebaseFirestore.OrderByDirection;
     export interface Query extends FirebaseFirestore.Query { }
     export interface QuerySnapshot extends FirebaseFirestore.QuerySnapshot { }
     export interface QueryDocumentSnapshot extends FirebaseFirestore.QueryDocumentSnapshot { }
-    export interface SetOptions extends FirebaseFirestore.SetOptions {
-      customKey?: string;
-    }
-    export type WhereFilterOp = FirebaseFirestore.WhereFilterOp;
     export interface WriteBatch extends FirebaseFirestore.WriteBatch { }
   }
 }

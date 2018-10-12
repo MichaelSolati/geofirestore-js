@@ -30,7 +30,7 @@ export class GeoWriteBatch {
   public set(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.cloud.SetOptions | GeoFirestoreTypes.web.SetOptions
+    options?: GeoFirestoreTypes.SetOptions
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
