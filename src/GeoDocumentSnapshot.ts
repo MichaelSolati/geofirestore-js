@@ -47,10 +47,10 @@ export class GeoDocumentSnapshot {
    * override this by passing an options object if you're on web.
    *
    * @param options Available on web only. An options object to configure how data is retrieved from the snapshot (e.g. the desired
-   * behavior for server timestamps that have not yet been set to their final value).
+   * behavior for server timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return An Object containing all fields in the document or 'undefined' if the document doesn't exist.
    */
-  public data(options?: GeoFirestoreTypes.web.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
+  public data(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
     const d = (this._isWeb && options) ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(options) : this._snapshot.data();
     return (d) ? decodeGeoDocumentData(d as GeoFirestoreTypes.Document) : null;
   }
@@ -63,12 +63,12 @@ export class GeoDocumentSnapshot {
    *
    * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
    * @param options An options object to configure how the field is retrieved from the snapshot (e.g. the desired behavior for server
-   * timestamps that have not yet been set to their final value).
+   * timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return The data at the specified field location or undefined if no such field exists in the document.
    */
   public get(
     fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
-    options?: GeoFirestoreTypes.web.SnapshotOptions
+    options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
     const d = (this._isWeb && options) ?
       (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(fieldPath, options) : this._snapshot.get(fieldPath);

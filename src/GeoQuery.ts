@@ -1,7 +1,7 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
 import { GeoFirestore } from './GeoFirestore';
 import { GeoQuerySnapshot } from './GeoQuerySnapshot';
+import { GeoJoinerOnSnapshot } from './GeoJoinerOnSnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
 /**
@@ -52,16 +52,7 @@ export class GeoQuery {
   get onSnapshot(): (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => void {
     return (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => {
       if (this._center && this._radius) {
-        const subscriptions: Array<() => void> = [];
-        this._generateQuery().forEach((value: GeoFirestoreTypes.web.Query) => {
-          const subscription = value.onSnapshot((snapshot) => {
-            if (onNext) { onNext(new GeoQuerySnapshot(snapshot, this._near)); }
-          }, (error) => {
-            if (onError) { onError(error); }
-          });
-          subscriptions.push(subscription);
-        });
-        return () => subscriptions.forEach(subscription => subscription());
+        return new GeoJoinerOnSnapshot(this._generateQuery(), this._near, onNext, onError).unsubscribe();
       } else {
         return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
       }
@@ -81,7 +72,7 @@ export class GeoQuery {
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
-      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this._near));
+      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this._near.center));
     } else {
       const promise = this._isWeb ?
         (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
@@ -161,12 +152,12 @@ export class GeoQuery {
    * @return A single QuerySnapshot from an array of QuerySnapshots.
    */
   private _joinQueries(results: GeoFirestoreTypes.web.QuerySnapshot[]): GeoFirestoreTypes.web.QuerySnapshot {
-    const docs = [];
-    const docChanges = [];
+    let docs = [];
+    let docChanges = [];
 
     results.forEach((value: GeoFirestoreTypes.web.QuerySnapshot) => {
-      docs.concat(value.docs);
-      docChanges.concat(value.docChanges());
+      docs = docs.concat(value.docs);
+      docChanges = docChanges.concat(value.docChanges());
     });
 
     return {

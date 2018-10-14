@@ -2,12 +2,20 @@ import * as chai from 'chai';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
-import { GeoFirestoreTypes } from '../src/GeoFirestoreTypes';
+import { GeoCollectionReference, GeoFirestore, GeoFirestoreTypes } from '../src';
 
 /*************/
 /*  GLOBALS  */
 /*************/
 const expect = chai.expect;
+// Define dummy data for database
+export const dummyData = [
+  { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(0.2, 0.3), count: 1 },
+  { key: 'loc2', coordinates: new firebase.firestore.GeoPoint(5, -0.7), count: 2 },
+  { key: 'loc3', coordinates: new firebase.firestore.GeoPoint(1.6, -15), count: 3 },
+  { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(.5, .5), count: 1 },
+  { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(6.7, 5.5), count: 2 }
+];
 // Define examples of valid and invalid parameters
 export const invalidFirestores = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
 export const invalidGeoFirestoreDocuments = [
@@ -54,8 +62,9 @@ export const validQueryCriterias: GeoFirestoreTypes.QueryCriteria[] = [
   { center: new firebase.firestore.GeoPoint(1, 2), radius: 2 }, { radius: 1000 }, { radius: 1.78 }, { radius: 0 }
 ];
 
-// Create global constiables to hold the Firebase and GeoFire constiables
+// Create global constiables to hold the Firebasestore and GeoFirestore constiables
 export let firestoreRef: firebase.firestore.Firestore;
+export let collectionRef: firebase.firestore.CollectionReference;
 
 // Initialize Firebase
 firebase.initializeApp({
@@ -69,23 +78,23 @@ firebase.firestore().settings({ timestampsInSnapshots: true });
 /*  HELPER FUNCTIONS  */
 /**********************/
 /* Helper functions which runs before each Jasmine test has started */
-export function beforeEachHelper(done) {
+export function beforeEachHelper(done): void {
   // Create a new Firebase database ref at a random node
   firestoreRef = firebase.firestore();
-
+  collectionRef = firestoreRef.collection('tests');
   done();
 }
 
 /* Helper functions which runs after each Jasmine test has completed */
-export function afterEachHelper(done) {
-  deleteCollection(firestoreRef, testCollectionName, 50).then(() => {
+export function afterEachHelper(done): void {
+  deleteCollection().then(() => {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
   }).then(done);
 }
 
 /* Returns a promise which is fulfilled after the inputted number of milliseconds pass */
-export function wait(milliseconds) {
+export function wait(milliseconds): Promise<void> {
   return new Promise((resolve) => {
     const timeout = window.setTimeout(() => {
       window.clearTimeout(timeout);
@@ -95,23 +104,18 @@ export function wait(milliseconds) {
 }
 
 /* Used to purge Firestore collection. Used by afterEachHelperFirestore. */
-function deleteCollection(db: firebase.firestore.Firestore, collectionPath: string, batchSize: number) {
-  const collectionRef = db.collection(collectionPath);
-  const query: firebase.firestore.Query = collectionRef.limit(batchSize);
-
-  return new Promise((resolve, reject) => deleteQueryBatch(db, query, batchSize, resolve, reject));
+function deleteCollection(): Promise<any> {
+  return new Promise((resolve, reject) => deleteQueryBatch(collectionRef.limit(500), resolve, reject));
 }
 
 /* Actually purges Firestore collection recursively through batch function. */
-function deleteQueryBatch(
-  db: firebase.firestore.Firestore, query: firebase.firestore.Query, batchSize: number, resolve: Function, reject: Function
-) {
+function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, reject: Function): void {
   query.get().then((snapshot) => {
     // When there are no documents left, we are done
     if (snapshot.size === 0) { return 0; }
 
     // Delete documents in a batch
-    const batch = db.batch();
+    const batch = firestoreRef.batch();
     snapshot.docs.forEach((doc) => batch.delete(doc.ref));
 
     return batch.commit().then(() => snapshot.size);
@@ -120,6 +124,17 @@ function deleteQueryBatch(
       resolve();
       return;
     }
-    process.nextTick(() => deleteQueryBatch(db, query, batchSize, resolve, reject));
+    process.nextTick(() => deleteQueryBatch(query, resolve, reject));
   }).catch(err => reject(err));
+}
+
+export function stubDatabase(): Promise<any> {
+  const geofirestore = new GeoFirestore(firestoreRef);
+  const batch = geofirestore.batch();
+  const collection = new GeoCollectionReference(collectionRef);
+  dummyData.forEach(item => {
+    const insert = collection.doc(item.key);
+    batch.set(insert, item);
+  });
+  return batch.commit();
 }

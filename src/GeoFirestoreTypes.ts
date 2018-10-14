@@ -30,6 +30,7 @@ export namespace GeoFirestoreTypes {
     merge?: boolean;
     mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
   }
+  export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
   export type UpdateData = DocumentData;
   export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
   export namespace web {
@@ -44,7 +45,6 @@ export namespace GeoFirestoreTypes {
     export interface Query extends FirestoreTypes.Query { }
     export interface QuerySnapshot extends FirestoreTypes.QuerySnapshot { }
     export interface QueryDocumentSnapshot extends FirestoreTypes.QueryDocumentSnapshot { }
-    export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
     export interface WriteBatch extends FirestoreTypes.WriteBatch { }
   }
   export namespace cloud {

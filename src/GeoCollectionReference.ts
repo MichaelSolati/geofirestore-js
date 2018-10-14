@@ -69,6 +69,6 @@ export class GeoCollectionReference extends GeoQuery {
    * @return The `GeoDocumentReference` instance.
    */
   public doc(documentPath?: string): GeoDocumentReference {
-    return new GeoDocumentReference(this._collection.doc(documentPath));
+    return (documentPath) ? new GeoDocumentReference(this._collection.doc(documentPath)) : new GeoDocumentReference(this._collection.doc());
   }
 }

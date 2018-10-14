@@ -1,5 +1,5 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { generateGeoQueryDocumentSnapshot, validateQueryCriteria } from './utils';
+import { generateGeoQueryDocumentSnapshot, validateLocation } from './utils';
 
 /**
  * A `GeoQuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects
@@ -10,8 +10,6 @@ import { generateGeoQueryDocumentSnapshot, validateQueryCriteria } from './utils
  */
 export class GeoQuerySnapshot {
   private _docs: GeoFirestoreTypes.QueryDocumentSnapshot[];
-  private _center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
-  private _radius: number;
 
   /**
    * @param _querySnapshot The `QuerySnapshot` instance.
@@ -19,27 +17,15 @@ export class GeoQuerySnapshot {
    */
   constructor(
     private _querySnapshot: GeoFirestoreTypes.web.QuerySnapshot | GeoFirestoreTypes.cloud.QuerySnapshot,
-    geoQueryCriteria?: GeoFirestoreTypes.QueryCriteria
+    private _center?: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint
   ) {
-    if (geoQueryCriteria) {
-      // Validate and save the query criteria
-      validateQueryCriteria(geoQueryCriteria);
-      this._center = geoQueryCriteria.center;
-      this._radius = geoQueryCriteria.radius;
+    if (_center) {
+      // Validate the _center coordinates
+      validateLocation(_center);
     }
 
-    this._docs = (this._querySnapshot as GeoFirestoreTypes.web.QuerySnapshot).docs
-    .reduce((filtered: GeoFirestoreTypes.QueryDocumentSnapshot[], snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot) => {
-      const documentSnapshot = generateGeoQueryDocumentSnapshot(snapshot, this._center);
-      if (this._center && this._radius) {
-        if (this._radius >= documentSnapshot.distance) {
-          filtered.push(documentSnapshot);
-        }
-      } else {
-        filtered.push(documentSnapshot);
-      }
-      return filtered;
-    }, []);
+    this._docs = (_querySnapshot as GeoFirestoreTypes.web.QuerySnapshot).docs
+      .map((snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot) => generateGeoQueryDocumentSnapshot(snapshot, _center));
   }
 
   /** An array of all the documents in the GeoQuerySnapshot. */
@@ -66,22 +52,14 @@ export class GeoQuerySnapshot {
    */
   public docChanges(): GeoFirestoreTypes.DocumentChange[] {
     return (this._querySnapshot.docChanges() as GeoFirestoreTypes.web.DocumentChange[])
-      .reduce((filtered: GeoFirestoreTypes.DocumentChange[], change: GeoFirestoreTypes.web.DocumentChange) => {
-        const documentChange = {
+      .map((change: GeoFirestoreTypes.web.DocumentChange) => {
+        return {
           doc: generateGeoQueryDocumentSnapshot(change.doc, this._center),
           newIndex: change.newIndex,
           oldIndex: change.oldIndex,
           type: change.type
         };
-        if (this._center && this._radius) {
-          if (this._radius >= documentChange.doc.distance) {
-            filtered.push(documentChange);
-          }
-        } else {
-          filtered.push(documentChange);
-        }
-        return filtered;
-      }, []);
+      });
   }
 
   /**

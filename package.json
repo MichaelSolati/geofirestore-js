@@ -20,13 +20,13 @@
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
   "author": "Michael Solati mkslt04@gmail.com",
-  "homepage": "https://github.com/MichaelSolati/geofirestore/",
+  "homepage": "https://github.com/geofirestore/geofirestore-js/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MichaelSolati/geofirestore.git"
+    "url": "https://github.com/geofirestore/geofirestore-js.git"
   },
   "bugs": {
-    "url": "https://github.com/MichaelSolati/geofirestore/issues"
+    "url": "https://github.com/geofirestore/geofirestore-js/issues"
   },
   "readme": "README.md",
   "license": "MIT",
