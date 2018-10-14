@@ -28,7 +28,7 @@ export class GeoJoinerOnSnapshot {
     private _queries: GeoFirestoreTypes.web.Query[], private _near: GeoFirestoreTypes.QueryCriteria,
     private _onNext: (snapshot: GeoQuerySnapshot) => void, private _onError?: (error: Error) => void
   ) {
-    validateQueryCriteria(this._near);
+    validateQueryCriteria(_near);
 
     this._queriesResolved = (new Array(_queries.length)).fill(0);
 

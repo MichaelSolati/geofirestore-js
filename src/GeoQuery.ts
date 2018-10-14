@@ -1,7 +1,8 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoFirestore } from './GeoFirestore';
-import { GeoQuerySnapshot } from './GeoQuerySnapshot';
+import { GeoJoinerGet } from './GeoJoinerGet';
 import { GeoJoinerOnSnapshot } from './GeoJoinerOnSnapshot';
+import { GeoQuerySnapshot } from './GeoQuerySnapshot';
 import { validateQueryCriteria, geohashQueries } from './utils';
 
 /**
@@ -72,7 +73,7 @@ export class GeoQuery {
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
-      return Promise.all(queries).then(value => new GeoQuerySnapshot(this._joinQueries(value), this._near.center));
+      return Promise.all(queries).then(value => new GeoJoinerGet(value, this._near).getGeoQuerySnapshot());
     } else {
       const promise = this._isWeb ?
         (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
