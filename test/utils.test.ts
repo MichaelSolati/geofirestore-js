@@ -4,9 +4,9 @@ import 'firebase/firestore';
 
 import {
   boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData, degreesToRadians,
-  encodeGeohash, encodeGeoDocument, encodeSetUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot, geohashQueries,
-  GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees, toGeoPoint,
-  validateGeoDocument, validateGeohash, validateLocation, validateQueryCriteria, wrapLongitude
+  encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot,
+  geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees,
+  toGeoPoint, validateGeoDocument, validateGeohash, validateLocation, validateQueryCriteria, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeoFirestoreDocuments, invalidGeohashes, invalidLocations, invalidQueryCriterias, validGeoFirestoreDocuments, validGeohashes,

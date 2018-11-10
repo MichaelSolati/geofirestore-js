@@ -1,5 +1,5 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetUpdateDocument } from './utils';
+import { encodeSetDocument, encodeUpdateDocument } from './utils';
 import { GeoDocumentReference } from './GeoDocumentReference';
 
 /**
@@ -36,7 +36,7 @@ export class GeoWriteBatch {
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
     (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).set(
       ref,
-      encodeSetUpdateDocument(data, (options) ? options.customKey : null),
+      encodeSetDocument(data, (options) ? options.customKey : null),
       options
     );
     return this;
@@ -54,12 +54,12 @@ export class GeoWriteBatch {
    */
   public update(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
-    data: GeoFirestoreTypes.DocumentData,
+    data: GeoFirestoreTypes.UpdateData,
     customKey?: string
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).update(ref, encodeSetUpdateDocument(data, customKey));
+    (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).update(ref, encodeUpdateDocument(data, customKey));
     return this;
   }
 

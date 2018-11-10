@@ -31,7 +31,7 @@ export namespace GeoFirestoreTypes {
     mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
   }
   export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
-  export type UpdateData = DocumentData;
+  export interface UpdateData { [fieldPath: string]: any; }
   export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
   export namespace web {
     export interface CollectionReference extends FirestoreTypes.CollectionReference { }

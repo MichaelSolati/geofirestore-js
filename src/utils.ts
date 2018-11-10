@@ -233,13 +233,13 @@ export function encodeGeoDocument(
 }
 
 /**
- * Encodes a Document used by GeoWriteBatch as a GeoDocument.
+ * Encodes a Document used by GeoWriteBatch.set as a GeoDocument.
  *
- * @param data The document being set or updated.
+ * @param data The document being set.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @return The document encoded as GeoDocument object.
  */
-export function encodeSetUpdateDocument(data: GeoFirestoreTypes.DocumentData, customKey?: string): GeoFirestoreTypes.Document {
+export function encodeSetDocument(data: GeoFirestoreTypes.DocumentData, customKey?: string): GeoFirestoreTypes.Document {
   if (Object.prototype.toString.call(data) === '[object Object]') {
     const unparsed: GeoFirestoreTypes.DocumentData = ('d' in data) ? data.d : data;
     const locationKey: string = findCoordinatesKey(unparsed, customKey, true);
@@ -249,6 +249,30 @@ export function encodeSetUpdateDocument(data: GeoFirestoreTypes.DocumentData, cu
       return encodeGeoDocument(location, geohash, unparsed);
     }
     return { d: unparsed } as GeoFirestoreTypes.Document;
+  } else {
+    throw new Error('document must be an object');
+  }
+}
+
+/**
+ * Encodes a Document used by GeoWriteBatch.update as a GeoDocument.
+ *
+ * @param data The document being updated.
+ * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+ * @return The document encoded as GeoDocument object.
+ */
+export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customKey?: string): GeoFirestoreTypes.UpdateData {
+  if (Object.prototype.toString.call(data) === '[object Object]') {
+    const result = {};
+    const locationKey: string = findCoordinatesKey(data, customKey, true);
+    if (locationKey) {
+      result['l'] = data[locationKey];
+      result['g'] = encodeGeohash(result['l']);
+    }
+    Object.getOwnPropertyNames(data).forEach((prop: string) => {
+      result['d.' + prop] = data[prop];
+    });
+    return result as GeoFirestoreTypes.UpdateData;
   } else {
     throw new Error('document must be an object');
   }
