@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
 import { GeoFirestore } from '../src/GeoFirestore';
-import { afterEachHelper, beforeEachHelper, firestoreRef, invalidFirestores, testCollectionName } from './common';
+import { afterEachHelper, beforeEachHelper, firestore, invalidFirestores, testCollectionName } from './common';
 
 const expect = chai.expect;
 
@@ -24,21 +24,21 @@ describe('GeoFirestore Tests:', () => {
     });
 
     it('Constructor does not throw errors given valid Firestore reference', () => {
-      expect(() => new GeoFirestore(firestoreRef)).not.to.throw();
+      expect(() => new GeoFirestore(firestore)).not.to.throw();
     });
   });
 
   describe('batch():', () => {
     it('batch() returns a new GeoWriteBatch based on a Firestore WriteBatch', () => {
-      expect((new GeoFirestore(firestoreRef)).batch()['_writeBatch']).to.deep.equal(firestoreRef.batch());
+      expect((new GeoFirestore(firestore)).batch()['_writeBatch']).to.deep.equal(firestore.batch());
     });
   });
 
   describe('collection():', () => {
     it('collection() returns a new GeoCollectionReference based on a Firestore CollectionReference', () => {
       expect(
-        (new GeoFirestore(firestoreRef)).collection(testCollectionName)['_collection']
-      ).to.deep.equal(firestoreRef.collection(testCollectionName));
+        (new GeoFirestore(firestore)).collection(testCollectionName)['_collection']
+      ).to.deep.equal(firestore.collection(testCollectionName));
     });
   });
 });

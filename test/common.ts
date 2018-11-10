@@ -63,8 +63,10 @@ export const validQueryCriterias: GeoFirestoreTypes.QueryCriteria[] = [
 ];
 
 // Create global constiables to hold the Firebasestore and GeoFirestore constiables
-export let firestoreRef: firebase.firestore.Firestore;
-export let collectionRef: firebase.firestore.CollectionReference;
+export let firestore: firebase.firestore.Firestore;
+export let collection: firebase.firestore.CollectionReference;
+export let geofirestore: GeoFirestore;
+export let geocollection: GeoCollectionReference;
 
 // Initialize Firebase
 firebase.initializeApp({
@@ -80,8 +82,10 @@ firebase.firestore().settings({ timestampsInSnapshots: true });
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done): void {
   // Create a new Firebase database ref at a random node
-  firestoreRef = firebase.firestore();
-  collectionRef = firestoreRef.collection('tests');
+  firestore = firebase.firestore();
+  collection = firestore.collection(testCollectionName);
+  geofirestore = new GeoFirestore(firestore);
+  geocollection = new GeoCollectionReference(collection);
   done();
 }
 
@@ -91,6 +95,47 @@ export function afterEachHelper(done): void {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
   }).then(done);
+}
+
+/* Keeps track of all the current asynchronous tasks being run */
+export class Checklist {
+  constructor(private _eventsToComplete: string[], private _expect: Function, private _done: Function) { }
+  /* Removes a task from the events list */
+  public x(item: string): void {
+    const index = this._eventsToComplete.indexOf(item);
+    if (index === -1) {
+      this._expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false; // tslint:disable-line
+    }
+    else {
+      this._eventsToComplete.splice(index, 1);
+      if (this.isEmpty()) {
+        this._done();
+      }
+    }
+  }
+
+  public remaining(): string[] {
+    return [...this._eventsToComplete];
+  }
+
+  /* Returns the length of the events list */
+  public length(): number {
+    return this._eventsToComplete.length;
+  }
+
+  /* Returns true if the events list is empty */
+  public isEmpty(): boolean {
+    return (this.length() === 0);
+  }
+}
+
+/* Common error handler for use in .catch() statements of promises. This will
+ * cause the test to fail, outputting the details of the exception. Otherwise, tests
+ * tend to fail due to the Jasmine ASYNC timeout and provide no details of what actually
+ * went wrong.
+ **/
+export function failTestOnCaughtError(error) {
+  expect(error).to.throw();
 }
 
 /* Returns a promise which is fulfilled after the inputted number of milliseconds pass */
@@ -105,7 +150,7 @@ export function wait(milliseconds): Promise<void> {
 
 /* Used to purge Firestore collection. Used by afterEachHelperFirestore. */
 function deleteCollection(): Promise<any> {
-  return new Promise((resolve, reject) => deleteQueryBatch(collectionRef.limit(500), resolve, reject));
+  return new Promise((resolve, reject) => deleteQueryBatch(collection.limit(500), resolve, reject));
 }
 
 /* Actually purges Firestore collection recursively through batch function. */
@@ -115,7 +160,7 @@ function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, re
     if (snapshot.size === 0) { return 0; }
 
     // Delete documents in a batch
-    const batch = firestoreRef.batch();
+    const batch = firestore.batch();
     snapshot.docs.forEach((doc) => batch.delete(doc.ref));
 
     return batch.commit().then(() => snapshot.size);
@@ -129,11 +174,11 @@ function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, re
 }
 
 export function stubDatabase(): Promise<any> {
-  const geofirestore = new GeoFirestore(firestoreRef);
+  const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
-  const collection = new GeoCollectionReference(collectionRef);
+  const geocollection = new GeoCollectionReference(collection);
   dummyData.forEach(item => {
-    const insert = collection.doc(item.key);
+    const insert = geocollection.doc(item.key);
     batch.set(insert, item);
   });
   return batch.commit();
