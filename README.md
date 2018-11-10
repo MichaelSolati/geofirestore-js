@@ -1,6 +1,6 @@
 # geofirestore
 
-[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/MichaelSolati/geofirestore.svg?branch=master)](https://travis-ci.org/MichaelSolati/geofirestore) [![Coverage Status](https://coveralls.io/repos/github/MichaelSolati/geofirestore/badge.svg?branch=master)](https://coveralls.io/github/MichaelSolati/geofirestore?branch=master)
+[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/geofirestore/geofirestore-js.svg?branch=master)](https://travis-ci.org/geofirestore/geofirestore-js) [![Coverage Status](https://coveralls.io/repos/github/geofirestore/geofirestore-js/badge.svg?branch=master)](https://coveralls.io/github/geofirestore/geofirestore-js?branch=master)
 
 GeoFirestore is an open-source library that allows you to store and query a set of keys based on their geographic location. At its heart, GeoFirestore simply stores locations with string keys. Its main benefit, however, is the possibility of retrieving only those keys within a given geographic area - all in realtime.
 
