@@ -1,25 +1,28 @@
+/* tslint:disable:no-import-side-effect no-namespace */
 import * as FirestoreWeb from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
 import '@types/node';
 export namespace firestore {
-  export interface CollectionReference extends FirestoreWeb.CollectionReference { }
-  export interface DocumentChange extends FirestoreWeb.DocumentChange { }
-  export interface DocumentReference extends FirestoreWeb.DocumentReference { }
-  export interface DocumentSnapshot extends FirestoreWeb.DocumentSnapshot { }
-  export interface GetOptions extends FirestoreWeb.GetOptions { }
-  export interface GeoPoint extends FirestoreWeb.GeoPoint { }
-  export interface Query extends FirestoreWeb.Query { }
-  export interface QuerySnapshot extends FirestoreWeb.QuerySnapshot { }
-  export interface WriteBatch extends FirestoreWeb.WriteBatch { }
+  export namespace web {
+    export type CollectionReference = FirestoreWeb.CollectionReference;
+    export type DocumentChange = FirestoreWeb.DocumentChange;
+    export type DocumentReference = FirestoreWeb.DocumentReference;
+    export type DocumentSnapshot = FirestoreWeb.DocumentSnapshot;
+    export type GetOptions = FirestoreWeb.GetOptions;
+    export type GeoPoint = FirestoreWeb.GeoPoint;
+    export type Query = FirestoreWeb.Query;
+    export type QuerySnapshot = FirestoreWeb.QuerySnapshot;
+    export type WriteBatch = FirestoreWeb.WriteBatch;
+  }
   export namespace cloud {
-    export interface CollectionReference extends FirebaseFirestore.CollectionReference { }
-    export interface DocumentChange extends FirebaseFirestore.DocumentChange { }
-    export interface DocumentReference extends FirebaseFirestore.DocumentReference { }
-    export interface DocumentSnapshot extends FirebaseFirestore.DocumentSnapshot { }
-    export interface GeoPoint extends FirebaseFirestore.GeoPoint { }
-    export interface Query extends FirebaseFirestore.Query { }
-    export interface QuerySnapshot extends FirebaseFirestore.QuerySnapshot { }
-    export interface WriteBatch extends FirebaseFirestore.WriteBatch { }
-    export interface WriteResult extends FirebaseFirestore.WriteResult { }
+    export type CollectionReference = FirebaseFirestore.CollectionReference;
+    export type DocumentChange = FirebaseFirestore.DocumentChange;
+    export type DocumentReference = FirebaseFirestore.DocumentReference;
+    export type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
+    export type GeoPoint = FirebaseFirestore.GeoPoint;
+    export type Query = FirebaseFirestore.Query;
+    export type QuerySnapshot = FirebaseFirestore.QuerySnapshot;
+    export type WriteBatch = FirebaseFirestore.WriteBatch;
+    export type WriteResult = FirebaseFirestore.WriteResult;
   }
 }

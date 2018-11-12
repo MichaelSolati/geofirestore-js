@@ -5,5 +5,5 @@ export interface LocationTracked {
   document: any;
   geohash: string;
   isInQuery: boolean;
-  location: firestore.GeoPoint | firestore.cloud.GeoPoint;
+  location: firestore.web.GeoPoint | firestore.cloud.GeoPoint;
 }

@@ -11,12 +11,12 @@ export class GeoFirestore {
   /**
    * @param collectionRef A Firestore Collection reference where the GeoFirestore data will be stored.
    */
-  constructor(private _collectionRef: firestore.CollectionReference | firestore.cloud.CollectionReference) {
+  constructor(private _collectionRef: firestore.web.CollectionReference | firestore.cloud.CollectionReference) {
     if (Object.prototype.toString.call(this._collectionRef) !== '[object Object]') {
       throw new Error('collectionRef must be an instance of a Firestore Collection');
     }
 
-    this._isWeb = Object.prototype.toString.call((this._collectionRef as firestore.CollectionReference).firestore.enablePersistence) === '[object Function]';
+    this._isWeb = Object.prototype.toString.call((this._collectionRef as firestore.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
   }
 
   /********************/
@@ -29,10 +29,10 @@ export class GeoFirestore {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  public add(document: any, customKey?: string): Promise<firestore.DocumentReference | firestore.cloud.DocumentReference> {
+  public add(document: any, customKey?: string): Promise<firestore.web.DocumentReference | firestore.cloud.DocumentReference> {
     if (Object.prototype.toString.call(document) === '[object Object]') {
       const locationKey: string = findCoordinatesKey(document, customKey);
-      const location: firestore.GeoPoint | firestore.cloud.GeoPoint = document[locationKey];
+      const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = document[locationKey];
       const geohash: string = encodeGeohash(location);
       return this._collectionRef.add(encodeGeoFireObject(location, geohash, document));
     } else {
@@ -49,12 +49,12 @@ export class GeoFirestore {
    * @param options Describes whether we should get from server or cache.
    * @returns A promise that is fulfilled with the document of the given key.
    */
-  public get($key: string, options: firestore.GetOptions = { source: 'default' }): Promise<any> {
+  public get($key: string, options: firestore.web.GetOptions = { source: 'default' }): Promise<any> {
     validateKey($key);
-    const documentReference: firestore.DocumentReference = this._collectionRef.doc($key) as firestore.DocumentReference;
-    const promise: Promise<firestore.DocumentSnapshot> = this._isWeb ? documentReference.get(options) : documentReference.get();
+    const documentReference: firestore.web.DocumentReference = this._collectionRef.doc($key) as firestore.web.DocumentReference;
+    const promise: Promise<firestore.web.DocumentSnapshot> = this._isWeb ? documentReference.get(options) : documentReference.get();
 
-    return promise.then((documentSnapshot: firestore.DocumentSnapshot) => {
+    return promise.then((documentSnapshot: firestore.web.DocumentSnapshot) => {
       if (!documentSnapshot.exists) {
         return null;
       } else {
@@ -69,7 +69,7 @@ export class GeoFirestore {
    *
    * @returns The Firestore Collection used to create this GeoFirestore instance.
    */
-  public ref(): firestore.CollectionReference | firestore.cloud.CollectionReference {
+  public ref(): firestore.web.CollectionReference | firestore.cloud.CollectionReference {
     return this._collectionRef;
   }
 
@@ -109,7 +109,7 @@ export class GeoFirestore {
         return this._collectionRef.doc(keyOrDocuments).delete();
       } else {
         const locationKey: string = findCoordinatesKey(document, customKey);
-        const location: firestore.GeoPoint | firestore.cloud.GeoPoint = document[locationKey];
+        const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = document[locationKey];
         const geohash: string = encodeGeohash(location);
         return this._collectionRef.doc(keyOrDocuments).set(encodeGeoFireObject(location, geohash, document));
       }
@@ -121,16 +121,16 @@ export class GeoFirestore {
       throw new Error('keyOrDocuments must be a string or a mapping of key - document pairs.');
     }
 
-    const batch: firestore.WriteBatch = this._collectionRef.firestore.batch() as firestore.WriteBatch;
+    const batch: firestore.web.WriteBatch = this._collectionRef.firestore.batch() as firestore.web.WriteBatch;
     Object.keys(keyOrDocuments).forEach((key) => {
       validateKey(key);
-      const ref: firestore.DocumentReference = this._collectionRef.doc(key) as firestore.DocumentReference;
+      const ref: firestore.web.DocumentReference = this._collectionRef.doc(key) as firestore.web.DocumentReference;
       const documentToUpdate: any = keyOrDocuments[key];
       if (!documentToUpdate) {
         batch.delete(ref);
       } else {
         const locationKey = findCoordinatesKey(documentToUpdate, customKey);
-        const location: firestore.GeoPoint | firestore.cloud.GeoPoint = documentToUpdate[locationKey];
+        const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = documentToUpdate[locationKey];
         const geohash: string = encodeGeohash(location);
         batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate), { merge: true });
       }
@@ -160,7 +160,7 @@ export class GeoFirestore {
    * @param location2 The GeoPoint of the second location.
    * @returns The distance, in kilometers, between the inputted locations.
    */
-  public static distance(location1: firestore.GeoPoint | firestore.cloud.GeoPoint, location2: firestore.GeoPoint | firestore.cloud.GeoPoint): number {
+  public static distance(location1: firestore.web.GeoPoint | firestore.cloud.GeoPoint, location2: firestore.web.GeoPoint | firestore.cloud.GeoPoint): number {
     validateLocation(location1);
     validateLocation(location2);
 

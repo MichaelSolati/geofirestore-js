@@ -46,15 +46,16 @@
     "README.md"
   ],
   "dependencies": {
+    "@firebase/firestore-types": "0.x.x",
     "@google-cloud/firestore": "0.x.x",
-    "@types/node": "x.x.x",
-    "firebase": "5.x.x"
+    "@types/node": "x.x.x"
   },
   "devDependencies": {
     "@types/chai": "^4.1.5",
     "@types/mocha": "^5.2.5",
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
+    "firebase": "5.x.x",
     "firebase-tools": "^4.2.1",
     "generate-changelog": "^1.7.1",
     "jsdom": "^12.0.0",
