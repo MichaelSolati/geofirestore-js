@@ -47,31 +47,32 @@
     "README.md"
   ],
   "dependencies": {
+    "@firebase/firestore-types": "0.x.x",
     "@google-cloud/firestore": "0.x.x",
-    "@types/node": "x.x.x",
-    "firebase": "5.x.x"
+    "@types/node": "x.x.x"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.6",
+    "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
-    "firebase-tools": "^4.2.1",
+    "firebase": "5.x.x",
+    "firebase-tools": "^6.0.1",
     "generate-changelog": "^1.7.1",
-    "jsdom": "^12.1.0",
+    "jsdom": "^13.0.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.2.0",
-    "nyc": "^13.0.1",
-    "rollup": "^0.66.4",
-    "rollup-plugin-commonjs": "^9.1.8",
+    "nyc": "^13.1.0",
+    "rollup": "^0.67.1",
+    "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-typescript2": "^0.17.1",
+    "rollup-plugin-typescript2": "^0.17.2",
     "rollup-plugin-uglify": "^6.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
-    "typedoc": "^0.12.0",
-    "typescript": "^3.1.1"
+    "typedoc": "^0.13.0",
+    "typescript": "3.x.x"
   },
   "nyc": {
     "extension": [

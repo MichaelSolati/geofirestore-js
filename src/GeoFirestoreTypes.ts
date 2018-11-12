@@ -1,3 +1,4 @@
+/* tslint:disable:no-import-side-effect no-namespace */
 import * as FirestoreTypes from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
 import '@types/node';
@@ -30,34 +31,34 @@ export namespace GeoFirestoreTypes {
     merge?: boolean;
     mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
   }
-  export interface SnapshotOptions extends FirestoreTypes.SnapshotOptions { }
+  export type SnapshotOptions = FirestoreTypes.SnapshotOptions;
   export interface UpdateData { [fieldPath: string]: any; }
   export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
   export namespace web {
-    export interface CollectionReference extends FirestoreTypes.CollectionReference { }
-    export interface DocumentChange extends FirestoreTypes.DocumentChange { }
-    export interface DocumentReference extends FirestoreTypes.DocumentReference { }
-    export interface DocumentSnapshot extends FirestoreTypes.DocumentSnapshot { }
-    export interface Firestore extends FirestoreTypes.FirebaseFirestore { }
-    export interface FieldPath extends FirestoreTypes.FieldPath { }
-    export interface GetOptions extends FirestoreTypes.GetOptions { }
-    export interface GeoPoint extends FirestoreTypes.GeoPoint { }
-    export interface Query extends FirestoreTypes.Query { }
-    export interface QuerySnapshot extends FirestoreTypes.QuerySnapshot { }
-    export interface QueryDocumentSnapshot extends FirestoreTypes.QueryDocumentSnapshot { }
-    export interface WriteBatch extends FirestoreTypes.WriteBatch { }
+    export type CollectionReference = FirestoreTypes.CollectionReference;
+    export type DocumentChange = FirestoreTypes.DocumentChange;
+    export type DocumentReference = FirestoreTypes.DocumentReference;
+    export type DocumentSnapshot = FirestoreTypes.DocumentSnapshot;
+    export type Firestore = FirestoreTypes.FirebaseFirestore;
+    export type FieldPath = FirestoreTypes.FieldPath;
+    export type GetOptions = FirestoreTypes.GetOptions;
+    export type GeoPoint = FirestoreTypes.GeoPoint;
+    export type Query = FirestoreTypes.Query;
+    export type QuerySnapshot = FirestoreTypes.QuerySnapshot;
+    export type QueryDocumentSnapshot = FirestoreTypes.QueryDocumentSnapshot;
+    export type WriteBatch = FirestoreTypes.WriteBatch;
   }
   export namespace cloud {
-    export interface CollectionReference extends FirebaseFirestore.CollectionReference { }
-    export interface DocumentChange extends FirebaseFirestore.DocumentChange { }
-    export interface DocumentReference extends FirebaseFirestore.DocumentReference { }
-    export interface DocumentSnapshot extends FirebaseFirestore.DocumentSnapshot { }
-    export interface Firestore extends FirebaseFirestore.Firestore { }
-    export interface FieldPath extends FirebaseFirestore.FieldPath { }
-    export interface GeoPoint extends FirebaseFirestore.GeoPoint { }
-    export interface Query extends FirebaseFirestore.Query { }
-    export interface QuerySnapshot extends FirebaseFirestore.QuerySnapshot { }
-    export interface QueryDocumentSnapshot extends FirebaseFirestore.QueryDocumentSnapshot { }
-    export interface WriteBatch extends FirebaseFirestore.WriteBatch { }
+    export type CollectionReference = FirebaseFirestore.CollectionReference;
+    export type DocumentChange = FirebaseFirestore.DocumentChange;
+    export type DocumentReference = FirebaseFirestore.DocumentReference;
+    export type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
+    export type Firestore = FirebaseFirestore.Firestore;
+    export type FieldPath = FirebaseFirestore.FieldPath;
+    export type GeoPoint = FirebaseFirestore.GeoPoint;
+    export type Query = FirebaseFirestore.Query;
+    export type QuerySnapshot = FirebaseFirestore.QuerySnapshot;
+    export type QueryDocumentSnapshot = FirebaseFirestore.QueryDocumentSnapshot;
+    export type WriteBatch = FirebaseFirestore.WriteBatch;
   }
 }
