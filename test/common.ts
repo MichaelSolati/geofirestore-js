@@ -42,7 +42,7 @@ export const invalidQueryCriterias = [
   false, undefined, NaN, [], 'a', 1, { center: new firebase.firestore.GeoPoint(1, 2), radius: 2, query: false },
   { center: new firebase.firestore.GeoPoint(1, 2), radius: 2, query: 23 }
 ];
-// export const invalidObjects = [false, true, 'pie', 3, null, undefined, NaN];
+export const invalidObjects = [false, true, 'pie', 3, null, undefined, NaN];
 export const testCollectionName = 'tests';
 export const validGeoFirestoreDocuments: GeoFirestoreTypes.Document[] = [
   { d: { coordinates: new firebase.firestore.GeoPoint(-23.5, -46.9) }, g: '6gydkcbqwf', l: new firebase.firestore.GeoPoint(-23.5, -46.9) },

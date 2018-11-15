@@ -1,7 +1,5 @@
 import * as chai from 'chai';
-import * as firebase from 'firebase/app';
 
-import { GeoFirestore } from '../src/GeoFirestore';
 import { GeoWriteBatch } from '../src/GeoWriteBatch';
 import {
   afterEachHelper, beforeEachHelper, collection, dummyData, failTestOnCaughtError,
@@ -142,14 +140,6 @@ describe('GeoWriteBatch Tests:', () => {
         .then(snapshot => {
           expect(snapshot.exists).to.equal(false);
         });
-    });
-  });
-
-  describe('collection():', () => {
-    it('collection() returns a new GeoCollectionReference based on a Firestore CollectionReference', () => {
-      expect(
-        (new GeoFirestore(firestore)).collection(testCollectionName)['_collection']
-      ).to.deep.equal(firestore.collection(testCollectionName));
     });
   });
 });

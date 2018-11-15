@@ -13,9 +13,6 @@ export class GeoCollectionReference extends GeoQuery {
    */
   constructor(private _collection: GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference) {
     super(_collection);
-    if (Object.prototype.toString.call(_collection) !== '[object Object]') {
-      throw new Error('CollectionReference must be an instance of a Firestore CollectionReference');
-    }
   }
 
   /** The identifier of the collection. */
