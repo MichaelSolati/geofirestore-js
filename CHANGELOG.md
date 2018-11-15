@@ -1,3 +1,18 @@
+#### 2.2.3 (2018-11-15)
+
+##### Chores
+
+* **README:**  update badges ([dfc9f1ba](https://github.com/MichaelSolati/geofirestore/commit/dfc9f1ba4f55cc054c161e2561fb2000fb649725))
+*  update firebase settings and dependencies ([2b95d766](https://github.com/MichaelSolati/geofirestore/commit/2b95d766bd7fb5fa92ba0b7ada859468cca62999))
+*  update `README.md` ([d55b979a](https://github.com/MichaelSolati/geofirestore/commit/d55b979ac8d8d07a7d3b3b67ee85f44915a39d66))
+*  rename `COMMITS.md` to `CONTRIBUTING.md` ([f37e95ee](https://github.com/MichaelSolati/geofirestore/commit/f37e95ee305fe3e0f82c5b290f04caa8fba513c8))
+* **LICENSE:**  update license ([7dc3064e](https://github.com/MichaelSolati/geofirestore/commit/7dc3064e674497334d0b2a47f767b1aefafcd59c))
+* **COC:**  add a Code of Conduct ([e018ddba](https://github.com/MichaelSolati/geofirestore/commit/e018ddba42a5476669a7536d6ede378c8f508a1a))
+
+##### Bug Fixes
+
+* **lint:**  resolve linting issues in some firebase projects, fixes [#48](https://github.com/MichaelSolati/geofirestore/pull/48) ([a9fe161a](https://github.com/MichaelSolati/geofirestore/commit/a9fe161a377425d18806f0f470c22f8d46a7666a))
+
 #### 2.2.2 (2018-10-10)
 
 ##### Documentation Changes
