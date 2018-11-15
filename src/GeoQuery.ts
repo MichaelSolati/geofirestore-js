@@ -50,8 +50,8 @@ export class GeoQuery {
    * cease.
    * @return An unsubscribe function that can be called to cancel the snapshot listener.
    */
-  get onSnapshot(): (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => void {
-    return (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => {
+  get onSnapshot(): ((onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => () => void) {
+    return (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void): (() => void) => {
       if (this._center && this._radius) {
         return new GeoJoinerOnSnapshot(this._generateQuery(), this._near, onNext, onError).unsubscribe();
       } else {
@@ -144,27 +144,6 @@ export class GeoQuery {
       center: this._center,
       radius: this._radius
     };
-  }
-
-  /**
-   * Merges the results of an array of QuerySnapshots into one QuerySnapshot (like) object.
-   *
-   * @param results An array of QuerySnapshots from multiple queries.
-   * @return A single QuerySnapshot from an array of QuerySnapshots.
-   */
-  private _joinQueries(results: GeoFirestoreTypes.web.QuerySnapshot[]): GeoFirestoreTypes.web.QuerySnapshot {
-    let docs = [];
-    let docChanges = [];
-
-    results.forEach((value: GeoFirestoreTypes.web.QuerySnapshot) => {
-      docs = docs.concat(value.docs);
-      docChanges = docChanges.concat(value.docChanges());
-    });
-
-    return {
-      docs,
-      docChanges: () => docChanges
-    } as GeoFirestoreTypes.web.QuerySnapshot;
   }
 
   /**
