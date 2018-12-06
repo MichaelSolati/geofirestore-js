@@ -1123,7 +1123,7 @@ describe('GeoFirestore Tests:', () => {
                     coordinates: invalidLocation
                 });
             }).to.throw(Error, /Invalid GeoFirestore document/);
-        })
+        });
     });
 
     it('update() updates/adds additional fields in documents', (done) => {

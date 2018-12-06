@@ -180,7 +180,7 @@ export class GeoFirestore {
   public set (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
     return this.write('set', keyOrDocuments, document, customKey);
   }
-    /**
+  /**
    * Updates the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
    *
    * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
