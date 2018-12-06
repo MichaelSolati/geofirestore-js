@@ -114,10 +114,7 @@ export function calculateDistance(
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
 export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFirestoreTypes.DocumentData {
-  if (validateGeoDocument(data, true)) {
-    return data.d;
-  }
-  return data;
+  return (validateGeoDocument(data, true)) ? data.d : data;
 }
 
 /**

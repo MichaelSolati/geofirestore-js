@@ -25,7 +25,6 @@ export class GeoJoinerGet {
     });
   }
 
-
   /**
    * Returns parsed docs as a GeoQuerySnapshot.
    * 

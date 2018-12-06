@@ -1,8 +1,12 @@
 import * as chai from 'chai';
+import * as firebase from 'firebase/app';
 
 import { GeoFirestore } from '../src/GeoFirestore';
 import { GeoQuery } from '../src/GeoQuery';
-import { afterEachHelper, beforeEachHelper, collection, dummyData, firestore, invalidFirestores, stubDatabase } from './common';
+import {
+  afterEachHelper, beforeEachHelper, collection, dummyData,
+  firestore, invalidFirestores, stubDatabase, invalidLocations
+} from './common';
 
 const expect = chai.expect;
 
@@ -35,6 +39,51 @@ describe('GeoQuery Tests:', () => {
     });
   });
 
+  describe('onSnapshot:', () => {
+    it('onSnapshot returns dummy data, without any geo related filters', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.onSnapshot((snapshot) => {
+          subscription();
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members(dummyData);
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot returns dummy data, without any geo related filters and with a `where` statement', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.where('count', '>', 2).onSnapshot((snapshot) => {
+          subscription();
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+            { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
+            { key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5 },
+          ]);
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot returns dummy data, with geo related filters', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).onSnapshot((snapshot) => {
+          subscription();
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+          ]);
+          done();
+        });
+      });
+    });
+  });
+
   describe('get():', () => {
     it('get() returns dummy data, without any geo related filters', (done) => {
       const query = new GeoQuery(collection);
@@ -45,6 +94,162 @@ describe('GeoQuery Tests:', () => {
           done();
         });
       });
+    });
+
+    it('get() returns dummy data, without any geo related filters and with a `where` statement', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query.where('count', '>', 2).get().then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+            { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
+            { key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5 },
+          ]);
+          done();
+        });
+      });
+    });
+
+    it('get() returns dummy data, with geo related filters', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).get().then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+          ]);
+          done();
+        });
+      });
+    });
+
+    it('get() returns dummy data, when not on web', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query['_isWeb'] = false;
+        query.get().then(data => {
+          const result = data.docs.map(d => d.data);
+          expect(result).to.have.deep.members(dummyData);
+          done();
+        });
+      });
+    });
+
+    it('get() returns dummy data, with geo related filters, when not on web', (done) => {
+      let query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query = query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 });
+        query['_isWeb'] = false;
+        query.get().then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+          ]);
+          done();
+        });
+      });
+    });
+
+    it('get() returns dummy data from server (web only)', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query.get({ source: 'server' }).then(data => {
+          const result = data.docs.map(d => d.data);
+          expect(result).to.have.deep.members(dummyData);
+          done();
+        });
+      });
+    });
+
+    it('get() returns dummy data, with geo related filters from server (web only)', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).get({ source: 'server' }).then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data);
+          expect(result).to.have.deep.members([
+            { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
+            { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+          ]);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('near():', () => {
+    it('near() does not throw an error with valid arguments', () => {
+      const query = new GeoQuery(collection);
+      expect(() => query.near({ center: new firebase.firestore.GeoPoint(0, 0), radius: 100 })).not.to.throw();
+      expect(() => query.near({ center: new firebase.firestore.GeoPoint(1, 1) })).not.to.throw();
+      expect(() => query.near({ radius: 500 })).not.to.throw();
+    });
+
+    it('near() throws error with no arguments', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query.near()).to.throw();
+    });
+
+    it('near() throws error with invalid arguments', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query.near({})).to.throw();
+      invalidLocations.forEach((loc) => {
+        // @ts-ignore
+        expect(() => query.near({ center: loc, radius: loc })).to.throw();
+        // @ts-ignore
+        expect(() => query.near({ center: loc })).to.throw();
+        // @ts-ignore
+        expect(() => query.near({ radius: loc })).to.throw();
+      });
+    });
+  });
+
+  describe('where():', () => {
+    it('where() does not throw an error with valid arguments', () => {
+      const query = new GeoQuery(collection);
+      expect(() => query.where('count', '>', '2')).not.to.throw();
+    });
+
+    it('where() throws error with no arguments', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query.where()).to.throw();
+    });
+
+    it('where() throws error with invalid arguments', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query.where('count', 'as', 12)).to.throw();
+    });
+  });
+
+  describe('_stringToQuery():', () => {
+    it('_stringToQuery() returns an array of two string elements', () => {
+      const query = new GeoQuery(collection);
+      expect(query['_stringToQuery']('0:z')).to.have.deep.members(['0', 'z']);
+    });
+
+    it('_stringToQuery() throws error with invalid argument', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query['_stringToQuery']('0z')).to.throw();
+    });
+  });
+
+  describe('_queryToString():', () => {
+    it('_queryToString() returns an array of two string elements', () => {
+      const query = new GeoQuery(collection);
+      expect(query['_queryToString'](['0', 'z'])).to.equal('0:z');
+    });
+
+    it('_queryToString() throws error with invalid argument', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query['_queryToString']('0', 'z', 'a')).to.throw();
     });
   });
 });

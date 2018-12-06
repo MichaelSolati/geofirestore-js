@@ -27,7 +27,7 @@ export class GeoQuery {
     }
     this._isWeb = Object.prototype.toString
       .call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
-    if (near) {
+    if (near && near.center && near.radius) {
       // Validate and save the query criteria
       validateQueryCriteria(near);
       this._center = near.center;
@@ -114,7 +114,7 @@ export class GeoQuery {
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {
-    return new GeoQuery(this._query.where(fieldPath, opStr, value), this._near);
+    return new GeoQuery(this._query.where((fieldPath ? ('d.' + fieldPath) : fieldPath), opStr, value), this._near);
   }
 
   /**

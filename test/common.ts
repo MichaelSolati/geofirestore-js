@@ -10,11 +10,12 @@ import { GeoCollectionReference, GeoFirestore, GeoFirestoreTypes } from '../src'
 const expect = chai.expect;
 // Define dummy data for database
 export const dummyData = [
-  { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(0.2, 0.3), count: 1 },
-  { key: 'loc2', coordinates: new firebase.firestore.GeoPoint(5, -0.7), count: 2 },
-  { key: 'loc3', coordinates: new firebase.firestore.GeoPoint(1.6, -15), count: 3 },
-  { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(.5, .5), count: 1 },
-  { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(6.7, 5.5), count: 2 }
+  { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
+  { key: 'loc2', coordinates: new firebase.firestore.GeoPoint(50, -7), count: 1 },
+  { key: 'loc3', coordinates: new firebase.firestore.GeoPoint(16, -150), count: 2 },
+  { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
+  { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
+  { key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5 },
 ];
 // Define examples of valid and invalid parameters
 export const invalidFirestores = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
@@ -63,8 +64,8 @@ export const validQueryCriterias: GeoFirestoreTypes.QueryCriteria[] = [
 ];
 
 // Create global constiables to hold the Firebasestore and GeoFirestore constiables
-export let firestore: firebase.firestore.Firestore;
-export let collection: firebase.firestore.CollectionReference;
+export let firestore: GeoFirestoreTypes.web.Firestore;
+export let collection: GeoFirestoreTypes.web.CollectionReference;
 export let geofirestore: GeoFirestore;
 export let geocollection: GeoCollectionReference;
 
@@ -173,11 +174,11 @@ function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, re
   }).catch(err => reject(err));
 }
 
-export function stubDatabase(): Promise<any> {
+export function stubDatabase(data: any[] = dummyData): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
   const geocollection = new GeoCollectionReference(collection);
-  dummyData.forEach(item => {
+  data.forEach(item => {
     const insert = geocollection.doc(item.key);
     batch.set(insert, item);
   });
