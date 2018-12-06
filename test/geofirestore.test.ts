@@ -682,7 +682,7 @@ describe('GeoFirestore Tests:', () => {
     });
   });
 
-  describe('Updating a single document via update():', () => {
+  describe('Updating single documents via update():', () => {
 
     it('update() returns a promise', (done) => {
         const cl = new Checklist(['p0', 'p1'], expect, done);
@@ -764,38 +764,62 @@ describe('GeoFirestore Tests:', () => {
     });
 
     it('update() handles custom fields for coordinates', (done) => {
-      const cl = new Checklist(['p0','p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
-      geoFirestore.set('loc1', { location: new firebase.firestore.GeoPoint(42, -42) }, 'location').then(() => {
-
-        return geoFirestore.set('loc2', { place: new firebase.firestore.GeoPoint(42, -42) }, 'place');
-      }).then(() => {
-
-        return geoFirestore.set('loc3', { coord: new firebase.firestore.GeoPoint(42, -42) }, 'coord');
-      }).then(() => {
-        cl.x('p0');
-        return geoFirestore.update('loc1', { location: new firebase.firestore.GeoPoint(0, 0) }, 'location');
-      }).then(() => {
-        cl.x('p1');
-
-        return geoFirestore.update('loc2', { place: new firebase.firestore.GeoPoint(50, 50) }, 'place');
-      }).then(() => {
-        cl.x('p2');
-
-        return geoFirestore.update('loc3', { coord: new firebase.firestore.GeoPoint(-90, -90) }, 'coord');
-      }).then(() => {
-        cl.x('p3');
-
-        return getFirestoreData();
-      }).then((firebaseData) => {
-        firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
-        expect(firebaseData).to.have.deep.members([
-          { 'loc1': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { location: new firebase.firestore.GeoPoint(0, 0) } },
-          { 'loc2': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { place: new firebase.firestore.GeoPoint(50, 50) } },
-          { 'loc3': new firebase.firestore.GeoPoint(-90, -90), 'g': '1bpbpbpbpb', 'd': { coord: new firebase.firestore.GeoPoint(-90, -90) } }
-        ]);
-
-        cl.x('p5');
-      }).catch(failTestOnCaughtError);
+        const cl = new Checklist(['p0', 'p1', 'p2', 'p3', 'p4', 'p5'], expect, done);
+        geoFirestore.set('loc1', {
+            location: new firebase.firestore.GeoPoint(42, -42)
+        }, 'location').then(() => {
+            cl.x('p0');
+            return geoFirestore.set('loc2', {
+                place: new firebase.firestore.GeoPoint(42, -42)
+            }, 'place');
+        }).then(() => {
+            cl.x('p1');
+            return geoFirestore.set('loc3', {
+                coord: new firebase.firestore.GeoPoint(42, -42)
+            }, 'coord');
+        }).then(() => {
+            cl.x('p2');
+            return geoFirestore.update('loc1', {
+                location: new firebase.firestore.GeoPoint(0, 0)
+            }, 'location');
+        }).then(() => {
+            cl.x('p3');
+            return geoFirestore.update('loc2', {
+                place: new firebase.firestore.GeoPoint(50, 50)
+            }, 'place');
+        }).then(() => {
+            cl.x('p4');
+            return geoFirestore.update('loc3', {
+                coord: new firebase.firestore.GeoPoint(-90, -90)
+            }, 'coord');
+        }).then(() => {
+            cl.x('p5');
+            return getFirestoreData();
+        }).then((firebaseData) => {
+            firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+            expect(firebaseData).to.have.deep.members([{
+                    'l': new firebase.firestore.GeoPoint(0, 0),
+                    'g': '7zzzzzzzzz',
+                    'd': {
+                        location: new firebase.firestore.GeoPoint(0, 0)
+                    }
+                },
+                {
+                    'l': new firebase.firestore.GeoPoint(50, 50),
+                    'g': 'v0gs3y0zh7',
+                    'd': {
+                        place: new firebase.firestore.GeoPoint(50, 50)
+                    }
+                },
+                {
+                    'l': new firebase.firestore.GeoPoint(-90, -90),
+                    'g': '1bpbpbpbpb',
+                    'd': {
+                        coord: new firebase.firestore.GeoPoint(-90, -90)
+                    }
+                }
+            ]);
+        }).catch(failTestOnCaughtError);
     });
 
     it('update() updates Firebase document attributes without GeoPoints', (done) => {
@@ -1258,78 +1282,90 @@ describe('GeoFirestore Tests:', () => {
     });
 
     it('update() updates Firebase when changing a pre-existing key to the same location', (done) => {
-      const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
+        const cl = new Checklist(['p1', 'p2', 'p3'], expect, done);
 
-      geoFirestore.set({
-          'loc1': {
-              coordinates: new firebase.firestore.GeoPoint(0, 0)
-          },
-          'loc2': {
-              coordinates: new firebase.firestore.GeoPoint(50, 50)
-          },
-          'loc3': {
-              coordinates: new firebase.firestore.GeoPoint(-90, -90)
-          }
-      }).then(() => {
-          cl.x('p1');
+        geoFirestore.set({
+            'loc1': {
+                coordinates: new firebase.firestore.GeoPoint(0, 0)
+            },
+            'loc2': {
+                coordinates: new firebase.firestore.GeoPoint(50, 50)
+            },
+            'loc3': {
+                coordinates: new firebase.firestore.GeoPoint(-90, -90)
+            }
+        }).then(() => {
+            cl.x('p1');
 
-          return geoFirestore.update({
-              'loc1': {
-                  coordinates: new firebase.firestore.GeoPoint(0, 0)
-              }
-          });
-      }).then(() => {
-          cl.x('p2');
+            return geoFirestore.update({
+                'loc1': {
+                    coordinates: new firebase.firestore.GeoPoint(0, 0)
+                }
+            });
+        }).then(() => {
+            cl.x('p2');
 
-          return getFirestoreData();
-      }).then((firebaseData) => {
-          expect(firebaseData).to.deep.equal({
-              'loc1': {
-                  'l': new firebase.firestore.GeoPoint(0, 0),
-                  'g': '7zzzzzzzzz',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(0, 0)
-                  }
-              },
-              'loc2': {
-                  'l': new firebase.firestore.GeoPoint(50, 50),
-                  'g': 'v0gs3y0zh7',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(50, 50)
-                  }
-              },
-              'loc3': {
-                  'l': new firebase.firestore.GeoPoint(-90, -90),
-                  'g': '1bpbpbpbpb',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(-90, -90)
-                  }
-              }
-          });
+            return getFirestoreData();
+        }).then((firebaseData) => {
+            expect(firebaseData).to.deep.equal({
+                'loc1': {
+                    'l': new firebase.firestore.GeoPoint(0, 0),
+                    'g': '7zzzzzzzzz',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(0, 0)
+                    }
+                },
+                'loc2': {
+                    'l': new firebase.firestore.GeoPoint(50, 50),
+                    'g': 'v0gs3y0zh7',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(50, 50)
+                    }
+                },
+                'loc3': {
+                    'l': new firebase.firestore.GeoPoint(-90, -90),
+                    'g': '1bpbpbpbpb',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(-90, -90)
+                    }
+                }
+            });
 
-          cl.x('p3');
-      }).catch(failTestOnCaughtError);
-  });
+            cl.x('p3');
+        }).catch(failTestOnCaughtError);
+    });
 });
 
 
 describe('Updating multiple documents via update():', () => {
 
-      it('update() multiple documents returns a promise', (done) => {
+    it('update() multiple documents returns a promise', (done) => {
         const cl = new Checklist(['p0', 'p1'], expect, done);
 
         geoFirestore.set({
-          'loc2': { coordinates: new firebase.firestore.GeoPoint(-42, 42) },
-          'loc4': { coordinates: new firebase.firestore.GeoPoint(-42, 42) },
-          'loc5': { coordinates: new firebase.firestore.GeoPoint(-42, 42) }
+            'loc2': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            },
+            'loc4': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            },
+            'loc5': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            }
         }).then(() => {
             cl.x('p0');
         }).then(() => {
             cl.x('p1');
             return geoFirestore.update({
-              'loc2': { coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621) },
-              'loc4': { coordinates: new firebase.firestore.GeoPoint(87.6, -130) },
-              'loc5': { coordinates: new firebase.firestore.GeoPoint(5, 55.555) }
+                'loc2': {
+                    coordinates: new firebase.firestore.GeoPoint(0.2358, -72.621)
+                },
+                'loc4': {
+                    coordinates: new firebase.firestore.GeoPoint(87.6, -130)
+                },
+                'loc5': {
+                    coordinates: new firebase.firestore.GeoPoint(5, 55.555)
+                }
             });
         });
     });
@@ -1394,62 +1430,62 @@ describe('Updating multiple documents via update():', () => {
     });
 
     it('update() handles multiple decimal latitudes and longitudes', (done) => {
-      const cl = new Checklist(['p0', 'p1', 'p2'], expect, done);
-      geoFirestore.set({
-          'loc1': {
-              coordinates: new firebase.firestore.GeoPoint(-42, 42)
-          },
-          'loc2': {
-              coordinates: new firebase.firestore.GeoPoint(-42, 42)
-          },
-          'loc3': {
-              coordinates: new firebase.firestore.GeoPoint(-42, 42)
-          }
-      }).then(() => {
-          cl.x('p0');
+        const cl = new Checklist(['p0', 'p1', 'p2'], expect, done);
+        geoFirestore.set({
+            'loc1': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            },
+            'loc2': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            },
+            'loc3': {
+                coordinates: new firebase.firestore.GeoPoint(-42, 42)
+            }
+        }).then(() => {
+            cl.x('p0');
 
-          return geoFirestore.update({
-              'loc1' : {
-                coordinates: new firebase.firestore.GeoPoint(0.254, 0)
-              },
-              'loc2': {
-                coordinates: new firebase.firestore.GeoPoint(50, 50.293403)
-              },
-              'loc3': {
-                coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938)
-              },
-        });
-      }).then(() => {
-          cl.x('p1');
+            return geoFirestore.update({
+                'loc1': {
+                    coordinates: new firebase.firestore.GeoPoint(0.254, 0)
+                },
+                'loc2': {
+                    coordinates: new firebase.firestore.GeoPoint(50, 50.293403)
+                },
+                'loc3': {
+                    coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938)
+                },
+            });
+        }).then(() => {
+            cl.x('p1');
 
-          return getFirestoreData();
-      }).then((firebaseData) => {
-          cl.x('p2');
+            return getFirestoreData();
+        }).then((firebaseData) => {
+            cl.x('p2');
 
-          expect(firebaseData).to.deep.equal({
-              'loc1': {
-                  'l': new firebase.firestore.GeoPoint(0.254, 0),
-                  'g': 'ebpcrypzxv',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(0.254, 0)
-                  }
-              },
-              'loc2': {
-                  'l': new firebase.firestore.GeoPoint(50, 50.293403),
-                  'g': 'v0gu2qnx15',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(50, 50.293403)
-                  }
-              },
-              'loc3': {
-                  'l': new firebase.firestore.GeoPoint(-82.614, -90.938),
-                  'g': '1cr648sfx4',
-                  'd': {
-                      coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938)
-                  }
-              },
-          });
-      }).catch(failTestOnCaughtError);
+            expect(firebaseData).to.deep.equal({
+                'loc1': {
+                    'l': new firebase.firestore.GeoPoint(0.254, 0),
+                    'g': 'ebpcrypzxv',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(0.254, 0)
+                    }
+                },
+                'loc2': {
+                    'l': new firebase.firestore.GeoPoint(50, 50.293403),
+                    'g': 'v0gu2qnx15',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(50, 50.293403)
+                    }
+                },
+                'loc3': {
+                    'l': new firebase.firestore.GeoPoint(-82.614, -90.938),
+                    'g': '1cr648sfx4',
+                    'd': {
+                        coordinates: new firebase.firestore.GeoPoint(-82.614, -90.938)
+                    }
+                },
+            });
+        }).catch(failTestOnCaughtError);
     });
 
     it('update() updates/adds multiple document fields', (done) => {
@@ -1539,88 +1575,87 @@ describe('Updating multiple documents via update():', () => {
         });
     });
 
-    ////
     it('update() updates/adds multiple document fields without GeoPoints', (done) => {
-      const cl = new Checklist(['p0', 'p1', 'p2'], expect, done);
+        const cl = new Checklist(['p0', 'p1', 'p2'], expect, done);
 
-      geoFirestore.set({
-          'loc1': {
-              coordinates: new firebase.firestore.GeoPoint(0, 0),
-          },
-          'loc2': {
-              coordinates: new firebase.firestore.GeoPoint(50, 50),
-              bool: false,
-              string: 'string'
-          },
-          'loc3': {
-              coordinates: new firebase.firestore.GeoPoint(-90, -90),
-              bool: false,
-              string: 'string'
-          }
-      }).then(() => {
-          cl.x('p0');
-          return geoFirestore.update({
-              'loc1': {
-                  bool: true,
-                  string: 'varchar'
-              },
-              'loc2': {
-                  bool: true,
-                  string: 'varchar',
-                  array: [0, 1, 3]
-              },
-              'loc3': {
-                  bool: true,
-                  string: 'varchar',
-                  array: [0, 1, 3],
-                  object: {
-                      foo: 'bar'
-                  }
-              },
-          });
+        geoFirestore.set({
+            'loc1': {
+                coordinates: new firebase.firestore.GeoPoint(0, 0),
+            },
+            'loc2': {
+                coordinates: new firebase.firestore.GeoPoint(50, 50),
+                bool: false,
+                string: 'string'
+            },
+            'loc3': {
+                coordinates: new firebase.firestore.GeoPoint(-90, -90),
+                bool: false,
+                string: 'string'
+            }
+        }).then(() => {
+            cl.x('p0');
+            return geoFirestore.update({
+                'loc1': {
+                    bool: true,
+                    string: 'varchar'
+                },
+                'loc2': {
+                    bool: true,
+                    string: 'varchar',
+                    array: [0, 1, 3]
+                },
+                'loc3': {
+                    bool: true,
+                    string: 'varchar',
+                    array: [0, 1, 3],
+                    object: {
+                        foo: 'bar'
+                    }
+                },
+            });
 
-      }).then(() => {
-          cl.x('p1');
-          return getFirestoreData();
-      }).then((firebaseData) => {
-          cl.x('p2');
-          firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
-          expect(firebaseData).to.have.deep.members([{
-                  'l': new firebase.firestore.GeoPoint(0, 0),
-                  'g': '7zzzzzzzzz',
-                  'd': {
-                      'coordinates': new firebase.firestore.GeoPoint(0, 0),
-                      bool: true,
-                      string: 'varchar'
-                  }
-              },
-              {
-                  'l': new firebase.firestore.GeoPoint(50, 50),
-                  'g': 'v0gs3y0zh7',
-                  'd': {
-                      'coordinates': new firebase.firestore.GeoPoint(50, 50),
-                      bool: true,
-                      string: 'varchar',
-                      array: [0, 1, 3]
-                  }
-              },
-              {
-                  'l': new firebase.firestore.GeoPoint(-90, -90),
-                  'g': '1bpbpbpbpb',
-                  'd': {
-                      'coordinates': new firebase.firestore.GeoPoint(-90, -90),
-                      bool: true,
-                      string: 'varchar',
-                      array: [0, 1, 3],
-                      object: {
-                          foo: 'bar'
-                      }
-                  }
-              },
-          ]);
-      }).catch((error) => {
-          failTestOnCaughtError(error);
-      });
+        }).then(() => {
+            cl.x('p1');
+            return getFirestoreData();
+        }).then((firebaseData) => {
+            cl.x('p2');
+            firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
+            expect(firebaseData).to.have.deep.members([{
+                    'l': new firebase.firestore.GeoPoint(0, 0),
+                    'g': '7zzzzzzzzz',
+                    'd': {
+                        'coordinates': new firebase.firestore.GeoPoint(0, 0),
+                        bool: true,
+                        string: 'varchar'
+                    }
+                },
+                {
+                    'l': new firebase.firestore.GeoPoint(50, 50),
+                    'g': 'v0gs3y0zh7',
+                    'd': {
+                        'coordinates': new firebase.firestore.GeoPoint(50, 50),
+                        bool: true,
+                        string: 'varchar',
+                        array: [0, 1, 3]
+                    }
+                },
+                {
+                    'l': new firebase.firestore.GeoPoint(-90, -90),
+                    'g': '1bpbpbpbpb',
+                    'd': {
+                        'coordinates': new firebase.firestore.GeoPoint(-90, -90),
+                        bool: true,
+                        string: 'varchar',
+                        array: [0, 1, 3],
+                        object: {
+                            foo: 'bar'
+                        }
+                    }
+                },
+            ]);
+        }).catch((error) => {
+            failTestOnCaughtError(error);
+        });
     });
 
     it('update() handles multiple keys at the same location', (done) => {
@@ -1725,7 +1760,6 @@ describe('Updating multiple documents via update():', () => {
         });
     });
 });
-
 
   describe('Retrieving a single document via get():', () => {
     it('get() returns a promise', (done) => {
