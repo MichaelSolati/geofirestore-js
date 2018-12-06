@@ -148,7 +148,7 @@ export class GeoFirestore {
             const geoFireDocument = encodeGeoFireObject(location, geohash, documentToUpdate);
             batch.update(ref, geoFireDocToFieldPath(geoFireDocument));
           }else {
-            batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate), { merge: true });
+            batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate));
           }
         }
       }
