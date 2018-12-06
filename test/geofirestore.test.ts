@@ -788,7 +788,6 @@ describe('GeoFirestore Tests:', () => {
         return getFirestoreData();
       }).then((firebaseData) => {
         firebaseData = Object.keys(firebaseData).map(key => firebaseData[key]);
-        process.exit();
         expect(firebaseData).to.have.deep.members([
           { 'loc1': new firebase.firestore.GeoPoint(0, 0), 'g': '7zzzzzzzzz', 'd': { location: new firebase.firestore.GeoPoint(0, 0) } },
           { 'loc2': new firebase.firestore.GeoPoint(50, 50), 'g': 'v0gs3y0zh7', 'd': { place: new firebase.firestore.GeoPoint(50, 50) } },

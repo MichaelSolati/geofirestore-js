@@ -137,7 +137,6 @@ export class Checklist {
  * went wrong.
  **/
 export function failTestOnCaughtError(error) {
-  console.log(error);
   expect(error).to.throw();
 }
 
