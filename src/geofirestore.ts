@@ -1,5 +1,5 @@
 import { GeoFirestoreQuery } from './query';
-import { decodeGeoFirestoreObject, degreesToRadians, encodeGeoFireObject, encodeGeohash, validateLocation, validateKey, findCoordinatesKey } from './utils';
+import { decodeGeoFirestoreObject, degreesToRadians, encodeGeoFireObject, geoFireDocToFieldPath, encodeGeohash, validateLocation, validateKey, validateDocumentHasCoordinates, findCoordinatesKey } from './utils';
 
 import { firestore, GeoFirestoreObj, QueryCriteria } from './interfaces';
 
@@ -96,21 +96,30 @@ export class GeoFirestore {
    *
    * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
    *
+   * @param writeType Specifies the type of write (set || update).
    * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
    * @param document The document to be added to the GeoFirestore.
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  public set(keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+  private write(writeType: string, keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
     if (typeof keyOrDocuments === 'string' && keyOrDocuments.length !== 0) {
       validateKey(keyOrDocuments);
       if (!document) {
         // Setting location to null is valid since it will remove the key
         return this._collectionRef.doc(keyOrDocuments).delete();
       } else {
+        if(writeType === 'update' && !validateDocumentHasCoordinates(document, customKey)){
+          return this._collectionRef.doc(keyOrDocuments).update(geoFireDocToFieldPath({d: document}));
+        }
         const locationKey: string = findCoordinatesKey(document, customKey);
         const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = document[locationKey];
-        const geohash: string = encodeGeohash(location);
+        const geohash: string = encodeGeohash(location); 
+        
+        if(writeType === 'update') {
+          const geoFireDocument = encodeGeoFireObject(location, geohash, document);
+          return this._collectionRef.doc(keyOrDocuments).update(geoFireDocToFieldPath(geoFireDocument));
+        }
         return this._collectionRef.doc(keyOrDocuments).set(encodeGeoFireObject(location, geohash, document));
       }
     } else if (typeof keyOrDocuments === 'object') {
@@ -129,10 +138,19 @@ export class GeoFirestore {
       if (!documentToUpdate) {
         batch.delete(ref);
       } else {
-        const locationKey = findCoordinatesKey(documentToUpdate, customKey);
-        const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = documentToUpdate[locationKey];
-        const geohash: string = encodeGeohash(location);
-        batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate), { merge: true });
+        if(writeType === 'update' && !validateDocumentHasCoordinates(documentToUpdate, customKey)){
+          batch.update(ref, geoFireDocToFieldPath({d: documentToUpdate}));  
+        } else {
+          const locationKey = findCoordinatesKey(documentToUpdate, customKey);
+          const location: firestore.web.GeoPoint | firestore.cloud.GeoPoint = documentToUpdate[locationKey];
+          const geohash: string = encodeGeohash(location);
+          if(writeType === 'update') {
+            const geoFireDocument = encodeGeoFireObject(location, geohash, documentToUpdate);
+            batch.update(ref, geoFireDocToFieldPath(geoFireDocument));
+          }else {
+            batch.set(ref, encodeGeoFireObject(location, geohash, documentToUpdate));
+          }
+        }
       }
     });
     return batch.commit();
@@ -147,6 +165,36 @@ export class GeoFirestore {
   public query(queryCriteria: QueryCriteria): GeoFirestoreQuery {
     return new GeoFirestoreQuery(this._collectionRef, queryCriteria);
   }
+
+  /**
+   * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
+   *
+   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
+   *
+   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
+   * @param document The document to be added to the GeoFirestore.
+   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+
+  public set (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+    return this.write('set', keyOrDocuments, document, customKey);
+  }
+    /**
+   * Updates the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
+   *
+   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
+   *
+   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
+   * @param document The document to be added to the GeoFirestore.
+   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+
+   public update (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+    return this.write('update', keyOrDocuments, document, customKey);
+  }	  
+  
 
   /********************/
   /*  STATIC METHODS  */

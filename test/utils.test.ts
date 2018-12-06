@@ -5,7 +5,7 @@ import { GeoFirestore } from '../src';
 
 import {
   boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION, metersToLongitudeDegrees,
-  toGeoPoint, validateCriteria, validateGeoFirestoreObject, validateGeohash, validateKey, validateLocation, wrapLongitude
+  toGeoPoint, validateCriteria, validateGeoFirestoreObject, validateDocumentHasCoordinates, validateGeohash, validateKey, validateLocation, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeoFirestoreObjects, invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
@@ -123,9 +123,67 @@ describe('geoFireUtils Tests:', () => {
         });
       });
     });
+
+    it('validateDocumentHasCoordinates() returns true if a location is found', () => {
+      expect(() => validateDocumentHasCoordinates({
+          coordinates: new firebase.firestore.GeoPoint(42, 42),
+      })).to.be.true; // tslint:disable-line
+  
+      expect(() => validateDocumentHasCoordinates({
+          coordinates: new firebase.firestore.GeoPoint(42, 42),
+          bool: true,
+          string: 'varchar',
+          array: [0, 1, 3],
+          object: {
+              foo: 'bar'
+          }
+      })).to.be.true; // tslint:disable-line
+  
+      expect(() => validateDocumentHasCoordinates({
+          hotGeofire: new firebase.firestore.GeoPoint(42, 42),
+          bool: true,
+          string: 'varchar',
+          array: [0, 1, 3],
+          object: {
+              foo: 'bar'
+          }
+      }, 'hotGeofire')).to.be.true; // tslint:disable-line
+  
+      expect(() => validateDocumentHasCoordinates({
+          hotGeofire: new firebase.firestore.GeoPoint(42, 42),
+      }, 'hotGeofire')).to.be.true; // tslint:disable-line
+    });
+  
+    it('validateDocumentHasCoordinates() returns false no location is found', () => {
+        expect(() => validateDocumentHasCoordinates({
+            wrongField: new firebase.firestore.GeoPoint(42, 42),
+        })).to.be.false; // tslint:disable-line
+    
+        expect(() => validateDocumentHasCoordinates({
+            wrongField: new firebase.firestore.GeoPoint(42, 42),
+            bool: true,
+            string: 'varchar',
+            array: [0, 1, 3],
+            object: {
+                coordinates: new firebase.firestore.GeoPoint(42, 42),
+            }
+        })).to.be.false; // tslint:disable-line
+        
+        expect(() => validateDocumentHasCoordinates({
+            coldGeofire: new firebase.firestore.GeoPoint(42, 42),
+            bool: true,
+            string: 'varchar',
+            array: [0, 1, 3],
+            object: {
+                foo: 'bar'
+            }
+        }, 'hotGeofire')).to.be.false; // tslint:disable-line
+    
+        expect(() => validateDocumentHasCoordinates({
+            coldGeofire: new firebase.firestore.GeoPoint(42, 42),
+        }, 'hotGeofire')).to.be.false; // tslint:disable-line
+    });
   });
-
-
 
   describe('GeoPoint Generation:', () => {
     it('toGeoPoint() does not throw errors given valid coordinates', () => {

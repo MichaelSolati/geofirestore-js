@@ -45,6 +45,7 @@ You can find a full list of our demos and view the code for each of them in the 
   * [`get(key)`](#geofirestoregetkey)
   * [`add(document[, customKey])`](#geofirestoreadddocument-customkey)
   * [`set(keyOrDocuments[, document, customKey])`](#geofirestoresetkeyordocuments-document-customkey)
+  * [`update(keyOrDocuments[, document, customKey])`](#geofirestoreupdateexistingkeyordocuments-document-customkey)
   * [`remove(key)`](#geofirestoreremovekey)
   * [`query(queryCriteria)`](#geofirestorequeryquerycriteria)
 * [`GeoFirestoreQuery`](#geofirestorequery)
@@ -154,6 +155,53 @@ geoFirestore.set({
   console.log('Provided keys have been added to GeoFirestore');
 }, (error) => {
   console.log('Error: ' + error);
+});
+```
+
+#### GeoFirestore.update(existingKeyOrDocuments[, document, customKey])
+
+Updates the specified key - document pair(s) in this `GeoFirestore`. If the provided `keyOrDocuments` argument is a string than a single `document` will be updated. The `keyOrDocuments` argument can also an object containing a mapping between keys and documents. Thus allowing you to add several documents to GeoFirestore in one write. 
+
+Additional attributes can be updated or added to the `keyOrDocuments`. If any of the attributes pre-exist in the `document` -and are not (re)defined within the `keyOrDocuments` argument-, then those attributes will remain (unchanged). If merging of existing `document` data is not required, then [`GeoFirestore.set([..])`](#geofirestoresetkeyordocuments-document-customkey) is the more efficient choice.
+
+This method returns a promise which is fulfilled when the new document has been synchronized with the Firebase servers. If the provided key(s) do not exist in `GeoFirestore`, the update will fail and the returned Promise will be rejected. If the document has a `coordinates` field to update, then it must be a valid Firestore GeoPoint. 
+
+```JavaScript
+geoFirestore.update('existing_key', {
+    coordinates: new firebase.firestore.GeoPoint(37.79, -122.41),
+    some_custom_key: 'text' // Add|update a custom key
+}).then(() => {
+    console.log('Document has been updated in GeoFirestore');
+}, (error) => {
+    console.log('Error: ' + error);
+});
+```
+
+```JavaScript
+geoFirestore.update('existing_key', {
+    // Update coordinates only
+    coordinates: new firebase.firestore.GeoPoint(52.09, -5.12)
+}).then(() => {
+    console.log('Document has been updated in GeoFirestore');
+}, (error) => {
+    console.log('Error: ' + error);
+});
+```
+
+```JavaScript
+geoFirestore.update({
+    // Update multiple documents (with && witout coordinates)
+    'existing_key': {
+        custom_key: 'new text'
+    },
+    'another_existing_key': {
+        coordinates: new firebase.firestore.GeoPoint(36.98, -122.56),
+        other_key: 'text'
+    }
+}).then(() => {
+    console.log('Provided documents have been updated in GeoFirestore');
+}, (error) => {
+    console.log('Error: ' + error);
 });
 ```
 
