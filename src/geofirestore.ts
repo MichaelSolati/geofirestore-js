@@ -92,6 +92,48 @@ export class GeoFirestore {
   }
 
   /**
+   * Returns a new GeoQuery instance with the provided queryCriteria.
+   *
+   * @param queryCriteria The criteria which specifies the GeoQuery's center and radius.
+   * @return A new GeoFirestoreQuery object.
+   */
+  public query(queryCriteria: QueryCriteria): GeoFirestoreQuery {
+    return new GeoFirestoreQuery(this._collectionRef, queryCriteria);
+  }
+
+  /**
+   * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
+   *
+   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
+   *
+   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
+   * @param document The document to be added to the GeoFirestore.
+   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+
+  public set (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+    return this._write('set', keyOrDocuments, document, customKey);
+  }
+  /**
+   * Updates the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
+   *
+   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
+   *
+   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
+   * @param document The document to be added to the GeoFirestore.
+   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
+   * @returns A promise that is fulfilled when the write is complete.
+   */
+
+   public update (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+    return this._write('update', keyOrDocuments, document, customKey);
+  }	  
+  
+  /********************/
+  /*  PRIVATE METHODS  */
+  /********************/
+  /**
    * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
    *
    * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
@@ -102,7 +144,7 @@ export class GeoFirestore {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  private write(writeType: string, keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
+  private _write(writeType: string, keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
     if (typeof keyOrDocuments === 'string' && keyOrDocuments.length !== 0) {
       validateKey(keyOrDocuments);
       if (!document) {
@@ -156,45 +198,6 @@ export class GeoFirestore {
     return batch.commit();
   }
 
-  /**
-   * Returns a new GeoQuery instance with the provided queryCriteria.
-   *
-   * @param queryCriteria The criteria which specifies the GeoQuery's center and radius.
-   * @return A new GeoFirestoreQuery object.
-   */
-  public query(queryCriteria: QueryCriteria): GeoFirestoreQuery {
-    return new GeoFirestoreQuery(this._collectionRef, queryCriteria);
-  }
-
-  /**
-   * Adds the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
-   *
-   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
-   *
-   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
-   * @param document The document to be added to the GeoFirestore.
-   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
-   * @returns A promise that is fulfilled when the write is complete.
-   */
-
-  public set (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
-    return this.write('set', keyOrDocuments, document, customKey);
-  }
-  /**
-   * Updates the provided key - location pair(s) to Firestore. Returns an empty promise which is fulfilled when the write is complete.
-   *
-   * If any provided key already exists in this GeoFirestore, it will be overwritten with the new location value.
-   *
-   * @param keyOrDocuments The key representing the document to add or an object of $key - document pairs.
-   * @param document The document to be added to the GeoFirestore.
-   * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
-   * @returns A promise that is fulfilled when the write is complete.
-   */
-
-   public update (keyOrDocuments: string | any, document?: any, customKey?: string): Promise<any> {
-    return this.write('update', keyOrDocuments, document, customKey);
-  }	  
-  
 
   /********************/
   /*  STATIC METHODS  */
