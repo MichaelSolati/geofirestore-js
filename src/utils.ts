@@ -1,5 +1,4 @@
 import { firestore, GeoFirestoreObj, QueryCriteria } from './interfaces';
-import { triggerAsyncId } from 'async_hooks';
 
 // Default geohash length
 export const GEOHASH_PRECISION = 10;
@@ -535,7 +534,7 @@ export function geoFirestoreGetKey(snapshot: firestore.web.DocumentSnapshot | fi
  * @param customKey A custom keyname that might contain coordinates.
  * @returns The key for the location field of a document. 
  */
-export function findCoordinatesKey(document: any, customKey?: string) {
+export function findCoordinatesKey(document: any, customKey?: string): string {
   let error: string;
   let key: string;
 
