@@ -9,6 +9,9 @@ service cloud.firestore {
     }
     match /tests/{key} {
       allow write: if true;
+      match /{document}/{key}{
+        allow write: if true;
+      }
     }
   }
 }

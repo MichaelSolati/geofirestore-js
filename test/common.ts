@@ -25,7 +25,8 @@ export const invalidGeoFirestoreObjects = [{ d: null, g: '6gydkcbqwf', l: new fi
 // Create global constiables to hold the Firebase and GeoFire constiables
 export let geoFirestoreRef: firebase.firestore.CollectionReference,
   geoFirestore: GeoFirestore,
-  geoFirestoreQueries: GeoFirestoreQuery[] = [];
+  geoFirestoreQueries: GeoFirestoreQuery[] = [],
+  geoFirestoreCollectionName;
 
 // Initialize Firebase
 firebase.initializeApp({
@@ -40,8 +41,10 @@ firebase.firestore().settings({ timestampsInSnapshots: true });
 /**********************/
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done) {
+  // Create a random collection name
+  geoFirestoreCollectionName =  'tests/mocha/' + generateRandomString();
   // Create a new Firebase database ref at a random node
-  geoFirestoreRef = firebase.firestore().collection('tests');
+  geoFirestoreRef = firebase.firestore().collection(geoFirestoreCollectionName);
   // Create a new GeoFire instance
   geoFirestore = new GeoFirestore(geoFirestoreRef);
 
@@ -57,8 +60,8 @@ export function afterEachHelper(done) {
   geoFirestoreQueries.forEach((geoFirestoreQuery) => {
     geoFirestoreQuery.cancel();
   });
-
-  deleteCollection(geoFirestoreRef.firestore, 'tests', 50).then(() => {
+  
+  deleteCollection(geoFirestoreRef.firestore, geoFirestoreCollectionName, 50).then(() => {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
   }).then(done);
