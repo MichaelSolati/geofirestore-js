@@ -200,6 +200,28 @@ export function validateCriteria(newQueryCriteria: QueryCriteria, requireCenterA
 }
 
 /**
+ * Validates if coordinates are defined in document.
+ * @param document A GeoFirestore document.
+ * @param customKey A custom keyname that might contain coordinates.
+ * @returns True if a location field can be found in the document. 
+ */
+export function validateDocumentHasCoordinates(document: any, customKey?: string): boolean {
+
+  if (
+      (document && typeof document === 'object') // ${document} has to be defined (..in 'object')
+      &&                                         // (AND)
+      (
+        (customKey && customKey in document)     // ${customKey} has to be defined (..in ${document})
+        ||                                       // (OR)
+        ('coordinates' in document)              // 'coordinates' has to be defined in ${document}
+      )
+  ) {
+      return true;
+  }
+  return false;
+}
+
+/**
  * Converts degrees to radians.
  *
  * @param degrees The number of degrees to be converted to radians.
@@ -463,6 +485,35 @@ export function decodeGeoFirestoreObject(geoFirestoreObj: GeoFirestoreObj): any 
 }
 
 /**
+ * This function exists because Firestore can update fieldpaths but not nested documents
+ *
+ * @param geoFireObject Encoded and GeoFire object
+ * @returns GeoFire object with obj[d.field] instead of obj.d.field
+ * 
+ * @summary
+ * "With update() you can also use field paths for updating nested values" --Scarygami
+ *  
+ * We need this because doc['d.fieldname'] = 1; will add/update d.fieldname,
+ *  doc.d.fieldnname = 1; will empty doc.d so only doc.d.fieldnname remains
+ * 
+ * "For set() you always have to provide document-shaped data" --Scarygami
+ * 
+ *  If we do this than d. is not updated but replaced even if set([..], {merge: true})
+ */
+export function geoFireDocToFieldPath(geoFireObject: any): GeoFirestoreObj {
+  if((typeof (geoFireObject.d !== 'undefined')) &&
+     (geoFireObject.d.length !== 0)
+    ){
+      const document = geoFireObject.d;
+      delete geoFireObject.d; 
+      Object.keys(document).forEach((key) =>{
+          geoFireObject[`d.${key}`] = document[key]; 
+      });
+    }
+  return geoFireObject;
+}
+
+/**
  * Returns the id of a Firestore snapshot across SDK versions.
  *
  * @param snapshot A Firestore snapshot.
@@ -480,6 +531,7 @@ export function geoFirestoreGetKey(snapshot: firestore.web.DocumentSnapshot | fi
  * Returns the key of a document that is a GeoPoint.
  *
  * @param document A GeoFirestore document.
+ * @param customKey A custom keyname that might contain coordinates.
  * @returns The key for the location field of a document. 
  */
 export function findCoordinatesKey(document: any, customKey?: string): string {
