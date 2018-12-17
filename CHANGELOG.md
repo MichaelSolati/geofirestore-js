@@ -1,3 +1,33 @@
+### 2.3.0 (2018-12-17)
+
+##### Documentation Changes
+
+* **GeoFirestore:**  add docs for `update` function of `GeoFirestore` ([869e1893](https://github.com/MichaelSolati/geofirestore/commit/869e189368ce1312d178241bee40fe6cb3a1f46f))
+
+##### New Features
+
+* **GeoFirestore:**
+  *  add ability to update documents, fixes [#52](https://github.com/MichaelSolati/geofirestore/pull/52) ([555c9bc4](https://github.com/MichaelSolati/geofirestore/commit/555c9bc48bfc35fd281168ad7bfdb64a7f4fbf38))
+  *  add ability to update documents ([2f0b127e](https://github.com/MichaelSolati/geofirestore/commit/2f0b127eb7e8c2e04de06beba827a2e671ec7922))
+  *  add ability to update documents ([d0a327df](https://github.com/MichaelSolati/geofirestore/commit/d0a327df96880cd4e287ae6883416cffe5d49e4c))
+
+##### Refactors
+
+* **utils:**  remove unused import, restore findCoordinatesKey ([324aa960](https://github.com/MichaelSolati/geofirestore/commit/324aa9604d6e9419711eac77d1014706eafe3791))
+* **GeoFirestore:**  remove merge from batch.set ([7ed3586b](https://github.com/MichaelSolati/geofirestore/commit/7ed3586b895fc36d5ebf5a4f51a899bd5ffdfec1))
+
+##### Code Style Changes
+
+*  private method _ & alphabetical order ([716eda9e](https://github.com/MichaelSolati/geofirestore/commit/716eda9ed356cb1a078f6fc9fe1385b37973c6af))
+* **geoFirestore:**  TS Lint ([d4ed971b](https://github.com/MichaelSolati/geofirestore/commit/d4ed971b7cc81017670f85770adf7b142d04495e))
+
+##### Tests
+
+* **GeoFirestore:**
+  *  Corrected some EBKAC ([c9bf4f35](https://github.com/MichaelSolati/geofirestore/commit/c9bf4f351d907e5a4bf15d2916acda002f4d7f40))
+  *  removed exit(); ([a739d254](https://github.com/MichaelSolati/geofirestore/commit/a739d25438c69f42384b7d71eafd6fa6ed86454c))
+  *  add tests for `update`,validateDoc..HasCoordinates` ([77915930](https://github.com/MichaelSolati/geofirestore/commit/77915930cf7071220f05f90987738c80f073ae92))
+
 #### 2.2.3 (2018-11-15)
 
 ##### Chores
