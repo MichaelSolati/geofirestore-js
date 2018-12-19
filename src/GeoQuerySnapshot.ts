@@ -40,7 +40,7 @@ export class GeoQuerySnapshot {
 
   /** True if there are no documents in the GeoQuerySnapshot. */
   get empty(): boolean {
-    return Boolean(this._docs.length);
+    return this._docs.length ? false : true;
   }
 
   /**

@@ -14,7 +14,7 @@ export namespace GeoFirestoreTypes {
     doc: DocumentData;
     newIndex: number;
     oldIndex: number;
-    type: any;
+    type: 'added' | 'modified' | 'removed';
   }
   export interface QueryCriteria {
     center?: cloud.GeoPoint | web.GeoPoint;
@@ -23,7 +23,7 @@ export namespace GeoFirestoreTypes {
   export interface QueryDocumentSnapshot {
     exists: boolean;
     id: string;
-    data: DocumentData | any;
+    data: () => DocumentData | any;
     distance: number;
   }
   export interface SetOptions {

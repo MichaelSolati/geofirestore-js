@@ -45,7 +45,7 @@ describe('GeoQuery Tests:', () => {
       stubDatabase().then(() => {
         const subscription = query.onSnapshot((snapshot) => {
           subscription();
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
           done();
         });
@@ -57,7 +57,7 @@ describe('GeoQuery Tests:', () => {
       stubDatabase().then(() => {
         const subscription = query.where('count', '>', 2).onSnapshot((snapshot) => {
           subscription();
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
             { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
@@ -73,7 +73,7 @@ describe('GeoQuery Tests:', () => {
       stubDatabase().then(() => {
         const subscription = query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).onSnapshot((snapshot) => {
           subscription();
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
@@ -89,7 +89,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query.get().then(data => {
-          const result = data.docs.map(d => d.data);
+          const result = data.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
           done();
         });
@@ -100,7 +100,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query.where('count', '>', 2).get().then((snapshot) => {
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
             { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
@@ -115,7 +115,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).get().then((snapshot) => {
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
@@ -130,7 +130,7 @@ describe('GeoQuery Tests:', () => {
       stubDatabase().then(() => {
         query['_isWeb'] = false;
         query.get().then(data => {
-          const result = data.docs.map(d => d.data);
+          const result = data.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
           done();
         });
@@ -143,7 +143,7 @@ describe('GeoQuery Tests:', () => {
         query = query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 });
         query['_isWeb'] = false;
         query.get().then((snapshot) => {
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
@@ -157,7 +157,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query.get({ source: 'server' }).then(data => {
-          const result = data.docs.map(d => d.data);
+          const result = data.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
           done();
         });
@@ -168,7 +168,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query.near({ center: new firebase.firestore.GeoPoint(1, 2), radius: 1000 }).get({ source: 'server' }).then((snapshot) => {
-          const result = snapshot.docs.map(d => d.data);
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members([
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },

@@ -127,12 +127,12 @@ export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFire
 export function decodeGeoQueryDocumentSnapshotData(
   data: GeoFirestoreTypes.Document,
   center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
-): { data: GeoFirestoreTypes.DocumentData; distance: number; } {
+): { data: () => GeoFirestoreTypes.DocumentData; distance: number; } {
   if (validateGeoDocument(data, true)) {
     const distance = (center) ? calculateDistance(data.l, center) : null;
-    return { data: data.d, distance };
+    return { data: () => data.d, distance };
   }
-  return { data, distance: null };
+  return { data: () => data, distance: null };
 }
 
 /**
