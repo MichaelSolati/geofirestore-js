@@ -44,10 +44,12 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query.onSnapshot((snapshot) => {
-          subscription();
-          const result = snapshot.docs.map(d => d.data());
-          expect(result).to.have.deep.members(dummyData);
-          done();
+          if (snapshot.size === dummyData.length) {
+            subscription();
+            const result = snapshot.docs.map(d => d.data());
+            expect(result).to.have.deep.members(dummyData);
+            done();
+          }
         });
       });
     });
@@ -87,13 +89,13 @@ describe('GeoQuery Tests:', () => {
   describe('get():', () => {
     it('get() returns dummy data, without any geo related filters', (done) => {
       const query = new GeoQuery(collection);
-      stubDatabase().then(() => {
-        query.get().then(data => {
+      stubDatabase()
+        .then(() => query.get())
+        .then((data) => {
           const result = data.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
-          done();
-        });
-      });
+        })
+        .then(done);
     });
 
     it('get() returns dummy data, without any geo related filters and with a `where` statement', (done) => {

@@ -236,10 +236,14 @@ export function encodeGeoDocument(
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @return The document encoded as GeoDocument object.
  */
-export function encodeSetDocument(data: GeoFirestoreTypes.DocumentData, customKey?: string): GeoFirestoreTypes.Document {
+export function encodeSetDocument(
+  data: GeoFirestoreTypes.DocumentData,
+  options?: GeoFirestoreTypes.SetOptions
+): GeoFirestoreTypes.Document {
   if (Object.prototype.toString.call(data) === '[object Object]') {
+    const customKey = (options) ? options.customKey : null;
     const unparsed: GeoFirestoreTypes.DocumentData = ('d' in data) ? data.d : data;
-    const locationKey: string = findCoordinatesKey(unparsed, customKey, true);
+    const locationKey: string = findCoordinatesKey(unparsed, customKey, (options && (options.merge || !!options.mergeFields)));
     if (locationKey) {
       const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = unparsed[locationKey];
       const geohash: string = encodeGeohash(location);

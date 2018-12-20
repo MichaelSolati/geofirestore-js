@@ -36,7 +36,7 @@ export class GeoWriteBatch {
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
     (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).set(
       ref,
-      encodeSetDocument(data, (options) ? options.customKey : null),
+      encodeSetDocument(data, options),
       options
     );
     return this;

@@ -174,13 +174,22 @@ function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, re
   }).catch(err => reject(err));
 }
 
-export function stubDatabase(data: any[] = dummyData): Promise<any> {
+export function stubDatabase(): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
   const geocollection = new GeoCollectionReference(collection);
-  data.forEach(item => {
+  dummyData.forEach(item => {
     const insert = geocollection.doc(item.key);
     batch.set(insert, item);
   });
   return batch.commit();
+}
+
+export function sortObject(data: { [key: string]: any }): { [key: string]: any } {
+  const result = {};
+  const primitives = ['boolean', 'null', 'number', 'string', 'undefined'];
+  Object.getOwnPropertyNames(data).sort().forEach((key) => {
+    result[key] = primitives.includes(data[key]) ? data[key] : sortObject(data[key]);
+  });
+  return result;
 }

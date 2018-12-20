@@ -42,7 +42,7 @@ export class GeoDocumentReference {
    * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
    * @return An unsubscribe function that can be called to cancel the snapshot listener.
    */
-  get onSnapshot(): (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => void {
+  get onSnapshot(): ((onNext: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => () => void) {
     return (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => {
       return (this._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot((snapshot) => {
         if (onNext) { onNext(new GeoDocumentSnapshot(snapshot)); }
@@ -105,7 +105,7 @@ export class GeoDocumentReference {
     options?: GeoFirestoreTypes.SetOptions
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
-      encodeSetDocument(data, (options) ? options.customKey : null),
+      encodeSetDocument(data, options),
       options
     ).then(() => null);
   }
@@ -145,6 +145,6 @@ export class GeoDocumentReference {
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
     return this._isWeb ?
       (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
-      (this._document as GeoFirestoreTypes.web.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
+      (this._document as GeoFirestoreTypes.cloud.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 }
