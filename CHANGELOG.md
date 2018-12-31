@@ -1,3 +1,13 @@
+### 2.4.0 (2018-12-31)
+
+##### New Features
+
+* **GeoFirestoreQuery:**  add `error` listener for `on` function, fixes [#60](https://github.com/MichaelSolati/geofirestore/pull/60) ([b01d6906](https://github.com/MichaelSolati/geofirestore/commit/b01d69069505879e35c3964ead4b3954182a61f5))
+
+##### Refactors
+
+* **GeoFirestoreQuery:**  use `where` instead of `startAt` and `endAt`, fixes [#63](https://github.com/MichaelSolati/geofirestore/pull/63) ([f475fa01](https://github.com/MichaelSolati/geofirestore/commit/f475fa0100b5d4153f6cd01620c6c16a3cb930da))
+
 ### 2.3.0 (2018-12-17)
 
 ##### Documentation Changes
