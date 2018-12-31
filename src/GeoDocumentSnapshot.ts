@@ -70,9 +70,9 @@ export class GeoDocumentSnapshot {
     fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
     options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
-    const d = (this._isWeb && options) ?
-      (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(fieldPath, options) : this._snapshot.get(fieldPath);
-    return d;
+    const path = 'd.' + fieldPath;
+    return (this._isWeb && options) ?
+      (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(path, options) : this._snapshot.get(path);
   }
 
   /**
