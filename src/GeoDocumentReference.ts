@@ -44,11 +44,10 @@ export class GeoDocumentReference {
    */
   get onSnapshot(): ((onNext: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => () => void) {
     return (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => {
-      return (this._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot((snapshot) => {
-        if (onNext) { onNext(new GeoDocumentSnapshot(snapshot)); }
-      }, (error) => {
-        if (onError) { onError(error); }
-      });
+      return (this._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot(
+        (snapshot) => onNext(new GeoDocumentSnapshot(snapshot)),
+        (error) => { if (onError) { onError(error); } }
+      );
     };
   }
 

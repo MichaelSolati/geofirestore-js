@@ -132,7 +132,7 @@ export class GeoQuery {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
-      return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as GeoFirestoreTypes.web.Query;
+      return this._query.where('g', '>=', query[0]).where('g', '<=', query[1]) as GeoFirestoreTypes.web.Query;
     });
   }
 
