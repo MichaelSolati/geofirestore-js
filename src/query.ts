@@ -429,7 +429,7 @@ export class GeoFirestoreQuery {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
-      const firestoreQuery: firestore.web.Query = this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as firestore.web.Query;
+      const firestoreQuery: firestore.web.Query = this._query.where('g', '>=', query[0]).where('g', '<=', query[1]) as firestore.web.Query;
 
       // For every new matching geohash, determine if we should fire the 'key_entered' event
       const childCallback = firestoreQuery.onSnapshot((snapshot: firestore.web.QuerySnapshot | firestore.cloud.QuerySnapshot) => {
