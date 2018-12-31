@@ -9,7 +9,7 @@ import { firestore, GeoFirestoreObj, GeoFirestoreQueryState, GeoQueryCallbacks, 
  */
 export class GeoFirestoreQuery {
   // Event callbacks
-  private _callbacks: GeoQueryCallbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
+  private _callbacks: GeoQueryCallbacks = { ready: [], error: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
   // Variable to track when the query is cancelled
   private _cancelled = false;
   private _center: firestore.web.GeoPoint | firestore.cloud.GeoPoint;
@@ -53,7 +53,6 @@ export class GeoFirestoreQuery {
     this._center = queryCriteria.center;
     this._radius = queryCriteria.radius;
     this._query = (queryCriteria.query) ? queryCriteria.query(this._collectionRef) : this._collectionRef;
-
     // Listen for new geohashes being added around this query and fire the appropriate events
     this._listenForNewGeohashes();
   }
@@ -70,7 +69,7 @@ export class GeoFirestoreQuery {
     this._cancelled = true;
 
     // Cancel all callbacks in this query's callback list
-    this._callbacks = { ready: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
+    this._callbacks = { ready: [], error: [], key_entered: [], key_exited: [], key_moved: [], key_modified: [] };
 
     // Turn off all Firebase listeners for the current geohashes being queried
     const keys: string[] = Array.from(this._currentGeohashesQueried.keys());
@@ -128,8 +127,8 @@ export class GeoFirestoreQuery {
    */
   public on(eventType: string, callback: KeyCallback | ReadyCallback): GeoCallbackRegistration {
     // Validate the inputs
-    if (['ready', 'key_entered', 'key_exited', 'key_moved', 'key_modified'].indexOf(eventType) === -1) {
-      throw new Error('event type must be \'ready\', \'key_entered\', \'key_exited\', \'key_moved\', or \'key_modified\'');
+    if (['ready', 'error', 'key_entered', 'key_exited', 'key_moved', 'key_modified'].indexOf(eventType) === -1) {
+      throw new Error('event type must be \'ready\', \'error\', \'key_entered\', \'key_exited\', \'key_moved\', or \'key_modified\'');
     }
     if (typeof callback !== 'function') {
       throw new Error('callback must be a function');
@@ -339,12 +338,17 @@ export class GeoFirestoreQuery {
   }
 
   /**
+   * Fires each callback for the 'error' event.
+   */
+  private _fireErrorEventCallbacks(error: Error): void {
+    this._callbacks.error.forEach((callback) => callback(error));
+  }
+
+  /**
    * Fires each callback for the 'ready' event.
    */
   private _fireReadyEventCallbacks(): void {
-    this._callbacks.ready.forEach((callback) => {
-      callback();
-    });
+    this._callbacks.ready.forEach((callback) => callback());
   }
 
   /**
@@ -424,7 +428,6 @@ export class GeoFirestoreQuery {
     geohashesToQuery.forEach((toQueryStr: string) => {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
-
       // Create the Firebase query
       const firestoreQuery: firestore.web.Query = this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as firestore.web.Query;
 
@@ -456,7 +459,7 @@ export class GeoFirestoreQuery {
           childCallback,
           valueCallback
         });
-      });
+      }, (error) => this._fireErrorEventCallbacks(error));
     });
     // Based upon the algorithm to calculate geohashes, it's possible that no 'new'
     // geohashes were queried even if the client updates the radius of the query.

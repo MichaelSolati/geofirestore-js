@@ -585,6 +585,17 @@ describe('GeoFirestoreQuery Tests:', () => {
     });
   });
 
+  describe('\'error\' event:', () => {
+    it('\'error\' event fires after invalid index found', (done) => {
+      const cl = new Checklist(['error fired'], expect, done);
+      geoFirestoreQueries.push(geoFirestore.query({ center: new firebase.firestore.GeoPoint(0, 0), radius: 1, query: (ref) => ref.where('d.test', '==', 0) }));
+      const onErrorCallbackRegistration = geoFirestoreQueries[0].on('error', () => {
+        cl.x('error fired');
+        onErrorCallbackRegistration.cancel();
+      });
+    });
+  });
+
   describe('\'key_moved\' event:', () => {
     it('\'key_moved\' callback does not fire for brand new locations within or outside of the GeoFirestoreQuery', (done) => {
       const cl = new Checklist(['p1', 'p2'], expect, done);
@@ -1763,7 +1774,6 @@ describe('GeoFirestoreQuery Tests:', () => {
         radius: 1000
       }));
 
-      
       expect(() => geoFirestoreQueries[0]['_queryToString']([])).to.throw();
     });
 
@@ -1773,7 +1783,6 @@ describe('GeoFirestoreQuery Tests:', () => {
         radius: 1000
       }));
 
-      
       expect(() => geoFirestoreQueries[0]['_stringToQuery']('p129438tr')).to.throw();
     });
   });

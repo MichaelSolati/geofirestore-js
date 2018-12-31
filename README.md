@@ -343,6 +343,8 @@ Attaches a `callback` to this query which will be run when the provided `eventTy
 
 `ready` fires once when this query's initial state has been loaded from the server. The `ready` event will fire after all other events associated with the loaded data have been triggered. `ready` will fire again once each time `updateCriteria()` is called, after all new data is loaded and all other new events have been fired.
 
+`error` fires when this query's throws an Error. When an Error is thrown, no other listeners will work.
+
 `key_entered` fires when a key enters this query. This can happen when a key moves from a location outside of this query to one inside of it or when a key is written to `GeoFirestore` for the first time and it falls within this query.
 
 `key_exited` fires when a key moves from a location inside of this query to one outside of it. If the key was entirely removed from `GeoFirestore`, both the document and distance passed to the `callback` will be `null`.
@@ -356,6 +358,10 @@ Returns a `GeoCallbackRegistration` which can be used to cancel the `callback`. 
 ```JavaScript
 const onReadyRegistration = geoQuery.on('ready', () => {
   console.log('GeoFirestoreQuery has loaded and fired all other events for initial data');
+});
+
+const onErrorRegistration = geoQuery.on('error', (error) => {
+  console.log('GeoFirestoreQuery has thrown an Error: ' + error.message);
 });
 
 const onKeyEnteredRegistration = geoQuery.on('key_entered', function(key, document, distance) {
