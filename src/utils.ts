@@ -432,8 +432,7 @@ export function metersToLongitudeDegrees(distance: number, latitude: number): nu
   const deltaDeg = num * denom;
   if (deltaDeg < EPSILON) {
     return distance > 0 ? 360 : 0;
-  }
-  else {
+  } else {
     return Math.min(360, distance / deltaDeg);
   }
 }
@@ -592,8 +591,7 @@ export function wrapLongitude(longitude: number): number {
   const adjusted = longitude + 180;
   if (adjusted > 0) {
     return (adjusted % 360) - 180;
-  }
-  else {
+  } else {
     return 180 - (-adjusted % 360);
   }
 }
