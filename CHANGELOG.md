@@ -1,3 +1,57 @@
+## 3.0.0 (2019-01-02)
+
+##### Chores
+
+* **README:**
+  *  add some badges ([d1f2c220](https://github.com/geofirestore/geofirestore-js/commit/d1f2c220157dc9065bb914b575d5c314a0169ef7))
+  *  update badges ([bb2aa25f](https://github.com/geofirestore/geofirestore-js/commit/bb2aa25fa6bc5e23d6d4805a982b35fa0a056926))
+* **examples:**  update viewers example ([aed1a369](https://github.com/geofirestore/geofirestore-js/commit/aed1a36903717ae8aa15f3993d46adf6b86944c9))
+*  update dependencies and typings ([36cd49d3](https://github.com/geofirestore/geofirestore-js/commit/36cd49d33bbaa1c2f116c00abccb3d551a3512ee))
+*  generate and deploy docs site ([5273128f](https://github.com/geofirestore/geofirestore-js/commit/5273128f8dad518de10130808d44fa9b99931afd))
+
+##### Documentation Changes
+
+*  update README.md to reference https://geofirestore.com, as well as other tweaks ([d07efafc](https://github.com/geofirestore/geofirestore-js/commit/d07efafc765ba1ee7037c287207ef1564e34a3e7))
+*  fix up docs and max all lines to 140 characters ([06af76c7](https://github.com/geofirestore/geofirestore-js/commit/06af76c77f9d4af56a5e9216ff33b9dc7a435eae))
+
+##### New Features
+
+* **GeoJoinerGet:**  move join logic of `get` functions to own class with logic to filter out items not in radius of query ([5716654a](https://github.com/geofirestore/geofirestore-js/commit/5716654a63078d3a5f852a4a3d5a34a9d9fe4f55))
+* **GeoJoinerOnSnapshot:**  add ability to join `GeoQuerySnapshot` events from `onSnapshot` ([ba829244](https://github.com/geofirestore/geofirestore-js/commit/ba8292448c15612fa880ddb6079bea817c8e5b53))
+* **GeoDocumentSnapshot:**  add GeoDocumentSnapshot for for doc references and queries ([1abb499b](https://github.com/geofirestore/geofirestore-js/commit/1abb499b0147144fc5c7c0ea386217cddffe4203))
+* **GeoDocumentReference:**  add GeoDocumentReference for returns of doc and add ([9a5af9a5](https://github.com/geofirestore/geofirestore-js/commit/9a5af9a54aa463aec84dd436d29bcc9ad3f34e06))
+* **GeoQuery:**  implement remaining Firestore Query functions ([3cd3e0e3](https://github.com/geofirestore/geofirestore-js/commit/3cd3e0e33efe28d9f6a8dcc69d8bde70ced91701))
+* **GeoWriteBatch:**  add batch functionality to geofirestore ([f01de430](https://github.com/geofirestore/geofirestore-js/commit/f01de430bb6cdf8e924980afd2feb91519787825))
+* **GeoQuerySnapshot:**  filter out locations not in query ([b0ce13cb](https://github.com/geofirestore/geofirestore-js/commit/b0ce13cb317af14dd5b671695d618415b299ad7d))
+* **GeoFirestore:**  start rewrite to better align library to firestore sdk ([bf1d4273](https://github.com/geofirestore/geofirestore-js/commit/bf1d4273170e593ddef1da0d2c0fcbeef0e88586))
+
+##### Bug Fixes
+
+* **GeoFirestoreTypes:**  DocumentChange `doc` should return QueryDocumentSnapshot ([3b2e5d6c](https://github.com/geofirestore/geofirestore-js/commit/3b2e5d6cfc051c77c88e81471ccb58f929eeba9d))
+* **GeoDocumentReference:**  fix update function to use encodeUpdateDocument util function ([97baf212](https://github.com/geofirestore/geofirestore-js/commit/97baf212f41442264190806f7523fcdb7daa9864))
+* **GeoWriteBatch:**  fix update function to use fieldNames ([e27e668a](https://github.com/geofirestore/geofirestore-js/commit/e27e668ad89bb83bc6096fb93e147b0a584cf365))
+
+##### Refactors
+
+*  small change to `onSnapshot` and how geoqueries are generated ([7beffe69](https://github.com/geofirestore/geofirestore-js/commit/7beffe691588fa9db871cde3e95554624e141230))
+*  simply GeoFirestoreTypes and remove incompatible GeoQuery functions ([0edef6de](https://github.com/geofirestore/geofirestore-js/commit/0edef6de4a1bf374c9e52606725a59a520376714))
+* **GeoQuery:**  remove unneeded function ([76fa5af1](https://github.com/geofirestore/geofirestore-js/commit/76fa5af10ed8b4aca8348380c7e991cc42919df3))
+* **GeoFirestoreTypes:**  rename and put together all interfaces into GeoFirestoreTypes ([9141fb37](https://github.com/geofirestore/geofirestore-js/commit/9141fb373dedcfd9006ef087a9c1c39efd8af3bb))
+
+##### Tests
+
+* **GeoJoinerOnSnapshot:**  increase code coverage ([27803b3a](https://github.com/geofirestore/geofirestore-js/commit/27803b3a6eb8616268a4328f654d39da1f009bfb))
+* **utils:**  add code coverage for utils ([7872c290](https://github.com/geofirestore/geofirestore-js/commit/7872c290b406ca7d92ff3bae4bfc324e3d213357))
+* **GeoDocumentSnapshot:**  bring coverage to 100% ([5caa5b10](https://github.com/geofirestore/geofirestore-js/commit/5caa5b1008618fb7e59e7a2cbb57d7264f21f0b7))
+* **GeoDocumentReference:**  increase code coverage ([e9811ad1](https://github.com/geofirestore/geofirestore-js/commit/e9811ad13c989cf0b920ec1ff0b0dfb27e95d9d7))
+* **GeoQuerySnapshot:**  bring coverage to 100% ([51122f9d](https://github.com/geofirestore/geofirestore-js/commit/51122f9d1a13ae5105ee17a218ebe8d6ebf11e09))
+* **GeoQuery:**
+  *  bring coverage to 100% ([6252222b](https://github.com/geofirestore/geofirestore-js/commit/6252222b569fbb159b69949800e705d29131d0aa))
+  *  add basic tests for GeoQuery ([56cc5c44](https://github.com/geofirestore/geofirestore-js/commit/56cc5c44d0217e3f9a4a3f96a1da31c6bc76e351))
+* **GeoCollectionReference:**  bring coverage to 100% ([47a17f6e](https://github.com/geofirestore/geofirestore-js/commit/47a17f6e0a938b4d5328a6594876c94bff7939c0))
+* **GeoWriteBatch:**  create basic tests for GeoWriteBatch ([687c3061](https://github.com/geofirestore/geofirestore-js/commit/687c306153f434bcc59b1c1739e98b9954fecc78))
+* **GeoFirestore:**  add basic tests for new GeoFirestore ([74f97d75](https://github.com/geofirestore/geofirestore-js/commit/74f97d75d40b283856cd1ef10128bfffd8f47911))
+
 ### 2.4.0 (2018-12-31)
 
 ##### New Features
