@@ -1,6 +1,6 @@
 # geofirestore
 
-[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/geofirestore/geofirestore-js.svg?branch=master)](https://travis-ci.org/geofirestore/geofirestore-js) [![Coverage Status](https://coveralls.io/repos/github/geofirestore/geofirestore-js/badge.svg?branch=master)](https://coveralls.io/github/geofirestore/geofirestore-js?branch=master)
+[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/geofirestore/geofirestore-js.svg?branch=master)](https://travis-ci.org/geofirestore/geofirestore-js) [![Coverage Status](https://coveralls.io/repos/github/geofirestore/geofirestore-js/badge.svg?branch=master)](https://coveralls.io/github/geofirestore/geofirestore-js?branch=master) [![star this repo](http://githubbadges.com/star.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js) [![fork this repo](http://githubbadges.com/fork.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js/fork)
 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
