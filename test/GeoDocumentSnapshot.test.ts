@@ -162,13 +162,10 @@ describe('GeoDocumentSnapshot Tests:', () => {
 
   describe('isEqual:', () => {
     it('isEqual() returns true when given corresponding DocumentSnapshot', (done) => {
-      let geoQuerySnapshot;
       stubDatabase()
         .then(() => geocollection.doc(dummyData[0].key).get())
-        .then((snapshot) => geoQuerySnapshot = snapshot)
-        .then(() => collection.doc(dummyData[0].key).get())
         .then((snapshot) => {
-          expect(geoQuerySnapshot.isEqual(snapshot)).to.equal(true);
+          expect(snapshot.isEqual(snapshot['_snapshot'])).to.equal(true);
         })
         .then(done);
     });
@@ -183,13 +180,13 @@ describe('GeoDocumentSnapshot Tests:', () => {
     });
 
     it('isEqual() returns false when given non-corresponding DocumentSnapshot', (done) => {
-      let geoQuerySnapshot;
+      let snapshotDoc0;
       stubDatabase()
         .then(() => geocollection.doc(dummyData[0].key).get())
-        .then((snapshot) => geoQuerySnapshot = snapshot)
+        .then((snapshot) => snapshotDoc0 = snapshot)
         .then(() => collection.doc(dummyData[1].key).get())
         .then((snapshot) => {
-          expect(geoQuerySnapshot.isEqual(snapshot)).to.equal(false);
+          expect(snapshotDoc0.isEqual(snapshot)).to.equal(false);
         })
         .then(done);
     });

@@ -37,7 +37,7 @@ export class GeoJoinerOnSnapshot {
       this._subscriptions.push(subscription);
     });
 
-    this._interval = setInterval(() => this._emit(), 1000);
+    this._interval = setInterval(() => this._emit(), 100);
   }
 
   /**
@@ -86,7 +86,7 @@ export class GeoJoinerOnSnapshot {
   private _emit(): void {
     if (this._error) {
       if (this._onError) this._onError(this._error);
-      this.unsubscribe();
+      this.unsubscribe()();
     } else if (this._newValues && this._firstRoundResolved) {
       this._newValues = false;
       this._next();
@@ -104,7 +104,7 @@ export class GeoJoinerOnSnapshot {
   private _processSnapshot(snapshot: GeoFirestoreTypes.web.QuerySnapshot, index: number): void {
     if (!this._firstRoundResolved) this._queriesResolved[index] = 1;
     snapshot.docChanges().forEach((change) => {
-      const distance = calculateDistance(this._near.center, change.doc.data().l);
+      const distance = change.doc.data().l ? calculateDistance(this._near.center, change.doc.data().l) : null;
       const id = change.doc.id;
       const fromMap = this._docs.get(id);
       const doc: any = {
