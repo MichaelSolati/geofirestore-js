@@ -1,46 +1,42 @@
 let map;
-const collectionRef = firestore.collection('viewers');
-const geoFirestore = new GeoFirestore(collectionRef);
-let geoQuery;
+const geoFirestore = new GeoFirestore(firestore);
+const geoCollectionRef = geoFirestore.collection('viewers');
+let subscription;
 const markers = {};
 const radius = 1500;
 
 // Query viewers' locations from Firestore
 function queryFirestore(location) {
-  if (geoQuery) {
-    geoQuery.updateCriteria({
-      center: new firebase.firestore.GeoPoint(location.lat, location.lng)
-    });
-  } else {
-    geoQuery = geoFirestore.query({
-      center: new firebase.firestore.GeoPoint(location.lat, location.lng),
-      radius
-    });
-
-    geoQuery.on('ready', () => {
-      console.log('GeoFirestoreQuery has loaded and fired all other events for initial data');
-    });
-
-    geoQuery.on('key_entered', function (key, document, distance) {
-      console.log(key + ' entered query at ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
-      addMarker(key, document);
-    });
-
-    geoQuery.on('key_exited', function (key, document, distance) {
-      console.log(key + ' exited query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
-      // removeMarker(key); // To remove a marker if you wanted
-    });
-
-    geoQuery.on('key_moved', function (key, document, distance) {
-      console.log(key + ' moved within query to ' + document.coordinates.latitude + ',' + document.coordinates.longitude + ' (' + distance + ' km from center)');
-      updateMarker(key, document);
-    });
-
-    geoQuery.on('key_modified', function (key, document, distance) {
-      console.log(key + ' in query has been modified');
-      updateMarker(key, document);
-    });
+  if (subscription) {
+    console.log('Old query subscription cancelled');
+    subscription();
+    subscription = false;
   }
+
+  const query = geoCollectionRef.near({
+    center: new firebase.firestore.GeoPoint(location.lat, location.lng),
+    radius
+  });
+
+  console.log('New query subscription created');
+  subscription = query.onSnapshot((snapshot) => {
+    console.log(snapshot.docChanges())
+    snapshot.docChanges().forEach((change) => {
+      switch (change.type) {
+        case 'added':
+          console.log('Snapshot detected added marker');
+          return addMarker(change.doc.id, change.doc.data());
+        case 'modified':
+          console.log('Snapshot detected modified marker');
+          return updateMarker(change.doc.id, change.doc.data());
+        case 'removed':
+          console.log('Snapshot detected removed marker');
+          return removeMarker(change.doc.id, change.doc.data());
+        default:
+          break;
+      }
+    });
+  });
 }
 
 // First find if viewer's location is in Firestore
@@ -49,7 +45,8 @@ function getInFirestore(location) {
   location.lng = Number(location.lng.toFixed(1));
   const hash = geokit.Geokit.hash(location);
 
-  geoFirestore.get(hash).then((document) => {
+  geoCollectionRef.doc(hash).get().then((snapshot) => {
+    let document = snapshot.data();
     if (!document) {
       document = {
         count: 1,
@@ -69,7 +66,7 @@ function getInFirestore(location) {
 
 // Set viewer's location in Firestore
 function setInFirestore(key, document) {
-  geoFirestore.set(key, document).then(() => {
+  geoCollectionRef.doc(key).set(document).then(() => {
     console.log('Provided document has been set in Firestore');
   }, (error) => {
     console.log('Error: ' + error);
