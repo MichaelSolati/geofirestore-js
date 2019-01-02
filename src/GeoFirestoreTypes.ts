@@ -11,7 +11,7 @@ export namespace GeoFirestoreTypes {
   }
   export type DocumentData = { [field: string]: any } | undefined;
   export interface DocumentChange {
-    doc: DocumentData;
+    doc: QueryDocumentSnapshot;
     newIndex: number;
     oldIndex: number;
     type: 'added' | 'modified' | 'removed';
