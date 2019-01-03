@@ -1,3 +1,13 @@
+#### 3.0.1 (2019-01-03)
+
+##### Chores
+
+*  update dev dependencies ([b2ae17f4](https://github.com/geofirestore/geofirestore-js/commit/b2ae17f44cde95e421a45412122c9332907e9815))
+
+##### Documentation Changes
+
+* **README:**  fix typo and add dependency badge, fixes [#69](https://github.com/geofirestore/geofirestore-js/pull/69) ([55fd7bd3](https://github.com/geofirestore/geofirestore-js/commit/55fd7bd39c6276c069d4c22bb12d819299e81b54))
+
 ## 3.0.0 (2019-01-02)
 
 ##### Chores
