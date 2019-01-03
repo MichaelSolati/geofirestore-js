@@ -1,6 +1,6 @@
 # geofirestore
 
-[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/geofirestore/geofirestore-js.svg?branch=master)](https://travis-ci.org/geofirestore/geofirestore-js) [![Coverage Status](https://coveralls.io/repos/github/geofirestore/geofirestore-js/badge.svg?branch=master)](https://coveralls.io/github/geofirestore/geofirestore-js?branch=master) [![star this repo](http://githubbadges.com/star.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js) [![fork this repo](http://githubbadges.com/fork.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js/fork)
+[![npm version](https://badge.fury.io/js/geofirestore.svg)](https://badge.fury.io/js/geofirestore) [![Build Status](https://travis-ci.org/geofirestore/geofirestore-js.svg?branch=master)](https://travis-ci.org/geofirestore/geofirestore-js) [![Coverage Status](https://coveralls.io/repos/github/geofirestore/geofirestore-js/badge.svg?branch=master)](https://coveralls.io/github/geofirestore/geofirestore-js?branch=master) [![dependencies Status](https://david-dm.org/geofirestore/geofirestore-js/status.svg)](https://david-dm.org/geofirestore/geofirestore-js) [![star this repo](http://githubbadges.com/star.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js) [![fork this repo](http://githubbadges.com/fork.svg?user=geofirestore&repo=geofirestore-js&style=flat)](https://github.com/geofirestore/geofirestore-js/fork)
 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
@@ -71,7 +71,7 @@ query.get().then((value: GeoQuerySnapshot) => {
 });
 ```
 
-Simple. Easy. And very similar with how Firestore handles a `get` from a Firestore `Query`. The only difference being is the added ability to say query `near` a `center` point, with a set `radius` in meters.
+Simple. Easy. And very similar with how Firestore handles a `get` from a Firestore `Query`. The only difference being is the added ability to say query `near` a `center` point, with a set `radius` in kilometers.
 
 ## Contributing
 
