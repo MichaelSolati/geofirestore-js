@@ -1,3 +1,13 @@
+#### 3.0.2 (2019-01-15)
+
+##### Chores
+
+*  update dev dependencies ([92a4c7b6](https://github.com/geofirestore/geofirestore-js/commit/92a4c7b6fda2b0b6c4081dd6dcea77570f289259))
+
+##### Bug Fixes
+
+* **GeoJoinerOnSnapshot:**  emit snapshot on empty queries and update docs array when doc removed, fixes [#73](https://github.com/geofirestore/geofirestore-js/pull/73) ([85f2e260](https://github.com/geofirestore/geofirestore-js/commit/85f2e2605ac69a08c6653a53ae8160e3f151883f))
+
 #### 3.0.1 (2019-01-03)
 
 ##### Chores
