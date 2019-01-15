@@ -5,7 +5,7 @@ import { validateQueryCriteria, calculateDistance } from './utils';
 interface DocMap { change: GeoFirestoreTypes.web.DocumentChange; distance: number; emitted: boolean; }
 
 /**
- * A `GeoJoinerOnSnapshot` subscribes and aggregates multiple `onSnapshot` listeners 
+ * A `GeoJoinerOnSnapshot` subscribes and aggregates multiple `onSnapshot` listeners
  * while filtering out documents not in query radius.
  */
 export class GeoJoinerOnSnapshot {
@@ -29,11 +29,9 @@ export class GeoJoinerOnSnapshot {
     private _onNext: (snapshot: GeoQuerySnapshot) => void, private _onError?: (error: Error) => void
   ) {
     validateQueryCriteria(_near);
-
-    this._queriesResolved = (new Array(_queries.length)).fill(0);
-
+    this._queriesResolved = new Array(_queries.length).fill(0);
     _queries.forEach((value: GeoFirestoreTypes.web.Query, index: number) => {
-      const subscription = value.onSnapshot((snapshot) => this._processSnapshot(snapshot, index), (error) => this._error = error);
+      const subscription = value.onSnapshot(snapshot => this._processSnapshot(snapshot, index), error => (this._error = error));
       this._subscriptions.push(subscription);
     });
 
@@ -42,7 +40,7 @@ export class GeoJoinerOnSnapshot {
 
   /**
    * A functions that clears the interval and ends all query subscriptions.
-   * 
+   *
    * @return An unsubscribe function that can be called to cancel all snapshot listener.
    */
   public unsubscribe(): () => void {
@@ -72,11 +70,19 @@ export class GeoJoinerOnSnapshot {
         return result;
       });
 
-    const docs = docChanges.map((change) => change.doc);
+    const docs = docChanges.reduce((filtered, change) => {
+      if (change.newIndex >= 0) {
+        filtered.push(change.doc);
+      } else {
+        this._docs.delete(change.doc.id);
+      }
+      return filtered;
+    }, []);
+
     this._firstEmitted = true;
     this._onNext(new GeoQuerySnapshot({
-      docs,
-      docChanges: () => docChanges
+          docs,
+          docChanges: () => docChanges
     } as GeoFirestoreTypes.web.QuerySnapshot, this._near.center));
   }
 
@@ -97,35 +103,41 @@ export class GeoJoinerOnSnapshot {
 
   /**
    * Parses `snapshot` and filters out documents not in query radius. Sets new values to `_docs` map.
-   * 
+   *
    * @param snapshot The `QuerySnapshot` of the query.
    * @param index Index of query who's snapshot has been triggered.
    */
   private _processSnapshot(snapshot: GeoFirestoreTypes.web.QuerySnapshot, index: number): void {
     if (!this._firstRoundResolved) this._queriesResolved[index] = 1;
-    snapshot.docChanges().forEach((change) => {
-      const distance = change.doc.data().l ? calculateDistance(this._near.center, change.doc.data().l) : null;
-      const id = change.doc.id;
-      const fromMap = this._docs.get(id);
-      const doc: any = {
-        change: {
-          doc: change.doc,
-          oldIndex: fromMap && this._firstEmitted ? fromMap.change.oldIndex : -1,
-          newIndex: fromMap && this._firstEmitted ? fromMap.change.newIndex : -1,
-          type: fromMap && this._firstEmitted ? change.type : 'added'
-        }, distance, emitted: this._firstEmitted ? !!fromMap : false
-      };
-      // Ensure doc in query radius
-      if (this._near.radius >= distance) {
-        if (!fromMap && doc.change.type === 'removed') return; // Removed doc and wasn't in map
-        if (!fromMap && doc.change.type === 'modified') doc.change.type = 'added'; // Modified doc and wasn't in map
-        this._newValues = true;
-        this._docs.set(id, doc);
-      } else if (fromMap) {
-        doc.change.type = 'removed'; // Not in query anymore, mark for removal 
-        this._newValues = true;
-        this._docs.set(id, doc);
-      }
-    });
+    if (snapshot.docChanges().length) {
+      snapshot.docChanges().forEach(change => {
+        const distance = change.doc.data().l ? calculateDistance(this._near.center, change.doc.data().l) : null;
+        const id = change.doc.id;
+        const fromMap = this._docs.get(id);
+        const doc: any = {
+          change: {
+            doc: change.doc,
+            oldIndex: (fromMap && this._firstEmitted) ? fromMap.change.oldIndex : -1,
+            newIndex: (fromMap && this._firstEmitted) ? fromMap.change.newIndex : -1,
+            type: (fromMap && this._firstEmitted) ? change.type : 'added'
+          }, distance, emitted: this._firstEmitted ? !!fromMap : false
+        };
+        // Ensure doc in query radius
+        if (this._near.radius >= distance) {
+          if (!fromMap && doc.change.type === 'removed') return; // Removed doc and wasn't in map
+          if (!fromMap && doc.change.type === 'modified') doc.change.type = 'added'; // Modified doc and wasn't in map
+          this._newValues = true;
+          this._docs.set(id, doc);
+        } else if (fromMap) {
+          doc.change.type = 'removed'; // Not in query anymore, mark for removal
+          this._newValues = true;
+          this._docs.set(id, doc);
+        } else if (!fromMap && !this._firstRoundResolved) {
+          this._newValues = true;
+        }
+      });
+    } else if (!this._firstRoundResolved) {
+      this._newValues = true;
+    }
   }
 }

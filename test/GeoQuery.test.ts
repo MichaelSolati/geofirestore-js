@@ -5,7 +5,7 @@ import { GeoFirestore } from '../src/GeoFirestore';
 import { GeoQuery } from '../src/GeoQuery';
 import {
   afterEachHelper, beforeEachHelper, collection, dummyData,
-  firestore, invalidFirestores, stubDatabase, invalidLocations
+  firestore, invalidFirestores, stubDatabase, invalidLocations, geocollection
 } from './common';
 
 const expect = chai.expect;
@@ -81,6 +81,65 @@ describe('GeoQuery Tests:', () => {
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
           ]);
           done();
+        });
+      });
+    });
+
+    it('onSnapshot returns no data, with geo related filters on an empty area', (done) => {
+      const center = new firebase.firestore.GeoPoint(-50, -50);
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.near({ center, radius: 1 }).onSnapshot((snapshot) => {
+          subscription();
+          expect(snapshot.empty).to.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot updates when a new document, that matches the query, is added to collection', (done) => {
+      const center = new firebase.firestore.GeoPoint(-50, -50);
+      const doc = geocollection.doc();
+      let runOnce = false;
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.near({ center, radius: 1 }).onSnapshot((snapshot) => {
+          if (!runOnce) {
+            runOnce = true;
+            setTimeout(() => {
+              doc.set({ coordinates: center });
+            }, 100);
+          } else {
+            subscription();
+            const result = snapshot.docs.map(d => d.data());
+            expect(result).to.have.deep.members([{ coordinates: center }]);
+            done();
+          }
+        });
+      });
+    });
+
+    it('onSnapshot updates when a document, that belongs in the query, is removed from collection', (done) => {
+      const doc = dummyData[0];
+      let runOnce = false;
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.near({ center: doc.coordinates, radius: 0.1 }).onSnapshot((snapshot) => {
+          if (!runOnce) {
+            runOnce = true;
+            expect(snapshot.empty).to.equal(false);
+            expect(snapshot.docChanges().length).to.equal(1);
+            expect(snapshot.docChanges()[0].type).to.equal('added');
+            setTimeout(() => {
+              geocollection.doc(doc.key).delete();
+            }, 100);
+          } else {
+            subscription();
+            expect(snapshot.empty).to.equal(true);
+            expect(snapshot.docChanges().length).to.equal(1);
+            expect(snapshot.docChanges()[0].type).to.equal('removed');
+            done();
+          }
         });
       });
     });
