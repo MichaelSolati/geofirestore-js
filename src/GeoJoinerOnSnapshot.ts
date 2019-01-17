@@ -70,14 +70,16 @@ export class GeoJoinerOnSnapshot {
       }
     }
 
+    let deductIndexBy = 0;
     const docChanges = Array.from(this._docs.values()).map((value: DocMap, index: number) => {
         const result: GeoFirestoreTypes.web.DocumentChange = {
           type: value.change.type,
           doc: value.change.doc,
-          oldIndex: value.emitted ? index : -1,
-          newIndex: (value.change.type !== 'removed') ? index : -1
+          oldIndex: value.emitted ? value.change.newIndex : -1,
+          newIndex: (value.change.type !== 'removed') ? (index - deductIndexBy) : -1
         };
         if (result.type === 'removed') {
+          deductIndexBy--;
           this._docs.delete(result.doc.id);
         } else {
           this._docs.set(result.doc.id, { change: result, distance: value.distance, emitted: true });
