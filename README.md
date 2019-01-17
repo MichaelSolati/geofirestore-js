@@ -41,7 +41,7 @@ You can find a full list of our demos and view the code for each of them in the 
 
 ## Documentation
 
-Full documentation is available at [https://geofirestore.com](https://geofirestore.com). It mostly provides the same functionality as the Firestore library, in almost same way as the Firestore library. Many questions can be addressed by looking at the [Firestore docs](https://firebase.google.com/docs/firestore/). However there are a few differences, and below is a little example of how to make a location based query.
+Full documentation is available at [https://geofirestore.com](https://geofirestore.com). It mostly provides the same functionality as the Firestore library, in almost the same way as the Firestore library. Many questions can be addressed by looking at the [Firestore docs](https://firebase.google.com/docs/firestore/). However there are a few differences, and below is a little example of how to make a location based query.
 
 ```TypeScript
 import * as firebase from 'firebase/app';
@@ -74,7 +74,7 @@ query.get().then((value: GeoQuerySnapshot) => {
 Simple. Easy. And very similar with how Firestore handles a `get` from a Firestore `Query`. The difference being the added ability to say query `near` a `center` point, with a set `radius` in kilometers.
 
 ## Limitations
-Internally GeoFirestore creates multiple geohases around a requested area. It queries them and furter calculations on the seperate results are done within the libary. Because of this at this time the additional filtering methods `orderBy`, `limit`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/).
+Internally GeoFirestore creates multiple geohases around a requested area. It queries them and furter calculations on the seperate results are done within the libary. Because of this the additional filtering methods `orderBy`, `limit`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/) at this time.
 
 ## Contributing
 
