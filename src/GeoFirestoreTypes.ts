@@ -19,6 +19,7 @@ export namespace GeoFirestoreTypes {
   export interface QueryCriteria {
     center?: cloud.GeoPoint | web.GeoPoint;
     radius?: number;
+    limit?: number;
   }
   export interface QueryDocumentSnapshot {
     exists: boolean;

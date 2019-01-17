@@ -15,6 +15,7 @@ GeoFirestore is designed as a lightweight add-on to Firebase. To keep things sim
 * [Downloading GeoFirestore](#downloading-geofirestore)
 * [Example Usage](#example-usage)
 * [Documentation](#documentation)
+* [Limitations](#limitations)
 * [Contributing](#contributing)
 
 ## Downloading GeoFirestore
@@ -74,7 +75,12 @@ query.get().then((value: GeoQuerySnapshot) => {
 Simple. Easy. And very similar with how Firestore handles a `get` from a Firestore `Query`. The difference being the added ability to say query `near` a `center` point, with a set `radius` in kilometers.
 
 ## Limitations
-Internally GeoFirestore creates multiple geohases around a requested area. It queries them and furter calculations on the seperate results are done within the libary. Because of this the additional filtering methods `orderBy`, `limit`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/) at this time.
+
+Internally GeoFirestore creates multiple geohases around a requested area. It queries them and furter calculations on the seperate results are done within the libary. Because of this the additional filtering methods `orderBy`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/) at this time.
+
+### `limit()`
+
+The `limit` filtering method is exposed through GeoFirestore, however as geoqueries require an aggregation of queries, the library applies a paritial limit on the server, but primarily runs its limit on the client. This may mean you are loading to the client more documents then you intended. Use with this performance limitation in mind.
 
 ## Contributing
 

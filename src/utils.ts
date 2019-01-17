@@ -558,7 +558,7 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
   // Throw an error if there are any extraneous attributes
   const keys: string[] = Object.keys(newQueryCriteria);
   for (const key of keys) {
-    if (!['center', 'radius'].includes(key)) {
+    if (!['center', 'radius', 'limit'].includes(key)) {
       throw new Error('Unexpected attribute \'' + key + '\' found in query criteria');
     }
   }
@@ -574,6 +574,15 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
       throw new Error('radius must be a number');
     } else if (newQueryCriteria.radius < 0) {
       throw new Error('radius must be greater than or equal to 0');
+    }
+  }
+
+  // Validate the 'limit' attribute
+  if (typeof newQueryCriteria.limit !== 'undefined') {
+    if (typeof newQueryCriteria.limit !== 'number' || isNaN(newQueryCriteria.limit)) {
+      throw new Error('limit must be a number');
+    } else if (newQueryCriteria.limit < 0) {
+      throw new Error('limit must be greater than or equal to 0');
     }
   }
 }

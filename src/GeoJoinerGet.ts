@@ -6,23 +6,33 @@ import { validateQueryCriteria, calculateDistance } from './utils';
  * A `GeoJoinerGet` aggregates multiple `get` results.
  */
 export class GeoJoinerGet {
-  private _docs: GeoFirestoreTypes.web.QueryDocumentSnapshot[] = [];
+  private _docs: Map<string, GeoFirestoreTypes.web.QueryDocumentSnapshot> = new Map();
 
   /**
    * @param snapshots An array of snpashots from a Firestore Query `get` call.
-   * @param _near The center and radius of geo based queries.
+   * @param _queryCriteria The query criteria of geo based queries, includes field such as center, radius, and limit.
    */
-  constructor(snapshots: GeoFirestoreTypes.web.QuerySnapshot[], private _near: GeoFirestoreTypes.QueryCriteria) {
-    validateQueryCriteria(_near);
+  constructor(snapshots: GeoFirestoreTypes.web.QuerySnapshot[], private _queryCriteria: GeoFirestoreTypes.QueryCriteria) {
+    validateQueryCriteria(_queryCriteria);
 
     snapshots.forEach((snapshot: GeoFirestoreTypes.web.QuerySnapshot) => {
       snapshot.docs.forEach((doc) => {
-        const distance = calculateDistance(this._near.center, doc.data().l);
-        if (this._near.radius >= distance) {
-          this._docs.push(doc);
+        const distance = calculateDistance(this._queryCriteria.center, doc.data().l);
+        if (this._queryCriteria.radius >= distance) {
+          this._docs.set(doc.id, doc);
         }
       });
     });
+
+    if (this._queryCriteria.limit && this._docs.size > this._queryCriteria.limit) {
+      const arrayToLimit = Array.from(this._docs.values()).map((doc) => {
+        return {...doc, distance: calculateDistance(this._queryCriteria.center, doc.data().l)};
+      }).sort((a, b) => a.distance - b.distance);
+
+      for (let i = this._queryCriteria.limit; i < arrayToLimit.length; i++) {
+        this._docs.delete(arrayToLimit[i].id);
+      }
+    }
   }
 
   /**
@@ -31,6 +41,9 @@ export class GeoJoinerGet {
    * @return A new `GeoQuerySnapshot` of the filtered documents from the `get`.
    */
   public getGeoQuerySnapshot(): GeoQuerySnapshot {
-    return new GeoQuerySnapshot({ docs: this._docs, docChanges: () => [] } as GeoFirestoreTypes.web.QuerySnapshot, this._near.center);
+    return new GeoQuerySnapshot(
+      { docs: Array.from(this._docs.values()), docChanges: () => [] } as GeoFirestoreTypes.web.QuerySnapshot,
+      this._queryCriteria.center
+    );
   }
 }
