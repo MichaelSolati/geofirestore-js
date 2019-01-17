@@ -3,9 +3,18 @@
     "array-type": [true, "array-simple"],
     "arrow-return-shorthand": true,
     "ban": [true,
-      {"name": "parseInt", "message": "tsstyle#type-coercion"},
-      {"name": "parseFloat", "message": "tsstyle#type-coercion"},
-      {"name": "Array", "message": "tsstyle#array-constructor"}
+      {
+        "name": "parseInt",
+        "message": "tsstyle#type-coercion"
+      },
+      {
+        "name": "parseFloat",
+        "message": "tsstyle#type-coercion"
+      },
+      {
+        "name": "Array",
+        "message": "tsstyle#array-constructor"
+      }
     ],
     "ban-types": [true,
       ["Object", "Use {} instead."],
@@ -19,6 +28,10 @@
     "interface-name": [true, "never-prefix"],
     "jsdoc-format": true,
     "label-position": true,
+    "max-line-length": [
+      true,
+      140
+    ],
     "member-access": true,
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,

@@ -1,149 +1,156 @@
 import * as chai from 'chai';
-import * as firebase from 'firebase';
-
-import { GeoFirestore } from '../src';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 
 import {
-  boundingBoxBits, degreesToRadians, encodeGeohash, geohashQuery, geohashQueries, GEOHASH_PRECISION, metersToLongitudeDegrees,
-  toGeoPoint, validateCriteria, validateGeoFirestoreObject, validateGeohash, validateKey, validateLocation, wrapLongitude
+  boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData, degreesToRadians,
+  encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot,
+  geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees,
+  toGeoPoint, validateGeoDocument, validateGeohash, validateLocation, validateQueryCriteria, wrapLongitude
 } from '../src/utils';
 import {
-  invalidGeoFirestoreObjects, invalidGeohashes, invalidKeys, invalidLocations, invalidQueryCriterias,
-  validGeoFirestoreObjects, validGeohashes, validKeys, validLocations, validQueryCriterias
+  invalidGeoFirestoreDocuments, invalidGeohashes, invalidLocations, invalidQueryCriterias, validGeoFirestoreDocuments, validGeohashes,
+  validLocations, validQueryCriterias, dummyData
 } from './common';
 
 const expect = chai.expect;
 
-describe('geoFireUtils Tests:', () => {
-  describe('Parameter validation:', () => {
-    it('validateKey() does not throw errors given valid keys', () => {
-      validKeys.forEach((validKey) => {
-        expect(() => validateKey(validKey)).not.to.throw();
+describe('Utils Tests:', () => {
+  describe('Bounding box bits:', () => {
+    it('boundingBoxBits() must return correct number of bits', () => {
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(35, 0), 1000)).to.be.equal(28);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(35.645, 0), 1000)).to.be.equal(27);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(36, 0), 1000)).to.be.equal(27);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 0), 1000)).to.be.equal(28);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, -180), 1000)).to.be.equal(28);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 180), 1000)).to.be.equal(28);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 0), 8000)).to.be.equal(22);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(45, 0), 1000)).to.be.equal(27);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(75, 0), 1000)).to.be.equal(25);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(75, 0), 2000)).to.be.equal(23);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(90, 0), 1000)).to.be.equal(1);
+      expect(boundingBoxBits(new firebase.firestore.GeoPoint(90, 0), 2000)).to.be.equal(1);
+    });
+  });
+
+  describe('Bounding box coordinates:', () => {
+    it('boundingBoxCoordinates() must return correct set of coordinates', () => {
+      expect(boundingBoxCoordinates(new firebase.firestore.GeoPoint(41.3083, -72.9279), 1000)).to.have.deep.members([
+        toGeoPoint(41.3083, -72.9279),
+        toGeoPoint(41.3083, -72.93984310002693),
+        toGeoPoint(41.3083, -72.91595689997305),
+        toGeoPoint(41.31734371732957, -72.9279),
+        toGeoPoint(41.31734371732957, -72.93984310002693),
+        toGeoPoint(41.31734371732957, -72.91595689997305),
+        toGeoPoint(41.299256282670434, -72.9279),
+        toGeoPoint(41.299256282670434, -72.93984310002693),
+        toGeoPoint(41.299256282670434, -72.91595689997305),
+      ]);
+    });
+  });
+
+  describe('Calculate distance:', () => {
+    it('calculateDistance() calculates the distance between locations', () => {
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(90, 180),
+        new firebase.firestore.GeoPoint(90, 180))
+      ).to.be.closeTo(0, 0);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(-90, -180),
+        new firebase.firestore.GeoPoint(90, 180))
+      ).to.be.closeTo(20015, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(-90, -180),
+        new firebase.firestore.GeoPoint(-90, 180))
+      ).to.be.closeTo(0, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(-90, -180),
+        new firebase.firestore.GeoPoint(90, -180))
+      ).to.be.closeTo(20015, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(37.7853074, -122.4054274),
+        new firebase.firestore.GeoPoint(78.216667, 15.55))
+      ).to.be.closeTo(6818, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(38.98719, -77.250783),
+        new firebase.firestore.GeoPoint(29.3760648, 47.9818853))
+      ).to.be.closeTo(10531, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(38.98719, -77.250783),
+        new firebase.firestore.GeoPoint(-54.933333, -67.616667))
+      ).to.be.closeTo(10484, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(29.3760648, 47.9818853),
+        new firebase.firestore.GeoPoint(-54.933333, -67.616667))
+      ).to.be.closeTo(14250, 1);
+      expect(calculateDistance(
+        new firebase.firestore.GeoPoint(-54.933333, -67.616667),
+        new firebase.firestore.GeoPoint(-54, -67))
+      ).to.be.closeTo(111, 1);
+    });
+
+    it('calculateDistance() does not throw errors given valid locations', () => {
+      validLocations.forEach((validLocation) => {
+        expect(() => calculateDistance(validLocation, new firebase.firestore.GeoPoint(0, 0))).not.to.throw();
+        expect(() => calculateDistance(new firebase.firestore.GeoPoint(0, 0), validLocation)).not.to.throw();
       });
     });
 
-    it('validateKey() returns true given valid keys with flag enabled', () => {
-      validKeys.forEach((validKey) => {
-        expect(validateKey(validKey, true)).to.be.true; // tslint:disable-line
-      });
-    });
-
-    it('validateKey() throws errors given invalid keys', () => {
-      invalidKeys.forEach((invalidKey) => {
+    it('calculateDistance() throws errors given invalid locations', () => {
+      invalidLocations.forEach((invalidLocation) => {
         // @ts-ignore
-        expect(() => validateKey(invalidKey)).to.throw();
-      });
-    });
-
-    it('validateKey() returns false given invalid keys with flag enabled', () => {
-      invalidKeys.forEach((invalidKey) => {
+        expect(() => calculateDistance(invalidLocation, [0, 0])).to.throw();
         // @ts-ignore
-        expect(validateKey(invalidKey, true)).to.be.false; // tslint:disable-line
-      });
-    });
-
-    it('validateLocation() does not throw errors given valid locations', () => {
-      validLocations.forEach((validLocation, i) => {
-        expect(() => validateLocation(validLocation)).not.to.throw();
-      });
-    });
-
-    it('validateLocation() throws errors given invalid locations', () => {
-      invalidLocations.forEach((invalidLocation, i) => {
-        // @ts-ignore
-        expect(() => validateLocation(invalidLocation)).to.throw();
-      });
-    });
-
-    it('validateGeohash() does not throw errors given valid geohashes', () => {
-      validGeohashes.forEach((validGeohash, i) => {
-        expect(() => validateGeohash(validGeohash)).not.to.throw();
-      });
-    });
-
-    it('validateGeohash() throws errors given invalid geohashes', () => {
-      invalidGeohashes.forEach((invalidGeohash, i) => {
-        // @ts-ignore
-        expect(() => validateGeohash(invalidGeohash)).to.throw();
-      });
-    });
-
-    it('validateCriteria(criteria, true) does not throw errors given valid query criteria', () => {
-      validQueryCriterias.forEach((validQueryCriteria) => {
-        if (typeof validQueryCriteria.center !== 'undefined' && typeof validQueryCriteria.radius !== 'undefined') {
-          expect(() => validateCriteria(validQueryCriteria, true)).not.to.throw();
-        }
-      });
-    });
-
-    it('validateCriteria(criteria) does not throw errors given valid query criteria', () => {
-      validQueryCriterias.forEach((validQueryCriteria) => {
-        expect(() => validateCriteria(validQueryCriteria)).not.to.throw();
-      });
-    });
-
-    it('validateCriteria(criteria, true) throws errors given invalid query criteria', () => {
-      invalidQueryCriterias.forEach((invalidQueryCriteria) => {
-        // @ts-ignore
-        expect(() => validateCriteria(invalidQueryCriteria, true)).to.throw();
-      });
-      expect(() => validateCriteria({ center: new firebase.firestore.GeoPoint(0, 0) }, true)).to.throw();
-      expect(() => validateCriteria({ radius: 1000 }, true)).to.throw();
-    });
-
-    it('validateCriteria(criteria) throws errors given invalid query criteria', () => {
-      invalidQueryCriterias.forEach((invalidQueryCriteria) => {
-        // @ts-ignore
-        expect(() => validateCriteria(invalidQueryCriteria)).to.throw();
-      });
-
-      it('validateGeoFirestoreObject() does not throw errors given valid GeoFirestoreObj', () => {
-        validGeoFirestoreObjects.forEach((validGeoFirestoreObject) => {
-          expect(() => validateGeoFirestoreObject(validGeoFirestoreObject)).not.to.throw();
-        });
-      });
-  
-      it('validateGeoFirestoreObject() returns true given valid GeoFirestoreObj with flag enabled', () => {
-        validGeoFirestoreObjects.forEach((validGeoFirestoreObject) => {
-          expect(() => validateGeoFirestoreObject(validGeoFirestoreObject, true)).to.be.true; // tslint:disable-line
-        });
-      });
-  
-      it('validateGeoFirestoreObject() throws errors given invalid GeoFirestoreObj', () => {
-        invalidGeoFirestoreObjects.forEach((invalidGeoFirestoreObject) => {
-          // @ts-ignore
-          expect(() => validateGeoFirestoreObject(invalidGeoFirestoreObject)).to.throw();
-        });
-      });
-  
-      it('validateGeoFirestoreObject() returns false given invalid GeoFirestoreObj with flag enabled', () => {
-        invalidGeoFirestoreObjects.forEach((invalidGeoFirestoreObject) => {
-          // @ts-ignore
-          expect(() => validateGeoFirestoreObject(invalidGeoFirestoreObject, true)).to.throw();
-        });
+        expect(() => calculateDistance([0, 0], invalidLocation)).to.throw();
       });
     });
   });
 
-
-
-  describe('GeoPoint Generation:', () => {
-    it('toGeoPoint() does not throw errors given valid coordinates', () => {
-      validLocations.forEach((validLocation, i) => {
-        expect(() => toGeoPoint(validLocation.latitude, validLocation.latitude)).not.to.throw();
+  describe('Decodes GeoDocument data:', () => {
+    it('decodeGeoDocumentData() returns decoded document given valid data', () => {
+      validGeoFirestoreDocuments.forEach((doc) => {
+        expect(decodeGeoDocumentData(doc)).to.deep.equal(doc.d);
       });
     });
 
-    it('toGeoPoint() throws errors given invalid coordinates', () => {
-      invalidLocations.forEach((invalidLocation, i) => {
+    it('decodeGeoDocumentData() returns original document given invalid data', () => {
+      dummyData.forEach((doc) => {
         // @ts-ignore
-        expect(() => toGeoPoint((invalidLocation.latitude || 900), (invalidLocation.latitude || 900))).to.throw();
+        expect(decodeGeoDocumentData(doc)).to.deep.equal(doc);
       });
     });
   });
 
+  describe('Decodes GeoQueryDocumentSnapshot data:', () => {
+    it('decodeGeoQueryDocumentSnapshotData() returns decoded document with no distance given valid data and no center', () => {
+      validGeoFirestoreDocuments.forEach((doc) => {
+        const decoded = decodeGeoQueryDocumentSnapshotData(doc);
+        expect(decoded.data()).to.deep.equal(doc.d);
+        expect(decoded.distance).to.equal(null);
+      });
+    });
 
-  describe('Distance calculations:', () => {
+    it('decodeGeoQueryDocumentSnapshotData() returns decoded document with distance given valid data and center', () => {
+      validGeoFirestoreDocuments.forEach((doc) => {
+        const center = new firebase.firestore.GeoPoint(0, 0);
+        const decoded = decodeGeoQueryDocumentSnapshotData(doc, center);
+        const distance = calculateDistance(doc.l, center);
+        expect(decoded.data()).to.deep.equal(doc.d);
+        expect(decoded.distance).to.be.equal(distance);
+      });
+    });
+
+    it('decodeGeoQueryDocumentSnapshotData() returns original document and no distance given invalid data and no center', () => {
+      dummyData.forEach((doc) => {
+        // @ts-ignore
+        const decoded = decodeGeoQueryDocumentSnapshotData(doc);
+        expect(decoded.data()).to.deep.equal(doc);
+        expect(decoded.distance).to.equal(null);
+      });
+    });
+  });
+
+  describe('Degrees to radians:', () => {
     it('degreesToRadians() converts degrees to radians', () => {
       expect(degreesToRadians(0)).to.be.closeTo(0, 0);
       expect(degreesToRadians(45)).to.be.closeTo(0.7854, 4);
@@ -174,47 +181,25 @@ describe('geoFireUtils Tests:', () => {
       expect(() => degreesToRadians(null)).to.throw();
       expect(() => degreesToRadians(undefined)).to.throw();
     });
-
-    it('dist() calculates the distance between locations', () => {
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(90, 180), new firebase.firestore.GeoPoint(90, 180))).to.be.closeTo(0, 0);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(-90, -180), new firebase.firestore.GeoPoint(90, 180))).to.be.closeTo(20015, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(-90, -180), new firebase.firestore.GeoPoint(-90, 180))).to.be.closeTo(0, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(-90, -180), new firebase.firestore.GeoPoint(90, -180))).to.be.closeTo(20015, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(37.7853074, -122.4054274), new firebase.firestore.GeoPoint(78.216667, 15.55))).to.be.closeTo(6818, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(38.98719, -77.250783), new firebase.firestore.GeoPoint(29.3760648, 47.9818853))).to.be.closeTo(10531, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(38.98719, -77.250783), new firebase.firestore.GeoPoint(-54.933333, -67.616667))).to.be.closeTo(10484, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(29.3760648, 47.9818853), new firebase.firestore.GeoPoint(-54.933333, -67.616667))).to.be.closeTo(14250, 1);
-      expect(GeoFirestore.distance(new firebase.firestore.GeoPoint(-54.933333, -67.616667), new firebase.firestore.GeoPoint(-54, -67))).to.be.closeTo(111, 1);
-    });
-
-    it('dist() does not throw errors given valid locations', () => {
-      validLocations.forEach((validLocation, i) => {
-        expect(() => GeoFirestore.distance(validLocation, new firebase.firestore.GeoPoint(0, 0))).not.to.throw();
-        expect(() => GeoFirestore.distance(new firebase.firestore.GeoPoint(0, 0), validLocation)).not.to.throw();
-      });
-    });
-
-    it('dist() throws errors given invalid locations', () => {
-      invalidLocations.forEach((invalidLocation, i) => {
-        // @ts-ignore
-        expect(() => GeoFirestore.distance(invalidLocation, [0, 0])).to.throw();
-        // @ts-ignore
-        expect(() => GeoFirestore.distance([0, 0], invalidLocation)).to.throw();
-      });
-    });
   });
 
-  describe('Geohashing:', () => {
+  describe('Encode geohash:', () => {
     it('encodeGeohash() encodes locations to geohashes given no precision', () => {
       expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, -180))).to.be.equal('0000000000'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(90, 180))).to.be.equal('zzzzzzzzzzzz'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(-90, 180))).to.be.equal('pbpbpbpbpbpb'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(90, -180))).to.be.equal('bpbpbpbpbpbp'.slice(0, GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(37.7853074, -122.4054274))).to.be.equal('9q8yywe56gcf'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(
+        new firebase.firestore.GeoPoint(37.7853074, -122.4054274))
+      ).to.be.equal('9q8yywe56gcf'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(38.98719, -77.250783))).to.be.equal('dqcjf17sy6cp'.slice(0, GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(29.3760648, 47.9818853))).to.be.equal('tj4p5gerfzqu'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(
+        new firebase.firestore.GeoPoint(29.3760648, 47.9818853))
+      ).to.be.equal('tj4p5gerfzqu'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(78.216667, 15.55))).to.be.equal('umghcygjj782'.slice(0, GEOHASH_PRECISION));
-      expect(encodeGeohash(new firebase.firestore.GeoPoint(-54.933333, -67.616667))).to.be.equal('4qpzmren1kwb'.slice(0, GEOHASH_PRECISION));
+      expect(encodeGeohash(
+        new firebase.firestore.GeoPoint(-54.933333, -67.616667))
+      ).to.be.equal('4qpzmren1kwb'.slice(0, GEOHASH_PRECISION));
       expect(encodeGeohash(new firebase.firestore.GeoPoint(-54, -67))).to.be.equal('4w2kg3s54y7h'.slice(0, GEOHASH_PRECISION));
     });
 
@@ -262,6 +247,122 @@ describe('geoFireUtils Tests:', () => {
     });
   });
 
+  describe('Encode GeoDocument:', () => {
+    it('encodeGeoDocument() encodes locations to geohashes given no precision', () => {
+      dummyData.forEach((data) => {
+        const g = encodeGeohash(data.coordinates);
+        const doc = { g, l: data.coordinates, d: data };
+        expect(encodeGeoDocument(data.coordinates, g, data)).to.deep.equal(doc);
+      });
+    });
+  });
+
+  describe('Parameter validation:', () => {
+    it('validateLocation() does not throw errors given valid locations', () => {
+      validLocations.forEach((validLocation, i) => {
+        expect(() => validateLocation(validLocation)).not.to.throw();
+      });
+    });
+
+    it('validateLocation() throws errors given invalid locations', () => {
+      invalidLocations.forEach((invalidLocation, i) => {
+        // @ts-ignore
+        expect(() => validateLocation(invalidLocation)).to.throw();
+      });
+    });
+
+    it('validateGeohash() does not throw errors given valid geohashes', () => {
+      validGeohashes.forEach((validGeohash, i) => {
+        expect(() => validateGeohash(validGeohash)).not.to.throw();
+      });
+    });
+
+    it('validateGeohash() throws errors given invalid geohashes', () => {
+      invalidGeohashes.forEach((invalidGeohash, i) => {
+        // @ts-ignore
+        expect(() => validateGeohash(invalidGeohash)).to.throw();
+      });
+    });
+
+    it('validateCriteria(criteria, true) does not throw errors given valid query criteria', () => {
+      validQueryCriterias.forEach((validQueryCriteria) => {
+        if (typeof validQueryCriteria.center !== 'undefined' && typeof validQueryCriteria.radius !== 'undefined') {
+          expect(() => validateQueryCriteria(validQueryCriteria, true)).not.to.throw();
+        }
+      });
+    });
+
+    it('validateCriteria(criteria) does not throw errors given valid query criteria', () => {
+      validQueryCriterias.forEach((validQueryCriteria) => {
+        expect(() => validateQueryCriteria(validQueryCriteria)).not.to.throw();
+      });
+    });
+
+    it('validateCriteria(criteria, true) throws errors given invalid query criteria', () => {
+      invalidQueryCriterias.forEach((invalidQueryCriteria) => {
+        // @ts-ignore
+        expect(() => validateQueryCriteria(invalidQueryCriteria, true)).to.throw();
+      });
+      expect(() => validateQueryCriteria({ center: new firebase.firestore.GeoPoint(0, 0) }, true)).to.throw();
+      expect(() => validateQueryCriteria({ radius: 1000 }, true)).to.throw();
+    });
+
+    it('validateCriteria(criteria) throws errors given invalid query criteria', () => {
+      invalidQueryCriterias.forEach((invalidQueryCriteria) => {
+        // @ts-ignore
+        expect(() => validateQueryCriteria(invalidQueryCriteria)).to.throw();
+      });
+
+      it('validateGeoFirestoreObject() does not throw errors given valid GeoFirestoreObj', () => {
+        validGeoFirestoreDocuments.forEach((validGeoFirestoreObject) => {
+          expect(() => validateGeoDocument(validGeoFirestoreObject)).not.to.throw();
+        });
+      });
+
+      it('validateGeoFirestoreObject() returns true given valid GeoFirestoreObj with flag enabled', () => {
+        validGeoFirestoreDocuments.forEach((validGeoFirestoreObject) => {
+          expect(() => validateGeoDocument(validGeoFirestoreObject, true)).to.be.true; // tslint:disable-line
+        });
+      });
+
+      it('validateGeoFirestoreObject() throws errors given invalid GeoFirestoreObj', () => {
+        invalidGeoFirestoreDocuments.forEach((invalidGeoFirestoreObject) => {
+          // @ts-ignore
+          expect(() => validateGeoDocument(invalidGeoFirestoreObject)).to.throw();
+        });
+      });
+
+      it('validateGeoFirestoreObject() returns false given invalid GeoFirestoreObj with flag enabled', () => {
+        invalidGeoFirestoreDocuments.forEach((invalidGeoFirestoreObject) => {
+          // @ts-ignore
+          expect(() => validateGeoDocument(invalidGeoFirestoreObject, true)).to.throw();
+        });
+      });
+    });
+  });
+
+
+
+  describe('GeoPoint Generation:', () => {
+    it('toGeoPoint() does not throw errors given valid coordinates', () => {
+      validLocations.forEach((validLocation) => {
+        expect(() => toGeoPoint(validLocation.latitude, validLocation.latitude)).not.to.throw();
+      });
+    });
+
+    it('toGeoPoint() throws errors given invalid coordinates', () => {
+      invalidLocations.forEach((invalidLocation) => {
+        // @ts-ignore
+        expect(() => toGeoPoint((invalidLocation.latitude || 900), (invalidLocation.latitude || 900))).to.throw();
+      });
+    });
+  });
+
+
+
+
+
+
   describe('Coordinate calculations:', () => {
     it('metersToLongtitudeDegrees calculates correctly', () => {
       expect(metersToLongitudeDegrees(1000, 0)).to.be.closeTo(0.008983, 5);
@@ -300,22 +401,7 @@ describe('geoFireUtils Tests:', () => {
     });
   });
 
-  describe('Bounding box bits:', () => {
-    it('boundingBoxBits must return correct number of bits', () => {
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(35, 0), 1000)).to.be.equal(28);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(35.645, 0), 1000)).to.be.equal(27);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(36, 0), 1000)).to.be.equal(27);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 0), 1000)).to.be.equal(28);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, -180), 1000)).to.be.equal(28);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 180), 1000)).to.be.equal(28);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(0, 0), 8000)).to.be.equal(22);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(45, 0), 1000)).to.be.equal(27);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(75, 0), 1000)).to.be.equal(25);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(75, 0), 2000)).to.be.equal(23);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(90, 0), 1000)).to.be.equal(1);
-      expect(boundingBoxBits(new firebase.firestore.GeoPoint(90, 0), 2000)).to.be.equal(1);
-    });
-  });
+
 
   describe('Geohash queries:', () => {
     it('Geohash queries must be of the right size', () => {
@@ -347,7 +433,10 @@ describe('geoFireUtils Tests:', () => {
         for (let j = 0; j < 1000; j++) {
           const pointLat = Math.max(-89.9, Math.min(89.9, centerLat + Math.random() * degreeRadius));
           const pointLong = wrapLongitude(centerLong + Math.random() * degreeRadius);
-          if (GeoFirestore.distance(new firebase.firestore.GeoPoint(centerLat, centerLong), new firebase.firestore.GeoPoint(pointLat, pointLong)) < radius / 1000) {
+          if (calculateDistance(
+            new firebase.firestore.GeoPoint(centerLat, centerLong),
+            new firebase.firestore.GeoPoint(pointLat, pointLong)
+          ) < radius / 1000) {
             expect(inQuery(queries, encodeGeohash(new firebase.firestore.GeoPoint(pointLat, pointLong)))).to.be.true; // tslint:disable-line
           }
         }

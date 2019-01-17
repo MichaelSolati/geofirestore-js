@@ -1,10 +1,11 @@
 {
   "name": "geofirestore",
   "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "2.2.2",
+  "version": "3.0.2",
   "scripts": {
     "build": "rm -rf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "docs": "typedoc --module node --target es5 --out docs/ src/",
     "lint": "tslint --project ./tslint.json 'src/**/*.ts'",
     "test": "nyc --reporter=html --reporter=text mocha",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
@@ -19,13 +20,13 @@
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
   "author": "Michael Solati mkslt04@gmail.com",
-  "homepage": "https://github.com/MichaelSolati/geofirestore/",
+  "homepage": "https://github.com/geofirestore/geofirestore-js/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MichaelSolati/geofirestore.git"
+    "url": "https://github.com/geofirestore/geofirestore-js.git"
   },
   "bugs": {
-    "url": "https://github.com/MichaelSolati/geofirestore/issues"
+    "url": "https://github.com/geofirestore/geofirestore-js/issues"
   },
   "readme": "README.md",
   "license": "MIT",
@@ -35,41 +36,46 @@
     "firebase",
     "firestore",
     "realtime",
-    "geolocation"
+    "geolocation",
+    "geofire",
+    "geohash",
+    "map"
   ],
   "files": [
     "dist/**",
     "CHANGELOG.md",
-    "LICENSE",
+    "LICENSE.md",
     "package-lock.json",
     "package.json",
     "README.md"
   ],
   "dependencies": {
+    "@firebase/firestore-types": "0.x.x",
     "@google-cloud/firestore": "0.x.x",
-    "@types/node": "x.x.x",
-    "firebase": "5.x.x"
+    "@types/node": "x.x.x"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.5",
+    "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "coveralls": "^3.0.2",
-    "firebase-tools": "^4.2.1",
+    "firebase": "5.x.x",
+    "firebase-tools": "^6.3.0",
     "generate-changelog": "^1.7.1",
-    "jsdom": "^12.0.0",
+    "jsdom": "^13.1.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.2.0",
-    "nyc": "^13.0.1",
-    "rollup": "^0.66.2",
-    "rollup-plugin-commonjs": "^9.1.8",
+    "nyc": "^13.1.0",
+    "rollup": "^1.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-copy": "^0.2.3",
-    "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-typescript2": "^0.17.0",
-    "rollup-plugin-uglify": "^6.0.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-typescript2": "^0.18.1",
+    "rollup-plugin-uglify": "^6.0.1",
     "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "typescript": "^3.0.3"
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.1",
+    "typescript": "3.x.x"
   },
   "nyc": {
     "extension": [

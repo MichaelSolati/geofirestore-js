@@ -1,3 +1,132 @@
+#### 3.0.2 (2019-01-15)
+
+##### Chores
+
+*  update dev dependencies ([92a4c7b6](https://github.com/geofirestore/geofirestore-js/commit/92a4c7b6fda2b0b6c4081dd6dcea77570f289259))
+
+##### Bug Fixes
+
+* **GeoJoinerOnSnapshot:**  emit snapshot on empty queries and update docs array when doc removed, fixes [#73](https://github.com/geofirestore/geofirestore-js/pull/73) ([85f2e260](https://github.com/geofirestore/geofirestore-js/commit/85f2e2605ac69a08c6653a53ae8160e3f151883f))
+
+#### 3.0.1 (2019-01-03)
+
+##### Chores
+
+*  update dev dependencies ([b2ae17f4](https://github.com/geofirestore/geofirestore-js/commit/b2ae17f44cde95e421a45412122c9332907e9815))
+
+##### Documentation Changes
+
+* **README:**  fix typo and add dependency badge, fixes [#69](https://github.com/geofirestore/geofirestore-js/pull/69) ([55fd7bd3](https://github.com/geofirestore/geofirestore-js/commit/55fd7bd39c6276c069d4c22bb12d819299e81b54))
+
+## 3.0.0 (2019-01-02)
+
+##### Chores
+
+* **README:**
+  *  add some badges ([d1f2c220](https://github.com/geofirestore/geofirestore-js/commit/d1f2c220157dc9065bb914b575d5c314a0169ef7))
+  *  update badges ([bb2aa25f](https://github.com/geofirestore/geofirestore-js/commit/bb2aa25fa6bc5e23d6d4805a982b35fa0a056926))
+* **examples:**  update viewers example ([aed1a369](https://github.com/geofirestore/geofirestore-js/commit/aed1a36903717ae8aa15f3993d46adf6b86944c9))
+*  update dependencies and typings ([36cd49d3](https://github.com/geofirestore/geofirestore-js/commit/36cd49d33bbaa1c2f116c00abccb3d551a3512ee))
+*  generate and deploy docs site ([5273128f](https://github.com/geofirestore/geofirestore-js/commit/5273128f8dad518de10130808d44fa9b99931afd))
+
+##### Documentation Changes
+
+*  update README.md to reference https://geofirestore.com, as well as other tweaks ([d07efafc](https://github.com/geofirestore/geofirestore-js/commit/d07efafc765ba1ee7037c287207ef1564e34a3e7))
+*  fix up docs and max all lines to 140 characters ([06af76c7](https://github.com/geofirestore/geofirestore-js/commit/06af76c77f9d4af56a5e9216ff33b9dc7a435eae))
+
+##### New Features
+
+* **GeoJoinerGet:**  move join logic of `get` functions to own class with logic to filter out items not in radius of query ([5716654a](https://github.com/geofirestore/geofirestore-js/commit/5716654a63078d3a5f852a4a3d5a34a9d9fe4f55))
+* **GeoJoinerOnSnapshot:**  add ability to join `GeoQuerySnapshot` events from `onSnapshot` ([ba829244](https://github.com/geofirestore/geofirestore-js/commit/ba8292448c15612fa880ddb6079bea817c8e5b53))
+* **GeoDocumentSnapshot:**  add GeoDocumentSnapshot for for doc references and queries ([1abb499b](https://github.com/geofirestore/geofirestore-js/commit/1abb499b0147144fc5c7c0ea386217cddffe4203))
+* **GeoDocumentReference:**  add GeoDocumentReference for returns of doc and add ([9a5af9a5](https://github.com/geofirestore/geofirestore-js/commit/9a5af9a54aa463aec84dd436d29bcc9ad3f34e06))
+* **GeoQuery:**  implement remaining Firestore Query functions ([3cd3e0e3](https://github.com/geofirestore/geofirestore-js/commit/3cd3e0e33efe28d9f6a8dcc69d8bde70ced91701))
+* **GeoWriteBatch:**  add batch functionality to geofirestore ([f01de430](https://github.com/geofirestore/geofirestore-js/commit/f01de430bb6cdf8e924980afd2feb91519787825))
+* **GeoQuerySnapshot:**  filter out locations not in query ([b0ce13cb](https://github.com/geofirestore/geofirestore-js/commit/b0ce13cb317af14dd5b671695d618415b299ad7d))
+* **GeoFirestore:**  start rewrite to better align library to firestore sdk ([bf1d4273](https://github.com/geofirestore/geofirestore-js/commit/bf1d4273170e593ddef1da0d2c0fcbeef0e88586))
+
+##### Bug Fixes
+
+* **GeoFirestoreTypes:**  DocumentChange `doc` should return QueryDocumentSnapshot ([3b2e5d6c](https://github.com/geofirestore/geofirestore-js/commit/3b2e5d6cfc051c77c88e81471ccb58f929eeba9d))
+* **GeoDocumentReference:**  fix update function to use encodeUpdateDocument util function ([97baf212](https://github.com/geofirestore/geofirestore-js/commit/97baf212f41442264190806f7523fcdb7daa9864))
+* **GeoWriteBatch:**  fix update function to use fieldNames ([e27e668a](https://github.com/geofirestore/geofirestore-js/commit/e27e668ad89bb83bc6096fb93e147b0a584cf365))
+
+##### Refactors
+
+*  small change to `onSnapshot` and how geoqueries are generated ([7beffe69](https://github.com/geofirestore/geofirestore-js/commit/7beffe691588fa9db871cde3e95554624e141230))
+*  simply GeoFirestoreTypes and remove incompatible GeoQuery functions ([0edef6de](https://github.com/geofirestore/geofirestore-js/commit/0edef6de4a1bf374c9e52606725a59a520376714))
+* **GeoQuery:**  remove unneeded function ([76fa5af1](https://github.com/geofirestore/geofirestore-js/commit/76fa5af10ed8b4aca8348380c7e991cc42919df3))
+* **GeoFirestoreTypes:**  rename and put together all interfaces into GeoFirestoreTypes ([9141fb37](https://github.com/geofirestore/geofirestore-js/commit/9141fb373dedcfd9006ef087a9c1c39efd8af3bb))
+
+##### Tests
+
+* **GeoJoinerOnSnapshot:**  increase code coverage ([27803b3a](https://github.com/geofirestore/geofirestore-js/commit/27803b3a6eb8616268a4328f654d39da1f009bfb))
+* **utils:**  add code coverage for utils ([7872c290](https://github.com/geofirestore/geofirestore-js/commit/7872c290b406ca7d92ff3bae4bfc324e3d213357))
+* **GeoDocumentSnapshot:**  bring coverage to 100% ([5caa5b10](https://github.com/geofirestore/geofirestore-js/commit/5caa5b1008618fb7e59e7a2cbb57d7264f21f0b7))
+* **GeoDocumentReference:**  increase code coverage ([e9811ad1](https://github.com/geofirestore/geofirestore-js/commit/e9811ad13c989cf0b920ec1ff0b0dfb27e95d9d7))
+* **GeoQuerySnapshot:**  bring coverage to 100% ([51122f9d](https://github.com/geofirestore/geofirestore-js/commit/51122f9d1a13ae5105ee17a218ebe8d6ebf11e09))
+* **GeoQuery:**
+  *  bring coverage to 100% ([6252222b](https://github.com/geofirestore/geofirestore-js/commit/6252222b569fbb159b69949800e705d29131d0aa))
+  *  add basic tests for GeoQuery ([56cc5c44](https://github.com/geofirestore/geofirestore-js/commit/56cc5c44d0217e3f9a4a3f96a1da31c6bc76e351))
+* **GeoCollectionReference:**  bring coverage to 100% ([47a17f6e](https://github.com/geofirestore/geofirestore-js/commit/47a17f6e0a938b4d5328a6594876c94bff7939c0))
+* **GeoWriteBatch:**  create basic tests for GeoWriteBatch ([687c3061](https://github.com/geofirestore/geofirestore-js/commit/687c306153f434bcc59b1c1739e98b9954fecc78))
+* **GeoFirestore:**  add basic tests for new GeoFirestore ([74f97d75](https://github.com/geofirestore/geofirestore-js/commit/74f97d75d40b283856cd1ef10128bfffd8f47911))
+
+### 2.4.0 (2018-12-31)
+
+##### New Features
+
+* **GeoFirestoreQuery:**  add `error` listener for `on` function, fixes [#60](https://github.com/MichaelSolati/geofirestore/pull/60) ([b01d6906](https://github.com/MichaelSolati/geofirestore/commit/b01d69069505879e35c3964ead4b3954182a61f5))
+
+##### Refactors
+
+* **GeoFirestoreQuery:**  use `where` instead of `startAt` and `endAt`, fixes [#63](https://github.com/MichaelSolati/geofirestore/pull/63) ([f475fa01](https://github.com/MichaelSolati/geofirestore/commit/f475fa0100b5d4153f6cd01620c6c16a3cb930da))
+
+### 2.3.0 (2018-12-17)
+
+##### Documentation Changes
+
+* **GeoFirestore:**  add docs for `update` function of `GeoFirestore` ([869e1893](https://github.com/MichaelSolati/geofirestore/commit/869e189368ce1312d178241bee40fe6cb3a1f46f))
+
+##### New Features
+
+* **GeoFirestore:**
+  *  add ability to update documents, fixes [#52](https://github.com/MichaelSolati/geofirestore/pull/52) ([555c9bc4](https://github.com/MichaelSolati/geofirestore/commit/555c9bc48bfc35fd281168ad7bfdb64a7f4fbf38))
+  *  add ability to update documents ([2f0b127e](https://github.com/MichaelSolati/geofirestore/commit/2f0b127eb7e8c2e04de06beba827a2e671ec7922))
+  *  add ability to update documents ([d0a327df](https://github.com/MichaelSolati/geofirestore/commit/d0a327df96880cd4e287ae6883416cffe5d49e4c))
+
+##### Refactors
+
+* **utils:**  remove unused import, restore findCoordinatesKey ([324aa960](https://github.com/MichaelSolati/geofirestore/commit/324aa9604d6e9419711eac77d1014706eafe3791))
+* **GeoFirestore:**  remove merge from batch.set ([7ed3586b](https://github.com/MichaelSolati/geofirestore/commit/7ed3586b895fc36d5ebf5a4f51a899bd5ffdfec1))
+
+##### Code Style Changes
+
+*  private method _ & alphabetical order ([716eda9e](https://github.com/MichaelSolati/geofirestore/commit/716eda9ed356cb1a078f6fc9fe1385b37973c6af))
+* **geoFirestore:**  TS Lint ([d4ed971b](https://github.com/MichaelSolati/geofirestore/commit/d4ed971b7cc81017670f85770adf7b142d04495e))
+
+##### Tests
+
+* **GeoFirestore:**
+  *  Corrected some EBKAC ([c9bf4f35](https://github.com/MichaelSolati/geofirestore/commit/c9bf4f351d907e5a4bf15d2916acda002f4d7f40))
+  *  removed exit(); ([a739d254](https://github.com/MichaelSolati/geofirestore/commit/a739d25438c69f42384b7d71eafd6fa6ed86454c))
+  *  add tests for `update`,validateDoc..HasCoordinates` ([77915930](https://github.com/MichaelSolati/geofirestore/commit/77915930cf7071220f05f90987738c80f073ae92))
+
+#### 2.2.3 (2018-11-15)
+
+##### Chores
+
+* **README:**  update badges ([dfc9f1ba](https://github.com/MichaelSolati/geofirestore/commit/dfc9f1ba4f55cc054c161e2561fb2000fb649725))
+*  update firebase settings and dependencies ([2b95d766](https://github.com/MichaelSolati/geofirestore/commit/2b95d766bd7fb5fa92ba0b7ada859468cca62999))
+*  update `README.md` ([d55b979a](https://github.com/MichaelSolati/geofirestore/commit/d55b979ac8d8d07a7d3b3b67ee85f44915a39d66))
+*  rename `COMMITS.md` to `CONTRIBUTING.md` ([f37e95ee](https://github.com/MichaelSolati/geofirestore/commit/f37e95ee305fe3e0f82c5b290f04caa8fba513c8))
+* **LICENSE:**  update license ([7dc3064e](https://github.com/MichaelSolati/geofirestore/commit/7dc3064e674497334d0b2a47f767b1aefafcd59c))
+* **COC:**  add a Code of Conduct ([e018ddba](https://github.com/MichaelSolati/geofirestore/commit/e018ddba42a5476669a7536d6ede378c8f508a1a))
+
+##### Bug Fixes
+
+* **lint:**  resolve linting issues in some firebase projects, fixes [#48](https://github.com/MichaelSolati/geofirestore/pull/48) ([a9fe161a](https://github.com/MichaelSolati/geofirestore/commit/a9fe161a377425d18806f0f470c22f8d46a7666a))
+
 #### 2.2.2 (2018-10-10)
 
 ##### Documentation Changes
