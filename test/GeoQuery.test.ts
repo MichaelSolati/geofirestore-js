@@ -288,6 +288,22 @@ describe('GeoQuery Tests:', () => {
     });
   });
 
+
+  describe('near().where():', () => {
+    it('near().where() does not throw an error with valid arguments', () => {
+      const query = new GeoQuery(collection);
+      expect(() => query.near({ center: new firebase.firestore.GeoPoint(0, 0), radius: 100 })
+                        .where('count', '==', 0)).not.to.throw();
+      expect(() => query.near({ center: new firebase.firestore.GeoPoint(1, 1) })
+                        .where('count', '>', 0)).not.to.throw();
+      expect(() => query.near({ radius: 500 })
+                        .where('count', '<=', 0)).not.to.throw();
+      expect(() => query.near({ radius: 500 })
+                        .where('array', 'array-contains', 'one')).not.to.throw();
+    });
+  });
+
+
   describe('_stringToQuery():', () => {
     it('_stringToQuery() returns an array of two string elements', () => {
       const query = new GeoQuery(collection);
