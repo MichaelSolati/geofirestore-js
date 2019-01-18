@@ -26,7 +26,7 @@ export class GeoJoinerGet {
 
     if (this._queryCriteria.limit && this._docs.size > this._queryCriteria.limit) {
       const arrayToLimit = Array.from(this._docs.values()).map((doc) => {
-        return {...doc, distance: calculateDistance(this._queryCriteria.center, doc.data().l)};
+        return { distance: calculateDistance(this._queryCriteria.center, doc.data().l), id: doc.id };
       }).sort((a, b) => a.distance - b.distance);
 
       for (let i = this._queryCriteria.limit; i < arrayToLimit.length; i++) {
@@ -41,8 +41,11 @@ export class GeoJoinerGet {
    * @return A new `GeoQuerySnapshot` of the filtered documents from the `get`.
    */
   public getGeoQuerySnapshot(): GeoQuerySnapshot {
+    const docs = Array.from(this._docs.values());
     return new GeoQuerySnapshot(
-      { docs: Array.from(this._docs.values()), docChanges: () => [] } as GeoFirestoreTypes.web.QuerySnapshot,
+      { docs, docChanges: () => docs.map((doc, index) => {
+        return { doc, newIndex: index, oldIndex: -1, type: 'added' };
+      }) } as GeoFirestoreTypes.web.QuerySnapshot,
       this._queryCriteria.center
     );
   }

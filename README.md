@@ -80,7 +80,7 @@ Internally GeoFirestore creates multiple geohases around a requested area. It qu
 
 ### `limit()`
 
-The `limit` filtering method is exposed through GeoFirestore, however as geoqueries require an aggregation of queries, the library applies a paritial limit on the server, but primarily runs its limit on the client. This may mean you are loading to the client more documents then you intended. Use with this performance limitation in mind.
+The `limit` filtering method is exposed through GeoFirestore, however there are some unique considerations when using it. Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries. When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents then you intended. Use with this performance limitation in mind.
 
 ## Contributing
 

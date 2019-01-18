@@ -56,8 +56,7 @@ export class GeoJoinerOnSnapshot {
   private _next(): void {
     // Sort docs based on distance if there is a limit so we can then limit it
     if (this._queryCriteria.limit && this._docs.size > this._queryCriteria.limit) {
-      const arrayToLimit = Array.from(this._docs.values());
-      arrayToLimit.sort((a, b) => a.distance - b.distance);
+      const arrayToLimit = Array.from(this._docs.values()).sort((a, b) => a.distance - b.distance);
       // Iterate over documents outside of limit
       for (let i = this._queryCriteria.limit; i < arrayToLimit.length; i++) {
         if (arrayToLimit[i].emitted) { // Mark as removed if outside of query and previously emitted
@@ -99,6 +98,7 @@ export class GeoJoinerOnSnapshot {
     this._firstEmitted = true;
     this._onNext(new GeoQuerySnapshot({
           docs,
+          // @TODO Remove docs that have already been added? Need to test. Maybe reduce...
           docChanges: () => docChanges
     } as GeoFirestoreTypes.web.QuerySnapshot, this._queryCriteria.center));
   }

@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 import { GeoCollectionReference, GeoFirestore, GeoFirestoreTypes } from '../src';
+import { calculateDistance } from '../src/utils';
 
 /*************/
 /*  GLOBALS  */
@@ -98,36 +99,17 @@ export function afterEachHelper(done): void {
   }).then(done);
 }
 
-/* Keeps track of all the current asynchronous tasks being run */
-export class Checklist {
-  constructor(private _eventsToComplete: string[], private _expect: Function, private _done: Function) { }
-  /* Removes a task from the events list */
-  public x(item: string): void {
-    const index = this._eventsToComplete.indexOf(item);
-    if (index === -1) {
-      this._expect('Attempting to delete unexpected item \'' + item + '\' from Checklist').to.be.false; // tslint:disable-line
-    }
-    else {
-      this._eventsToComplete.splice(index, 1);
-      if (this.isEmpty()) {
-        this._done();
-      }
-    }
-  }
-
-  public remaining(): string[] {
-    return [...this._eventsToComplete];
-  }
-
-  /* Returns the length of the events list */
-  public length(): number {
-    return this._eventsToComplete.length;
-  }
-
-  /* Returns true if the events list is empty */
-  public isEmpty(): boolean {
-    return (this.length() === 0);
-  }
+/* Helper function designed to create docs within a certain range of coordinates */
+export function generateDocs(
+  maxLat = 0.5, minLat = -0.5, maxLng = 0.5, minLng = -0.5,
+  total = 100, center = new firebase.firestore.GeoPoint(0, 0)
+): Array<{ [key: string]: any }> {
+  return (new Array(total)).fill(0).map(() => {
+    const lat = (Math.random() * (maxLat - minLat + 1)) + minLat;
+    const lng = (Math.random() * (maxLng - minLng + 1)) + minLng;
+    const coordinates = new firebase.firestore.GeoPoint(lat, lng);
+    return { coordinates, distance: calculateDistance(coordinates, center), key: Math.random().toString(36).substring(7) };
+  });
 }
 
 /* Common error handler for use in .catch() statements of promises. This will
@@ -174,11 +156,11 @@ function deleteQueryBatch(query: firebase.firestore.Query, resolve: Function, re
   }).catch(err => reject(err));
 }
 
-export function stubDatabase(): Promise<any> {
+export function stubDatabase(docs: Array<{ [key: string]: any; }> = dummyData): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
   const geocollection = new GeoCollectionReference(collection);
-  dummyData.forEach(item => {
+  docs.forEach(item => {
     const insert = geocollection.doc(item.key);
     batch.set(insert, item);
   });

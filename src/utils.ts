@@ -504,6 +504,27 @@ export function validateGeohash(geohash: string, flag = false): boolean {
 }
 
 /**
+ * Validates the inputted limit and throws an error, or returns boolean, if it is invalid.
+ *
+ * @param limit The limit to be applied by `GeoQuery.limit()`
+ * @param flag Tells function to send up boolean if valid instead of throwing an error.
+ */
+export function validateLimit(limit: number, flag = false): boolean {
+  let error: string;
+  if (typeof limit !== 'number' || isNaN(limit)) {
+    error = 'limit must be a number';
+  } else if (limit < 0) {
+    error = 'limit must be greater than or equal to 0';
+  }
+
+  if (typeof error !== 'undefined' && !flag) {
+    throw new Error(error);
+  } else {
+    return !error;
+  }
+}
+
+/**
  * Validates the inputted location and throws an error, or returns boolean, if it is invalid.
  *
  * @param location The Firestore GeoPoint to be verified.
@@ -579,11 +600,7 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
 
   // Validate the 'limit' attribute
   if (typeof newQueryCriteria.limit !== 'undefined') {
-    if (typeof newQueryCriteria.limit !== 'number' || isNaN(newQueryCriteria.limit)) {
-      throw new Error('limit must be a number');
-    } else if (newQueryCriteria.limit < 0) {
-      throw new Error('limit must be greater than or equal to 0');
-    }
+    validateLimit(newQueryCriteria.limit);
   }
 }
 

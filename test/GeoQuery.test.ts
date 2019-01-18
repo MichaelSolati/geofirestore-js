@@ -5,7 +5,7 @@ import { GeoFirestore } from '../src/GeoFirestore';
 import { GeoQuery } from '../src/GeoQuery';
 import {
   afterEachHelper, beforeEachHelper, collection, dummyData,
-  firestore, invalidFirestores, stubDatabase, invalidLocations, geocollection
+  firestore, invalidFirestores, stubDatabase, invalidLocations, geocollection, generateDocs
 } from './common';
 
 const expect = chai.expect;
@@ -143,6 +143,77 @@ describe('GeoQuery Tests:', () => {
         });
       });
     });
+
+    it('onSnapshot docChanges() returns an array of the \'added\' docs as well as their index and `type`', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query.onSnapshot((snapshot) => {
+          subscription();
+          snapshot.docChanges().forEach((doc, index) => {
+            expect(doc.newIndex).to.be.equal(index);
+            expect(doc.oldIndex).to.be.equal(-1);
+            expect(doc.type).to.be.equal('added');
+          });
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot docChanges() returns an geofiltered array of the \'added\' docs as well as their index and `type`', (done) => {
+      const query = new GeoQuery(collection);
+      const generatedData = generateDocs();
+      const radius = 100;
+      const dummyLimitedData = generatedData.reduce((limited, doc) => {
+        if (doc.distance <= radius) {
+          limited.push(doc);
+        }
+        return limited;
+      }, []) as any[];
+      stubDatabase(generatedData).then(() => {
+        const subscription = query.near({ center: new firebase.firestore.GeoPoint(0, 0), radius }).onSnapshot((snapshot) => {
+          subscription();
+          const docChanges = snapshot.docChanges();
+          const docs = docChanges.map(doc => doc.doc.data());
+          expect(docChanges.length).to.be.equal(dummyLimitedData.length);
+          expect(docs).to.have.deep.members(dummyLimitedData);
+          docChanges.forEach((doc, index) => {
+            expect(doc.newIndex).to.be.equal(index);
+            expect(doc.oldIndex).to.be.equal(-1);
+            expect(doc.type).to.be.equal('added');
+          });
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot returns n amount of documents when a `limit(n)` is applied', (done) => {
+      const query = new GeoQuery(collection);
+      const n = Math.floor(Math.random() * 99) + 1;
+      const generatedData = generateDocs();
+      stubDatabase(generatedData).then(() => {
+        const subscription = query.limit(n).onSnapshot((snapshot) => {
+          subscription();
+          expect(snapshot.size).to.be.equal(n);
+          done();
+        });
+      });
+    });
+
+    it('onSnapshot returns n amount of geofiltered documents when a `limit(n)` is applied', (done) => {
+      const query = new GeoQuery(collection);
+      const n = Math.floor(Math.random() * 99) + 1;
+      const generatedData = generateDocs();
+      const dummyLimitedData = [...generatedData].sort((a, b) => a.distance - b.distance).slice(0, n).sort((a, b) => a.key - b.key);
+      stubDatabase(generatedData).then(() => {
+        const subscription = query.limit(n).near({ center: new firebase.firestore.GeoPoint(0, 0), radius: 1000 }).onSnapshot((snapshot) => {
+          subscription();
+          const result = snapshot.docs.map(d => d.data()).sort((a, b) => a.key - b.key);
+          expect(snapshot.size).to.be.equal(n);
+          expect(result).to.have.deep.members(dummyLimitedData);
+          done();
+        });
+      });
+    });
   });
 
   describe('get():', () => {
@@ -167,8 +238,7 @@ describe('GeoQuery Tests:', () => {
             { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
             { key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5 },
           ]);
-          done();
-        });
+        }).then(done);
       });
     });
 
@@ -181,8 +251,49 @@ describe('GeoQuery Tests:', () => {
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
           ]);
-          done();
-        });
+        }).then(done);
+      });
+    });
+
+    it('get() docChanges() returns an array of the \'added\' docs as well as their index and `type`', (done) => {
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query.get().then((snapshot) => {
+          const docChanges = snapshot.docChanges();
+          const docs = docChanges.map(doc => doc.doc.data());
+          expect(docChanges.length).to.be.equal(dummyData.length);
+          expect(docs).to.have.deep.members(dummyData);
+          docChanges.forEach((doc, index) => {
+            expect(doc.newIndex).to.be.equal(index);
+            expect(doc.oldIndex).to.be.equal(-1);
+            expect(doc.type).to.be.equal('added');
+          });
+        }).then(done);
+      });
+    });
+
+    it('get() docChanges() returns an geofiltered array of the \'added\' docs as well as their index and `type`', (done) => {
+      const query = new GeoQuery(collection);
+      const generatedData = generateDocs();
+      const radius = 100;
+      const dummyLimitedData = generatedData.reduce((limited, doc) => {
+        if ((doc.distance <= radius)) {
+          limited.push(doc);
+        }
+        return limited;
+      }, []) as any[];
+      stubDatabase(generatedData).then(() => {
+        query.near({ center: new firebase.firestore.GeoPoint(0, 0), radius }).get().then((snapshot) => {
+          const docChanges = snapshot.docChanges();
+          const docs = docChanges.map(doc => doc.doc.data());
+          expect(docChanges.length).to.be.equal(dummyLimitedData.length);
+          expect(docs).to.have.deep.members(dummyLimitedData);
+          docChanges.forEach((doc, index) => {
+            expect(doc.newIndex).to.be.equal(index);
+            expect(doc.oldIndex).to.be.equal(-1);
+            expect(doc.type).to.be.equal('added');
+          });
+        }).then(done);
       });
     });
 
@@ -190,11 +301,10 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query['_isWeb'] = false;
-        query.get().then(data => {
-          const result = data.docs.map(d => d.data());
+        query.get().then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
-          done();
-        });
+        }).then(done);
       });
     });
 
@@ -209,19 +319,17 @@ describe('GeoQuery Tests:', () => {
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
           ]);
-          done();
-        });
+        }).then(done);
       });
     });
 
     it('get() returns dummy data from server (web only)', (done) => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
-        query.get({ source: 'server' }).then(data => {
-          const result = data.docs.map(d => d.data());
+        query.get({ source: 'server' }).then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data());
           expect(result).to.have.deep.members(dummyData);
-          done();
-        });
+        }).then(done);
       });
     });
 
@@ -234,8 +342,32 @@ describe('GeoQuery Tests:', () => {
             { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
             { key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3 },
           ]);
-          done();
-        });
+        }).then(done);
+      });
+    });
+
+    it('get() returns n amount of documents when a `limit(n)` is applied', (done) => {
+      const query = new GeoQuery(collection);
+      const n = Math.floor(Math.random() * 99) + 1;
+      const generatedData = generateDocs();
+      stubDatabase(generatedData).then(() => {
+        query.limit(n).get().then((snapshot) => {
+          expect(snapshot.size).to.be.equal(n);
+        }).then(done);
+      });
+    });
+
+    it('get() returns n amount of geofiltered documents when a `limit(n)` is applied', (done) => {
+      const query = new GeoQuery(collection);
+      const n = Math.floor(Math.random() * 99) + 1;
+      const generatedData = generateDocs();
+      const dummyLimitedData = [...generatedData].sort((a, b) => a.distance - b.distance).slice(0, n);
+      stubDatabase(generatedData).then(() => {
+        query.limit(n).near({ center: new firebase.firestore.GeoPoint(0, 0), radius: 1000 }).get().then((snapshot) => {
+          const result = snapshot.docs.map(d => d.data());
+          expect(snapshot.size).to.be.equal(n);
+          expect(result).to.have.deep.members(dummyLimitedData);
+        }).then(done);
       });
     });
   });
@@ -285,6 +417,29 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       // @ts-ignore
       expect(() => query.where('count', 'as', 12)).to.throw();
+    });
+  });
+
+  describe('limit():', () => {
+    it('limit() does not throw an error with valid arguments', () => {
+      const query = new GeoQuery(collection);
+      [1, 50, 233, 0.9].forEach((limit) => {
+        expect(() => query.limit(limit)).not.to.throw();
+      });
+    });
+
+    it('limit() throws error with no arguments', () => {
+      const query = new GeoQuery(collection);
+      // @ts-ignore
+      expect(() => query.limit()).to.throw();
+    });
+
+    it('limit() throws error with invalid arguments', () => {
+      const query = new GeoQuery(collection);
+      [query, '50', null, () => {}, {}].forEach((limit) => {
+        // @ts-ignore
+        expect(() => query.limit(limit)).to.throw();
+      });
     });
   });
 

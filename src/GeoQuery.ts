@@ -3,7 +3,7 @@ import { GeoFirestore } from './GeoFirestore';
 import { GeoJoinerGet } from './GeoJoinerGet';
 import { GeoJoinerOnSnapshot } from './GeoJoinerOnSnapshot';
 import { GeoQuerySnapshot } from './GeoQuerySnapshot';
-import { validateQueryCriteria, geohashQueries } from './utils';
+import { validateQueryCriteria, geohashQueries, validateLimit } from './utils';
 
 /**
  * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
@@ -61,7 +61,8 @@ export class GeoQuery {
       if (this._center && this._radius) {
         return new GeoJoinerOnSnapshot(this._generateQuery(), this._queryCriteria, onNext, onError).unsubscribe();
       } else {
-        return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
+        const query = this._limit ? this._query.limit(this._limit) : this._query;
+        return (query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
       }
     };
   }
@@ -81,8 +82,8 @@ export class GeoQuery {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
       return Promise.all(queries).then(value => new GeoJoinerGet(value, this._queryCriteria).getGeoQuerySnapshot());
     } else {
-      const promise = this._isWeb ?
-        (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
+      const query = this._limit ? this._query.limit(this._limit) : this._query;
+      const promise = this._isWeb ? (query as GeoFirestoreTypes.web.Query).get(options) : (query as GeoFirestoreTypes.web.Query).get();
       return promise.then((snapshot) => new GeoQuerySnapshot(snapshot));
     }
   }
@@ -92,16 +93,17 @@ export class GeoQuery {
    *
    * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the limit.
    * 
-   * Note: Geoqueries require an aggregation of queries, the library applies a paritial limit on the server,
-   * but primarily runs its limit on the client. This may mean you are loading to the client more documents then you intended.
-   * Use with this performance limitation in mind.
+   * Note: Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries.
+   * When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents
+   * then you intended. Use with this performance limitation in mind.
    *
    * @param limit The maximum number of items to return.
    * @return The created GeoQuery.
    */
   public limit(limit: number): GeoQuery {
-    this._limit = limit || this._limit;
-    return new GeoQuery(this._query.limit(limit), this._queryCriteria);
+    validateLimit(limit);
+    this._limit = limit;
+    return new GeoQuery(this._query, this._queryCriteria);
   }
 
   /**
