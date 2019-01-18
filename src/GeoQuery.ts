@@ -3,7 +3,7 @@ import { GeoFirestore } from './GeoFirestore';
 import { GeoJoinerGet } from './GeoJoinerGet';
 import { GeoJoinerOnSnapshot } from './GeoJoinerOnSnapshot';
 import { GeoQuerySnapshot } from './GeoQuerySnapshot';
-import { validateQueryCriteria, geohashQueries } from './utils';
+import { validateQueryCriteria, geohashQueries, validateLimit } from './utils';
 
 /**
  * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
@@ -11,27 +11,33 @@ import { validateQueryCriteria, geohashQueries } from './utils';
  */
 export class GeoQuery {
   private _center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+  private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
 
   /**
    * @param _query The `Query` instance.
-   * @param near The center and radius of geo based queries.
+   * @param queryCriteria The query criteria of geo based queries, includes field such as center, radius, and limit.
    */
   constructor(
     private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query,
-    near?: GeoFirestoreTypes.QueryCriteria
+    queryCriteria?: GeoFirestoreTypes.QueryCriteria
   ) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
     }
     this._isWeb = Object.prototype.toString
       .call((_query as GeoFirestoreTypes.web.CollectionReference).firestore.enablePersistence) === '[object Function]';
-    if (near && near.center && near.radius) {
-      // Validate and save the query criteria
-      validateQueryCriteria(near);
-      this._center = near.center;
-      this._radius = near.radius;
+    if (queryCriteria) {
+      if (queryCriteria.limit) {
+        this._limit = queryCriteria.limit;
+      }
+      if (queryCriteria.center && queryCriteria.radius) {
+        // Validate and save the query criteria
+        validateQueryCriteria(queryCriteria);
+        this._center = queryCriteria.center;
+        this._radius = queryCriteria.radius;
+      }
     }
   }
 
@@ -53,9 +59,10 @@ export class GeoQuery {
   get onSnapshot(): ((onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => () => void) {
     return (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void): (() => void) => {
       if (this._center && this._radius) {
-        return new GeoJoinerOnSnapshot(this._generateQuery(), this._near, onNext, onError).unsubscribe();
+        return new GeoJoinerOnSnapshot(this._generateQuery(), this._queryCriteria, onNext, onError).unsubscribe();
       } else {
-        return (this._query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
+        const query = this._limit ? this._query.limit(this._limit) : this._query;
+        return (query as GeoFirestoreTypes.web.Query).onSnapshot((snapshot) => onNext(new GeoQuerySnapshot(snapshot)), onError);
       }
     };
   }
@@ -73,12 +80,30 @@ export class GeoQuery {
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && this._radius) {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
-      return Promise.all(queries).then(value => new GeoJoinerGet(value, this._near).getGeoQuerySnapshot());
+      return Promise.all(queries).then(value => new GeoJoinerGet(value, this._queryCriteria).getGeoQuerySnapshot());
     } else {
-      const promise = this._isWeb ?
-        (this._query as GeoFirestoreTypes.web.Query).get(options) : (this._query as GeoFirestoreTypes.web.Query).get();
+      const query = this._limit ? this._query.limit(this._limit) : this._query;
+      const promise = this._isWeb ? (query as GeoFirestoreTypes.web.Query).get(options) : (query as GeoFirestoreTypes.web.Query).get();
       return promise.then((snapshot) => new GeoQuerySnapshot(snapshot));
     }
+  }
+
+  /**
+   * Creates and returns a new GeoQuery that's additionally limited to only return up to the specified number of documents.
+   *
+   * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the limit.
+   * 
+   * Note: Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries.
+   * When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents
+   * then you intended. Use with this performance limitation in mind.
+   *
+   * @param limit The maximum number of items to return.
+   * @return The created GeoQuery.
+   */
+  public limit(limit: number): GeoQuery {
+    validateLimit(limit);
+    this._limit = limit;
+    return new GeoQuery(this._query, this._queryCriteria);
   }
 
   /**
@@ -95,7 +120,7 @@ export class GeoQuery {
     this._center = newGeoQueryCriteria.center || this._center;
     this._radius = newGeoQueryCriteria.radius || this._radius;
 
-    return new GeoQuery(this._query, this._near);
+    return new GeoQuery(this._query, this._queryCriteria);
   }
 
   /**
@@ -114,7 +139,7 @@ export class GeoQuery {
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {
-    return new GeoQuery(this._query.where((fieldPath ? ('d.' + fieldPath) : fieldPath), opStr, value), this._near);
+    return new GeoQuery(this._query.where((fieldPath ? ('d.' + fieldPath) : fieldPath), opStr, value), this._queryCriteria);
   }
 
   /**
@@ -139,9 +164,10 @@ export class GeoQuery {
   /**
    * Returns the center and radius of geo based queries as a QueryCriteria object.
    */
-  private get _near(): GeoFirestoreTypes.QueryCriteria {
+  private get _queryCriteria(): GeoFirestoreTypes.QueryCriteria {
     return {
       center: this._center,
+      limit: this._limit,
       radius: this._radius
     };
   }

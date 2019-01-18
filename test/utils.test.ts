@@ -6,7 +6,7 @@ import {
   boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData, degreesToRadians,
   encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot,
   geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees,
-  toGeoPoint, validateGeoDocument, validateGeohash, validateLocation, validateQueryCriteria, wrapLongitude
+  toGeoPoint, validateGeoDocument, validateGeohash, validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeoFirestoreDocuments, invalidGeohashes, invalidLocations, invalidQueryCriterias, validGeoFirestoreDocuments, validGeohashes,
@@ -321,7 +321,7 @@ describe('Utils Tests:', () => {
 
       it('validateGeoFirestoreObject() returns true given valid GeoFirestoreObj with flag enabled', () => {
         validGeoFirestoreDocuments.forEach((validGeoFirestoreObject) => {
-          expect(() => validateGeoDocument(validGeoFirestoreObject, true)).to.be.true; // tslint:disable-line
+          expect(() => validateGeoDocument(validGeoFirestoreObject, true)).to.be.equal(true);
         });
       });
 
@@ -357,11 +357,6 @@ describe('Utils Tests:', () => {
       });
     });
   });
-
-
-
-
-
 
   describe('Coordinate calculations:', () => {
     it('metersToLongtitudeDegrees calculates correctly', () => {
@@ -401,8 +396,6 @@ describe('Utils Tests:', () => {
     });
   });
 
-
-
   describe('Geohash queries:', () => {
     it('Geohash queries must be of the right size', () => {
       expect(geohashQuery('64m9yn96mx', 6)).to.be.deep.equal(['60', '6h']);
@@ -437,10 +430,42 @@ describe('Utils Tests:', () => {
             new firebase.firestore.GeoPoint(centerLat, centerLong),
             new firebase.firestore.GeoPoint(pointLat, pointLong)
           ) < radius / 1000) {
-            expect(inQuery(queries, encodeGeohash(new firebase.firestore.GeoPoint(pointLat, pointLong)))).to.be.true; // tslint:disable-line
+            expect(inQuery(queries, encodeGeohash(new firebase.firestore.GeoPoint(pointLat, pointLong)))).to.be.equal(true);
           }
         }
       }
+    });
+  });
+
+  describe('Other: ', () => {
+    it('validateLimit() returns `true` if a number (not less than 0) is inputted', () => {
+      [0, 0.1, 1, 500, 30].forEach((n) => {
+        expect(validateLimit(n)).to.be.equal(true);
+      });
+    });
+
+    it('validateLimit() throws an error if a number less than 0 is inputted', () => {
+      [-0.1, -1, -500, -30].forEach((n) => {
+        expect(() => validateLimit(n)).to.throw();
+      });
+    });
+
+    it('validateLimit() returns `false` if a number less than 0 is inputted and the suppress error flag is enabled', () => {
+      [-0.1, -1, -500, -30].forEach((n) => {
+        expect(validateLimit(n, true)).to.be.equal(false);
+      });
+    });
+
+    it('validateLimit() throws an error given an invalid argument', () => {
+      [it, '50', null, () => {}, {}].forEach((n) => {
+        // @ts-ignore
+        expect(() => validateLimit(n)).to.throw();
+      });
+    });
+
+    it('validateLimit() throws error with no arguments', () => {
+      // @ts-ignore
+      expect(() => validateLimit()).to.throw();
     });
   });
 });
