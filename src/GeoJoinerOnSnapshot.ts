@@ -98,8 +98,12 @@ export class GeoJoinerOnSnapshot {
     this._firstEmitted = true;
     this._onNext(new GeoQuerySnapshot({
           docs,
-          // @TODO Remove docs that have already been added? Need to test. Maybe reduce...
-          docChanges: () => docChanges
+          docChanges: () => docChanges.reduce((reduced, change) => {
+            if (change.oldIndex === -1 || change.type !== 'added') {
+              reduced.push(change);
+            }
+            return reduced;
+          }, [])
     } as GeoFirestoreTypes.web.QuerySnapshot, this._queryCriteria.center));
   }
 
