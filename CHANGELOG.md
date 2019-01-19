@@ -1,3 +1,25 @@
+### 3.1.0 (2019-01-19)
+
+##### Documentation Changes
+
+* **README:**
+  *  added limitations, fixes [#75](https://github.com/geofirestore/geofirestore-js/pull/75) ([aa5e320f](https://github.com/geofirestore/geofirestore-js/commit/aa5e320fb2d6ef422527c55f826e3b29bf1fb836))
+  *  Added limitations ([659e2310](https://github.com/geofirestore/geofirestore-js/commit/659e2310413b18fe624ec90f5c0ff8c1ee70d363))
+
+##### New Features
+
+* **GeoQuery:**  expose limit function, fixes [#68](https://github.com/geofirestore/geofirestore-js/pull/68) [#26](https://github.com/geofirestore/geofirestore-js/pull/26) [#8](https://github.com/geofirestore/geofirestore-js/pull/8) ([5fb5de08](https://github.com/geofirestore/geofirestore-js/commit/5fb5de08833a6fe447a48b848e8baef8c7212767))
+
+##### Bug Fixes
+
+* **GeoJoinerOnSnapshot:**
+  *  remove unchanged docs from ([133e3d60](https://github.com/geofirestore/geofirestore-js/commit/133e3d603c2b7a63b60c5383f1131b0e44b2e5cc))
+  *  return properly computed `oldIndex` and `newIndex` ([ad9c657b](https://github.com/geofirestore/geofirestore-js/commit/ad9c657b6a7968695e1fd8f0f137cb02c2157584))
+
+##### Tests
+
+* **GeoQuery:**  add tests for new `limit` method ([d524789c](https://github.com/geofirestore/geofirestore-js/commit/d524789c8f27fc5d95e6fedd32600098d1bf37bb))
+
 #### 3.0.2 (2019-01-15)
 
 ##### Chores
