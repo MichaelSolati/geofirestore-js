@@ -14,7 +14,6 @@ export class GeoQuery {
   private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
-  private _ineq = false;
 
   /**
    * @param _query The `Query` instance.
@@ -140,8 +139,6 @@ export class GeoQuery {
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {
-    // True if inequality filter is used
-    this._ineq = (opStr !== '==' && opStr !== 'array-contains') ? true : this._ineq;
     // Return GeoQuery
     return new GeoQuery(this._query.where((fieldPath ? ('d.' + fieldPath) : fieldPath), opStr, value), this._queryCriteria);
   }
@@ -161,9 +158,6 @@ export class GeoQuery {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
-      if(!this._ineq){
-        return this._query.where('g', '>=', query[0]).where('g', '<=', query[1]) as GeoFirestoreTypes.web.Query;
-      }
       return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as GeoFirestoreTypes.web.Query;
     });
   }
