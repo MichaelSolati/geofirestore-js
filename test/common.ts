@@ -101,8 +101,8 @@ export function afterEachHelper(done): void {
 
 /* Helper function designed to create docs within a certain range of coordinates */
 export function generateDocs(
-  maxLat = 0.5, minLat = -0.5, maxLng = 0.5, minLng = -0.5,
-  total = 100, center = new firebase.firestore.GeoPoint(0, 0)
+  total = 100, center = new firebase.firestore.GeoPoint(0, 0),
+  maxLat = 0.5, minLat = -0.5, maxLng = 0.5, minLng = -0.5
 ): Array<{ [key: string]: any }> {
   return (new Array(total)).fill(0).map(() => {
     const lat = (Math.random() * (maxLat - minLat + 1)) + minLat;

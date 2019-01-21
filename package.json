@@ -50,7 +50,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@firebase/firestore-types": "0.x.x",
+    "@firebase/firestore-types": "0.x.x || 1.x.x",
     "@google-cloud/firestore": "0.x.x",
     "@types/node": "x.x.x"
   },
