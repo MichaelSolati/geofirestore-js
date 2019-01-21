@@ -92,7 +92,7 @@ export class GeoQuery {
    * Creates and returns a new GeoQuery that's additionally limited to only return up to the specified number of documents.
    *
    * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the limit.
-   * 
+   *
    * Note: Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries.
    * When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents
    * then you intended. Use with this performance limitation in mind.
@@ -139,6 +139,7 @@ export class GeoQuery {
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {
+    // Return GeoQuery
     return new GeoQuery(this._query.where((fieldPath ? ('d.' + fieldPath) : fieldPath), opStr, value), this._queryCriteria);
   }
 
@@ -157,7 +158,7 @@ export class GeoQuery {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
-      return this._query.where('g', '>=', query[0]).where('g', '<=', query[1]) as GeoFirestoreTypes.web.Query;
+      return this._query.orderBy('g').startAt(query[0]).endAt(query[1]) as GeoFirestoreTypes.web.Query;
     });
   }
 
