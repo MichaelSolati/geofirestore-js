@@ -47,6 +47,7 @@ export namespace GeoFirestoreTypes {
     export type Query = FirestoreTypes.Query;
     export type QuerySnapshot = FirestoreTypes.QuerySnapshot;
     export type QueryDocumentSnapshot = FirestoreTypes.QueryDocumentSnapshot;
+    export type Transaction = FirestoreTypes.Transaction;
     export type WriteBatch = FirestoreTypes.WriteBatch;
   }
   export namespace cloud {
@@ -60,6 +61,7 @@ export namespace GeoFirestoreTypes {
     export type Query = FirebaseFirestore.Query;
     export type QuerySnapshot = FirebaseFirestore.QuerySnapshot;
     export type QueryDocumentSnapshot = FirebaseFirestore.QueryDocumentSnapshot;
+    export type Transaction = FirebaseFirestore.Transaction;
     export type WriteBatch = FirebaseFirestore.WriteBatch;
   }
 }

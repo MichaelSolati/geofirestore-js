@@ -1,5 +1,6 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoCollectionReference } from './GeoCollectionReference';
+import { GeoTransaction } from './GeoTransaction';
 import { GeoWriteBatch } from './GeoWriteBatch';
 
 /**
@@ -32,5 +33,20 @@ export class GeoFirestore {
    */
   public collection(collectionPath: string): GeoCollectionReference {
     return new GeoCollectionReference(this._firestore.collection(collectionPath));
+  }
+
+  /**
+   * Executes the given updateFunction and then attempts to commit the changes applied within the transaction. If any document read within
+   * the transaction has changed, the updateFunction will be retried. If it fails to commit after 5 attempts, the transaction will fail.
+   *
+   * @param updateFunction The function to execute within the transaction context.
+   * @return If the transaction completed successfully or was explicitly aborted (by the updateFunction returning a failed Promise), the
+   * Promise returned by the updateFunction will be returned here. Else if the transaction failed, a rejected Promise with the
+   * corresponding failure error will be returned.
+   */
+  public runTransaction(
+    updateFunction: (transaction: GeoTransaction | GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
+  ): Promise<any> {
+    return (this._firestore as GeoFirestoreTypes.web.Firestore).runTransaction(updateFunction);
   }
 }
