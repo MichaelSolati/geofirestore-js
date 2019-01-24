@@ -45,7 +45,7 @@ export class GeoFirestore {
    * corresponding failure error will be returned.
    */
   public runTransaction(
-    updateFunction: (transaction: GeoTransaction | GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
+    updateFunction: (transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
   ): Promise<any> {
     return (this._firestore as GeoFirestoreTypes.web.Firestore).runTransaction(updateFunction);
   }
