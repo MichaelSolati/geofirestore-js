@@ -76,6 +76,31 @@ export class GeoDocumentReference {
   }
 
   /**
+   * Deletes the document referred to by this `GeoDocumentReference`.
+   *
+   * @return A Promise resolved once the document has been successfully deleted from the backend (Note that it won't resolve while you're
+   * offline).
+   */
+  public delete(): Promise<void> {
+    return (this._document as GeoFirestoreTypes.web.DocumentReference).delete().then(() => null);
+  }
+
+  /**
+   * Reads the document referred to by this `GeoDocumentReference`.
+   *
+   * Note: By default, get() attempts to provide up-to-date data when possible by waiting for data from the server, but it may return
+   * cached data or fail if you are offline and the server cannot be reached. This behavior can be altered via the `GetOptions` parameter.
+   *
+   * @param options An object to configure the get behavior.
+   * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
+   */
+  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
+    return this._isWeb ?
+      (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
+      (this._document as GeoFirestoreTypes.cloud.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
+  }
+
+  /**
    * Returns true if this `GeoDocumentReference` is equal to the provided one.
    *
    * @param other The `DocumentReference` or `GeoDocumentReference` to compare against.
@@ -99,14 +124,8 @@ export class GeoDocumentReference {
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
-  public set(
-    data: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.SetOptions
-  ): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
-      encodeSetDocument(data, options),
-      options
-    ).then(() => null);
+  public set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
+    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(encodeSetDocument(data, options), options).then(() => null);
   }
 
   /**
@@ -120,30 +139,5 @@ export class GeoDocumentReference {
    */
   public update(data: GeoFirestoreTypes.UpdateData, customKey?: string): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).update(encodeUpdateDocument(data, customKey)).then(() => null);
-  }
-
-  /**
-   * Deletes the document referred to by this `GeoDocumentReference`.
-   *
-   * @return A Promise resolved once the document has been successfully deleted from the backend (Note that it won't resolve while you're
-   * offline).
-   */
-  public delete(): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).delete().then(() => null);
-  }
-
-  /**
-   * Reads the document referred to by this `GeoDocumentReference`.
-   *
-   * Note: By default, get() attempts to provide up-to-date data when possible by waiting for data from the server, but it may return
-   * cached data or fail if you are offline and the server cannot be reached. This behavior can be altered via the `GetOptions` parameter.
-   *
-   * @param options An object to configure the get behavior.
-   * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
-   */
-  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
-    return this._isWeb ?
-      (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
-      (this._document as GeoFirestoreTypes.cloud.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 }
