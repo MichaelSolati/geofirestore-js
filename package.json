@@ -84,9 +84,6 @@
     "include": [
       "src/**/*.ts"
     ],
-    "exclude": [
-      "src/interfaces/*"
-    ],
     "reporter": [
       "html"
     ],

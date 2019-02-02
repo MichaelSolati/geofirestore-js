@@ -1,7 +1,10 @@
 import * as chai from 'chai';
 
-import { GeoFirestore } from '../src/GeoFirestore';
-import { afterEachHelper, beforeEachHelper, firestore, invalidFirestores, testCollectionName } from './common';
+import { GeoFirestore, GeoTransaction } from '../src';
+import {
+  afterEachHelper, beforeEachHelper, firestore, invalidFirestores,
+  testCollectionName, geofirestore, geocollection
+} from './common';
 
 const expect = chai.expect;
 
@@ -39,6 +42,23 @@ describe('GeoFirestore Tests:', () => {
       expect(
         (new GeoFirestore(firestore)).collection(testCollectionName)['_collection']
       ).to.deep.equal(firestore.collection(testCollectionName));
+    });
+  });
+
+  describe('runTransaction():', () => {
+    it('runTransaction() doesn\'t throw an error when a valid `updateFunction` is passed in', () => {
+      expect(() => {
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          const docRef = geocollection.doc('testdoc');
+          return geotransaction.get(docRef);
+        });
+      }).to.not.throw();
+    });
+
+    it('runTransaction() does throw an error when an invalid `updateFunction` is passed in', (done) => {
+      // @ts-ignore
+      geofirestore.runTransaction(() => Math).catch((e) => done());
     });
   });
 });
