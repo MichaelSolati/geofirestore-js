@@ -76,7 +76,6 @@ firebase.initializeApp({
   databaseURL: 'https://geofirestore.firebaseio.com',
   projectId: 'geofirestore',
 });
-firebase.firestore().settings({ timestampsInSnapshots: true });
 
 /**********************/
 /*  HELPER FUNCTIONS  */

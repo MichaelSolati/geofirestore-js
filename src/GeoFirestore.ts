@@ -1,6 +1,5 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoCollectionReference } from './GeoCollectionReference';
-import { GeoTransaction } from './GeoTransaction';
 import { GeoWriteBatch } from './GeoWriteBatch';
 
 /**
@@ -18,7 +17,7 @@ export class GeoFirestore {
 
   /**
    * Creates a write batch, used for performing multiple writes as a single atomic operation.
-   * 
+   *
    * @return A new `GeoWriteBatch` instance.
    */
   public batch(): GeoWriteBatch {
@@ -38,6 +37,28 @@ export class GeoFirestore {
   /**
    * Executes the given updateFunction and then attempts to commit the changes applied within the transaction. If any document read within
    * the transaction has changed, the updateFunction will be retried. If it fails to commit after 5 attempts, the transaction will fail.
+   *
+   * Note: The `updateFunction` passed into `runTransaction` is a standard Firestore transaction. You should then immediateley create a
+   * `GeoTransaction` to then make your calls to. Below is a small example on how to do that.
+   *
+   * @example
+   * ```typescript
+   * const geofirestore = new GeoFirestore(firebase.firestore());
+   * const sfDocRef = geofirestore.collection('cities').doc('SF');
+   * 
+   * geofirestore.runTransaction((transaction) => {
+   *  // Immediateley create a `GeoTransaction` from the `transaction`
+   *  const geotransaction = new GeoTransaction(transaction);
+   *  // This code may get re-run multiple times if there are conflicts.
+   *  return geotransaction.get(sfDocRef).then((sfDoc) => {
+   *    if (!sfDoc.exists) {
+   *      throw Error('Document does not exist!');
+   *    }
+   *    const newPopulation = sfDoc.data().population + 1;
+   *    geotransaction.update(sfDocRef, { population: newPopulation });
+   *  });
+   * });
+   * ```
    *
    * @param updateFunction The function to execute within the transaction context.
    * @return If the transaction completed successfully or was explicitly aborted (by the updateFunction returning a failed Promise), the
