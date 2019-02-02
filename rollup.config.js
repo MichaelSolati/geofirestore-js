@@ -1,21 +1,26 @@
 import commonjs from 'rollup-plugin-commonjs';
-import rollupCopy from 'rollup-plugin-copy';
+import copier from 'rollup-plugin-copier';
 import resolveModule from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 import { uglify } from 'rollup-plugin-uglify';
 import pkg from './package.json';
+
+const copy = copier({
+  items: [{
+    src: 'src/GeoFirestoreTypes.ts',
+    dest: 'dist/GeoFirestoreTypes.ts',
+    createPath: true
+  }]
+});
 
 const plugins = [
   resolveModule(),
   typescript({
     typescript: require('typescript')
   }),
-  commonjs()
+  commonjs(),
+  copy
 ];
-
-const copy = rollupCopy({
-  'src/GeoFirestoreTypes.ts': 'dist/GeoFirestoreTypes.ts'
-});
 
 const completeBuilds = [{
     input: 'src/index.ts',
@@ -40,8 +45,7 @@ const completeBuilds = [{
     },
     plugins: [
       ...plugins,
-      uglify(),
-      copy
+      uglify()
     ]
   }
 ];
