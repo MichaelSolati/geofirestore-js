@@ -72,7 +72,7 @@ export class GeoTransaction {
    * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested
    * fields within the document.
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
-   * @return This `Transaction` instance. Used for chaining method calls.
+   * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
   public update(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,

@@ -47,13 +47,7 @@ describe('GeoFirestore Tests:', () => {
 
   describe('runTransaction():', () => {
     it('runTransaction() doesn\'t throw an error when a valid `updateFunction` is passed in', () => {
-      expect(() => {
-        return geofirestore.runTransaction((transaction) => {
-          const geotransaction = new GeoTransaction(transaction);
-          const docRef = geocollection.doc('testdoc');
-          return geotransaction.get(docRef);
-        });
-      }).to.not.throw();
+      expect(() => geofirestore.runTransaction((transaction) => Promise.resolve(true))).to.not.throw();
     });
 
     it('runTransaction() does throw an error when an invalid `updateFunction` is passed in', (done) => {
