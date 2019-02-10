@@ -17,5 +17,5 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-    after_deploy:
-      - npm run deploy:travis
+after_deploy:
+  - npm run deploy:travis
