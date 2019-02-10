@@ -1,4 +1,4 @@
-/* tslint:disable:no-import-side-effect no-namespace */
+/* tslint:disable:no-import-side-effect no-namespace no-shadowed-variable */
 import * as FirestoreTypes from '@firebase/firestore-types';
 import '@google-cloud/firestore/types/firestore';
 import '@types/node';

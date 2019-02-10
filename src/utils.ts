@@ -371,9 +371,9 @@ export function geohashQuery(geohash: string, bits: number): string[] {
   if (geohash.length < precision) {
     return [geohash, geohash + '~'];
   }
-  geohash = geohash.substring(0, precision);
-  const base = geohash.substring(0, geohash.length - 1);
-  const lastValue = BASE32.indexOf(geohash.charAt(geohash.length - 1));
+  const ghash = geohash.substring(0, precision);
+  const base = ghash.substring(0, ghash.length - 1);
+  const lastValue = BASE32.indexOf(ghash.charAt(ghash.length - 1));
   const significantBits = bits - (base.length * BITS_PER_CHAR);
   const unusedBits = (BITS_PER_CHAR - significantBits);
   // delete unused bits
