@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 
 import { GeoTransaction } from '../src';
-import {
+import { 
   afterEachHelper, beforeEachHelper, collection, dummyData,
-  geocollection, geofirestore, invalidFirestores, stubDatabase
+  geocollection, geofirestore, invalidFirestores, stubDatabase, wait
 } from './common';
 
 const expect = chai.expect;
@@ -38,43 +38,41 @@ describe('GeoTransaction Tests:', () => {
     it('delete() removes a document from a Firestore collection when given a GeoDocumentReference', () => {
       const dummyDoc = dummyData[0];
       const docRef = geocollection.doc(dummyDoc.key);
-      return stubDatabase()
-        .then(() => {
-          return geofirestore.runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
-              geotransaction.delete(docRef);
-              return Promise.resolve(true);
-            });
+      return stubDatabase().then(() => {
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            geotransaction.delete(docRef);
           });
         })
-        .then(() => docRef.get())
-        .then((doc) => {
-          expect(doc.exists).to.be.equal(false);
-          return Promise.resolve(true);
+          .then(() => wait())
+          .then(() => docRef.get())
+          .then((doc) => {
+            expect(doc.exists).to.be.equal(false);
+            return Promise.resolve(true);
+          });
         });
     });
 
     it('delete() removes a document from a Firestore collection when given a DocumentReference', () => {
       const dummyDoc = dummyData[0];
       const docRef = collection.doc(dummyDoc.key);
-      return stubDatabase()
-        .then(() => {
-          return geofirestore.runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then((doc) => {
-              expect(doc.exists).to.be.equal(true);
-              geotransaction.delete(docRef);
-              return Promise.resolve(true);
-            });
+      return stubDatabase().then(() => {
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            geotransaction.delete(docRef);
           });
         })
-        .then(() => docRef.get())
-        .then((doc) => {
-          expect(doc.exists).to.be.equal(false);
-          return Promise.resolve(true);
-        });
+          .then(() => wait())
+          .then(() => docRef.get())
+          .then(doc => {
+            expect(doc.exists).to.be.equal(false);
+            return Promise.resolve(true);
+          });
+      });
     });
   });
 
@@ -89,7 +87,6 @@ describe('GeoTransaction Tests:', () => {
             expect(doc.exists).to.be.equal(true);
             expect(doc.data()).to.deep.equal(dummyDoc);
             geotransaction.update(docRef, dummyDoc);
-            return Promise.resolve(true);
           });
         });
       });
@@ -105,7 +102,6 @@ describe('GeoTransaction Tests:', () => {
             expect(doc.exists).to.be.equal(true);
             expect(doc.data()).to.deep.equal(dummyDoc);
             geotransaction.update(docRef, dummyDoc);
-            return Promise.resolve(true);
           });
         });
       });
@@ -118,18 +114,17 @@ describe('GeoTransaction Tests:', () => {
       const dummyDoc2 = dummyData[1];
       const docRef = geocollection.doc(dummyDoc.key);
       return stubDatabase().then(() => {
-        return geofirestore
-          .runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then((doc) => {
-              expect(doc.exists).to.be.equal(true);
-              expect(doc.data()).to.deep.equal(dummyDoc);
-              geotransaction.set(docRef, dummyDoc2);
-              return Promise.resolve(true);
-            });
-          })
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            expect(doc.data()).to.deep.equal(dummyDoc);
+            geotransaction.set(docRef, dummyDoc2);
+          });
+        })
+          .then(() => wait())
           .then(() => docRef.get())
-          .then((doc) => {
+          .then(doc => {
             expect(doc.exists).to.be.equal(true);
             expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
@@ -142,18 +137,17 @@ describe('GeoTransaction Tests:', () => {
       const dummyDoc2 = dummyData[1];
       const docRef = collection.doc(dummyDoc.key);
       return stubDatabase().then(() => {
-        return geofirestore
-          .runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then((doc) => {
-              expect(doc.exists).to.be.equal(true);
-              expect(doc.data()).to.deep.equal(dummyDoc);
-              geotransaction.set(docRef, dummyDoc2);
-              return Promise.resolve(true);
-            });
-          })
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            expect(doc.data()).to.deep.equal(dummyDoc);
+            geotransaction.set(docRef, dummyDoc2);
+          });
+        })
+          .then(() => wait())
           .then(() => docRef.get())
-          .then((doc) => {
+          .then(doc => {
             expect(doc.exists).to.be.equal(true);
             expect(doc.data().d).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
@@ -164,15 +158,14 @@ describe('GeoTransaction Tests:', () => {
     it('set() creates a new document if no document existed before', () => {
       const dummyDoc = dummyData[0];
       const docRef = geocollection.doc(dummyDoc.key);
-      return geofirestore
-        .runTransaction((transaction) => {
-          const geotransaction = new GeoTransaction(transaction);
-          return geotransaction.get(docRef).then((doc) => {
-            expect(doc.exists).to.be.equal(false);
-            geotransaction.set(docRef, dummyDoc);
-            return Promise.resolve(true);
-          });
-        })
+      return geofirestore.runTransaction((transaction) => {
+        const geotransaction = new GeoTransaction(transaction);
+        return geotransaction.get(docRef).then((doc) => {
+          expect(doc.exists).to.be.equal(false);
+          geotransaction.set(docRef, dummyDoc);
+        });
+      })
+        .then(() => wait())
         .then(() => docRef.get())
         .then((doc) => {
           expect(doc.exists).to.be.equal(true);
@@ -188,16 +181,15 @@ describe('GeoTransaction Tests:', () => {
       const dummyDoc2 = dummyData[1];
       const docRef = geocollection.doc(dummyDoc.key);
       return stubDatabase().then(() => {
-        return geofirestore
-          .runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then((doc) => {
-              expect(doc.exists).to.be.equal(true);
-              expect(doc.data()).to.deep.equal(dummyDoc);
-              geotransaction.update(docRef, dummyDoc2);
-              return Promise.resolve(true);
-            });
-          })
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            expect(doc.data()).to.deep.equal(dummyDoc);
+            geotransaction.update(docRef, dummyDoc2);
+          });
+        })
+          .then(() => wait())
           .then(() => docRef.get())
           .then((doc) => {
             expect(doc.exists).to.be.equal(true);
@@ -212,16 +204,15 @@ describe('GeoTransaction Tests:', () => {
       const dummyDoc2 = dummyData[1];
       const docRef = collection.doc(dummyDoc.key);
       return stubDatabase().then(() => {
-        return geofirestore
-          .runTransaction((transaction) => {
-            const geotransaction = new GeoTransaction(transaction);
-            return geotransaction.get(docRef).then((doc) => {
-              expect(doc.exists).to.be.equal(true);
-              expect(doc.data()).to.deep.equal(dummyDoc);
-              geotransaction.update(docRef, dummyDoc2);
-              return Promise.resolve(true);
-            });
-          })
+        return geofirestore.runTransaction((transaction) => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then((doc) => {
+            expect(doc.exists).to.be.equal(true);
+            expect(doc.data()).to.deep.equal(dummyDoc);
+            geotransaction.update(docRef, dummyDoc2);
+          });
+        })
+          .then(() => wait())
           .then(() => docRef.get())
           .then((doc) => {
             expect(doc.exists).to.be.equal(true);
@@ -231,26 +222,26 @@ describe('GeoTransaction Tests:', () => {
       });
     });
 
-    it('update() fails if no document existed before', (done) => {
+    it('update() fails if no document existed before', () => {
       const dummyDoc = dummyData[0];
       const docRef = geocollection.doc(dummyDoc.key);
       let isDone = false;
-      geofirestore
-        .runTransaction((transaction) => {
-          const geotransaction = new GeoTransaction(transaction);
-          return geotransaction.get(docRef).then((doc) => {
-            expect(doc.exists).to.be.equal(false);
-            geotransaction.update(docRef, dummyDoc);
-            return Promise.resolve(true);
-          }).catch((e) => {
-            expect(e).to.not.be.equal(null);
-            expect(e).to.not.be.equal(undefined);
-            if (!isDone) {
-              isDone = true;
-              done();
-            }
-          });
+      return geofirestore.runTransaction((transaction) => {
+        const geotransaction = new GeoTransaction(transaction);
+        return geotransaction.get(docRef).then((doc) => {
+          expect(doc.exists).to.be.equal(false);
+          geotransaction.update(docRef, dummyDoc);
+        });
+      })
+        .catch((e) => {
+          expect(e).to.not.be.equal(null);
+          expect(e).to.not.be.equal(undefined);
+          if (!isDone) {
+            isDone = true;
+            return Promise.resolve(isDone);
+          }
         });
     });
   });
 });
+

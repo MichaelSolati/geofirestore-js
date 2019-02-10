@@ -121,7 +121,7 @@ export function failTestOnCaughtError(error) {
 }
 
 /* Returns a promise which is fulfilled after the inputted number of milliseconds pass */
-export function wait(milliseconds): Promise<void> {
+export function wait(milliseconds = 100): Promise<void> {
   return new Promise((resolve) => {
     const timeout = window.setTimeout(() => {
       window.clearTimeout(timeout);

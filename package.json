@@ -6,7 +6,7 @@
     "build": "rm -rf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc --module node --target es5 --out docs/ src/",
-    "lint": "tslint --project ./tslint.json 'src/**/*.ts'",
+    "lint": "tslint -p ./tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "test": "nyc --reporter=html --reporter=text mocha",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
