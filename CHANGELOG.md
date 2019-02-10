@@ -1,3 +1,40 @@
+### 3.2.0 (2019-02-10)
+
+##### Build System / Dependencies
+
+* **rollup:**  change copy plugin for `GeoFirestoreTypes.ts` ([2a585845](https://github.com/geofirestore/geofirestore-js/commit/2a585845e1b6fe1682c22e9380629cef3e591031))
+
+##### Chores
+
+*  update dependencies ([ca387c00](https://github.com/geofirestore/geofirestore-js/commit/ca387c0004b06f2f9a879ea42e9e9c599721326b))
+
+##### Documentation Changes
+
+*  add details to `README.md` and a code example for `runTransaction` ([167e0728](https://github.com/geofirestore/geofirestore-js/commit/167e0728d3fe1610bb817e9572e771e175606018))
+
+##### New Features
+
+* **GeoTransaction:**
+  *  add remaining transaction functions ([6b1bbb8b](https://github.com/geofirestore/geofirestore-js/commit/6b1bbb8bb60260ff63dac0a4592d2fa95a34714b))
+  *  add delete function ([e48a7427](https://github.com/geofirestore/geofirestore-js/commit/e48a742728c6ae2987deb802cf9b25c377aca9d8))
+  *  stub GeoTransaction class ([0b68729e](https://github.com/geofirestore/geofirestore-js/commit/0b68729eaac78d57a8a379ff561c03fe47451e9e))
+
+##### Bug Fixes
+
+* **GeoFirestoreTypes:**  ignore `no-shadowed-variable` tslint rule, fixes [#83](https://github.com/geofirestore/geofirestore-js/pull/83) ([5e8684e5](https://github.com/geofirestore/geofirestore-js/commit/5e8684e5cb4319b7ec14cef57994c9fb38133836))
+
+##### Refactors
+
+* **GeoDocumentReference:**  reorder functions ([cc8cf1bf](https://github.com/geofirestore/geofirestore-js/commit/cc8cf1bfe8f3eb82205e781209077e3f0a181b5f))
+* **GeoQuery:**  where() -> startAt() ([51be1b20](https://github.com/geofirestore/geofirestore-js/commit/51be1b20075f2bbbab7fc3424f06af9ce5997849))
+
+##### Tests
+
+* **GeoTransaction:**
+  *  adjust timing of promise resolution, fixes [#72](https://github.com/geofirestore/geofirestore-js/pull/72) ([4d668500](https://github.com/geofirestore/geofirestore-js/commit/4d668500ec0c0624d657b1900f9fcae06f6dfde8))
+  *  bring coverage to 100% ([b9a63743](https://github.com/geofirestore/geofirestore-js/commit/b9a63743c7901febc4653be2e27551a4fe40c35f))
+* **GeoFirestore:**  add tests for `runTransaction` ([23f59ce8](https://github.com/geofirestore/geofirestore-js/commit/23f59ce85640ed7b78e66ec239e5936894b90e6b))
+
 ### 3.1.0 (2019-01-19)
 
 ##### Documentation Changes
