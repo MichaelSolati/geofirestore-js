@@ -20,7 +20,7 @@
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
   "author": "Michael Solati mkslt04@gmail.com",
-  "homepage": "https://github.com/geofirestore/geofirestore-js/",
+  "homepage": "https://geofirestore.com/",
   "repository": {
     "type": "git",
     "url": "https://github.com/geofirestore/geofirestore-js.git"
