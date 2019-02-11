@@ -1,3 +1,13 @@
+#### 3.2.1 (2019-02-11)
+
+##### Chores
+
+* **package.json:**  update homepage ([52df32b2](https://github.com/geofirestore/geofirestore-js/commit/52df32b2543ac974d1163fec52a502ddf838bd63))
+
+##### Bug Fixes
+
+* **travis:**  fix `after_deploy` script ([eaef13ef](https://github.com/geofirestore/geofirestore-js/commit/eaef13efced565bd3bde743c0388a33384484313))
+
 ### 3.2.0 (2019-02-10)
 
 ##### Build System / Dependencies
