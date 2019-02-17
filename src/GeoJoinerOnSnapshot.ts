@@ -129,9 +129,11 @@ export class GeoJoinerOnSnapshot {
    * @param index Index of query who's snapshot has been triggered.
    */
   private _processSnapshot(snapshot: GeoFirestoreTypes.web.QuerySnapshot, index: number): void {
+    const docChanges = Array.isArray(snapshot.docChanges) ?
+      snapshot.docChanges as any as GeoFirestoreTypes.web.DocumentChange[]: snapshot.docChanges();
     if (!this._firstRoundResolved) this._queriesResolved[index] = 1;
-    if (snapshot.docChanges().length) { // Snapshot has data, key during first snapshot
-      snapshot.docChanges().forEach(change => {
+    if (docChanges.length) { // Snapshot has data, key during first snapshot
+      docChanges.forEach((change) => {
         const distance = change.doc.data().l ? calculateDistance(this._queryCriteria.center, change.doc.data().l) : null;
         const id = change.doc.id;
         const fromMap = this._docs.get(id);

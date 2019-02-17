@@ -51,7 +51,9 @@ export class GeoQuerySnapshot {
    * @returns Array of DocumentChanges.
    */
   public docChanges(): GeoFirestoreTypes.DocumentChange[] {
-    return (this._querySnapshot.docChanges() as GeoFirestoreTypes.web.DocumentChange[])
+    const docChanges = Array.isArray(this._querySnapshot.docChanges) ?
+      this._querySnapshot.docChanges as any as GeoFirestoreTypes.web.DocumentChange[]: this._querySnapshot.docChanges();
+    return (docChanges as GeoFirestoreTypes.web.DocumentChange[])
       .map((change: GeoFirestoreTypes.web.DocumentChange) => {
         return {
           doc: generateGeoQueryDocumentSnapshot(change.doc, this._center),
