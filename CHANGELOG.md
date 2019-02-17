@@ -1,3 +1,9 @@
+#### 3.2.2 (2019-02-17)
+
+##### Bug Fixes
+
+* **react-native-firebase:**  check if `docChanges` is an array ([fc1622e4](https://github.com/geofirestore/geofirestore-js/commit/fc1622e41a6afb9aa98c2be85e3b9bcd354506b4))
+
 #### 3.2.1 (2019-02-11)
 
 ##### Chores
