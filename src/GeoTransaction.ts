@@ -60,7 +60,11 @@ export class GeoTransaction {
   ): GeoTransaction {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._transaction as GeoFirestoreTypes.web.Transaction).set(ref, encodeSetDocument(data, options), sanitizeSetOptions(options));
+    (this._transaction as GeoFirestoreTypes.web.Transaction).set(
+      ref, 
+      encodeSetDocument(data, options), 
+      sanitizeSetOptions(options)
+    );
     return this;
   }
 

@@ -125,7 +125,10 @@ export class GeoDocumentReference {
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
   public set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(encodeSetDocument(data, options), sanitizeSetOptions(options)).then(() => null);
+    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
+      encodeSetDocument(data, options), 
+      sanitizeSetOptions(options)
+    ).then(() => null);
   }
 
   /**
