@@ -1,5 +1,5 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetDocument, encodeUpdateDocument } from './utils';
+import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './utils';
 import { GeoCollectionReference } from './GeoCollectionReference';
 import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
 import { GeoFirestore } from './GeoFirestore';
@@ -125,7 +125,10 @@ export class GeoDocumentReference {
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
   public set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(encodeSetDocument(data, options), options).then(() => null);
+    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
+      encodeSetDocument(data, options), 
+      sanitizeSetOptions(options)
+    ).then(() => null);
   }
 
   /**

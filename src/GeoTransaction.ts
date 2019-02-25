@@ -1,7 +1,7 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoDocumentReference } from './GeoDocumentReference';
 import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
-import { encodeSetDocument, encodeUpdateDocument } from './utils';
+import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './utils';
 
 /**
  * A reference to a transaction. The `GeoTransaction` object passed to a transaction's updateFunction provides the methods to read and
@@ -60,7 +60,11 @@ export class GeoTransaction {
   ): GeoTransaction {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
       documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._transaction as GeoFirestoreTypes.web.Transaction).set(ref, encodeSetDocument(data, options), options);
+    (this._transaction as GeoFirestoreTypes.web.Transaction).set(
+      ref, 
+      encodeSetDocument(data, options), 
+      sanitizeSetOptions(options)
+    );
     return this;
   }
 

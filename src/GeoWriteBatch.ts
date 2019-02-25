@@ -1,5 +1,5 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetDocument, encodeUpdateDocument } from './utils';
+import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './utils';
 import { GeoDocumentReference } from './GeoDocumentReference';
 
 /**
@@ -37,7 +37,7 @@ export class GeoWriteBatch {
     (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).set(
       ref,
       encodeSetDocument(data, options),
-      options
+      sanitizeSetOptions(options)
     );
     return this;
   }

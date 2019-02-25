@@ -18,6 +18,12 @@ export const dummyData = [
   { key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4 },
   { key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5 },
 ];
+// Define dummy setOptions to sanitize
+export const dummySetOptions:GeoFirestoreTypes.SetOptions = {
+  merge: true,
+  customKey: 'foobar',
+  mergeFields: ['a', 'b']
+}
 // Define examples of valid and invalid parameters
 export const invalidFirestores = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
 export const invalidGeoFirestoreDocuments = [

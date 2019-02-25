@@ -6,11 +6,11 @@ import {
   boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData, degreesToRadians,
   encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot,
   geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees,
-  toGeoPoint, validateGeoDocument, validateGeohash, validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
+  sanitizeSetOptions, toGeoPoint, validateGeoDocument, validateGeohash, validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeoFirestoreDocuments, invalidGeohashes, invalidLocations, invalidQueryCriterias, validGeoFirestoreDocuments, validGeohashes,
-  validLocations, validQueryCriterias, dummyData
+  validLocations, validQueryCriterias, dummyData, dummySetOptions
 } from './common';
 
 const expect = chai.expect;
@@ -254,6 +254,14 @@ describe('Utils Tests:', () => {
         const doc = { g, l: data.coordinates, d: data };
         expect(encodeGeoDocument(data.coordinates, g, data)).to.deep.equal(doc);
       });
+    });
+  });
+
+  describe('Sanitize SetOptions:', () => {
+    it('sanitizeSetOptions() removes firestore-invalid keys from SetOptions', () => {
+      const { merge, mergeFields } = dummySetOptions
+      expect(sanitizeSetOptions(dummySetOptions)).to.deep.equal({ merge, mergeFields });
+      expect(sanitizeSetOptions(dummySetOptions).customKey).to.be.undefined;
     });
   });
 
