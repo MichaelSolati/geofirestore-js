@@ -3,10 +3,11 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 import {
-  boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData, degreesToRadians,
-  encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey, generateGeoQueryDocumentSnapshot,
-  geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2, longitudeBitsForResolution, metersToLongitudeDegrees,
-  sanitizeSetOptions, toGeoPoint, validateGeoDocument, validateGeohash, validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
+  boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData,
+  degreesToRadians, encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey,
+  generateGeoQueryDocumentSnapshot, geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2,
+  longitudeBitsForResolution, metersToLongitudeDegrees, sanitizeSetOptions, toGeoPoint, validateGeoDocument, validateGeohash,
+  validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
 } from '../src/utils';
 import {
   invalidGeoFirestoreDocuments, invalidGeohashes, invalidLocations, invalidQueryCriterias, validGeoFirestoreDocuments, validGeohashes,
@@ -259,9 +260,9 @@ describe('Utils Tests:', () => {
 
   describe('Sanitize SetOptions:', () => {
     it('sanitizeSetOptions() removes firestore-invalid keys from SetOptions', () => {
-      const { merge, mergeFields } = dummySetOptions
+      const { merge, mergeFields } = dummySetOptions;
       expect(sanitizeSetOptions(dummySetOptions)).to.deep.equal({ merge, mergeFields });
-      expect(sanitizeSetOptions(dummySetOptions).customKey).to.be.undefined;
+      expect(sanitizeSetOptions(dummySetOptions).customKey).to.be.equal(undefined);
     });
   });
 

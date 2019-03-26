@@ -23,7 +23,7 @@ export const dummySetOptions:GeoFirestoreTypes.SetOptions = {
   merge: true,
   customKey: 'foobar',
   mergeFields: ['a', 'b']
-}
+};
 // Define examples of valid and invalid parameters
 export const invalidFirestores = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
 export const invalidGeoFirestoreDocuments = [
