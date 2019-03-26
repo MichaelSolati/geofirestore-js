@@ -1,3 +1,13 @@
+#### 3.2.3 (2019-03-26)
+
+##### Bug Fixes
+
+*  sanitize `customKey` in `set` methods ([cee17d76](https://github.com/geofirestore/geofirestore-js/commit/cee17d76475a39738df2b719f82fcf1236b00232))
+
+##### Refactors
+
+* **test:**  lint test code ([1ed836a3](https://github.com/geofirestore/geofirestore-js/commit/1ed836a3295cadfa25bfa01c356375227d36cf91))
+
 #### 3.2.2 (2019-02-17)
 
 ##### Bug Fixes
