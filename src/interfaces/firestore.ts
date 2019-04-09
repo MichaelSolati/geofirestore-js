@@ -11,6 +11,6 @@ export namespace firestore {
   export interface QuerySnapshot extends typesWeb.QuerySnapshot { }
   export interface WriteBatch extends typesWeb.WriteBatch { }
   export namespace cloud {
-    export interface CollectionReference extends typesWeb.CollectionReference { }
+    export interface CollectionReference extends FirebaseFirestore.CollectionReference { }
   }
 }
