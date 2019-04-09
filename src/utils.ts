@@ -257,9 +257,8 @@ export function encodeSetDocument(
   if (Object.prototype.toString.call(data) === '[object Object]') {
     const customKey = (options) ? options.customKey : null;
     const unparsed: GeoFirestoreTypes.DocumentData = ('d' in data) ? data.d : data;
-    const locationKey: string = findCoordinatesKey(unparsed, customKey, (options && (options.merge || !!options.mergeFields)));
-    if (locationKey) {
-      const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = unparsed[locationKey];
+    const location = findCoordinates(unparsed, customKey, (options && (options.merge || !!options.mergeFields)));
+    if (location) {
       const geohash: string = encodeGeohash(location);
       return encodeGeoDocument(location, geohash, unparsed);
     }
@@ -279,9 +278,9 @@ export function encodeSetDocument(
 export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customKey?: string): GeoFirestoreTypes.UpdateData {
   if (Object.prototype.toString.call(data) === '[object Object]') {
     const result = {};
-    const locationKey: string = findCoordinatesKey(data, customKey, true);
-    if (locationKey) {
-      result['l'] = data[locationKey];
+    const location = findCoordinates(data, customKey, true);
+    if (location) {
+      result['l'] = location;
       result['g'] = encodeGeohash(result['l']);
     }
     Object.getOwnPropertyNames(data).forEach((prop: string) => {
@@ -294,38 +293,48 @@ export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customK
 }
 
 /**
- * Returns the key of a document that is a GeoPoint.
+ * Returns coordinates as GeoPoint from a document.
  *
  * @param document A Firestore document.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @param flag Tells function supress errors.
- * @return The key for the location field of a document. 
+ * @return The GeoPoint for the location field of a document. 
  */
-export function findCoordinatesKey(document: GeoFirestoreTypes.DocumentData, customKey?: string, flag = false): string {
+export function findCoordinates(
+  document: GeoFirestoreTypes.DocumentData, customKey?: string, flag = false
+): GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint {
   let error: string;
-  let key: string;
+  let coordinates;
 
-  if (document && typeof document === 'object') {
-    if (customKey && customKey in document) {
-      key = customKey;
-    } else if ('coordinates' in document) {
-      key = 'coordinates';
-    } else {
-      error = 'no valid key exists';
-    }
+  if (!customKey) {
+    coordinates = document['coordinates'];
+  } else if (customKey in document) {
+    coordinates = document[customKey];
   } else {
-    error = 'document not an object';
+    const props = customKey.split('.');
+    coordinates = document;
+    for (const prop of props) {
+      if (!(prop in coordinates)) {
+        coordinates = document['coordinates'];
+        break;
+      }
+      coordinates = coordinates[prop];
+    }
   }
 
-  if (key && !validateLocation(document[key], true)) {
-    error = key + ' is not a valid GeoPoint';
+  if (!coordinates) {
+    error = 'could not find GeoPoint';
+  }
+
+  if (coordinates && !validateLocation(coordinates, true)) {
+    error = 'invalid GeoPoint';
   }
 
   if (error && !flag) {
     throw new Error('Invalid GeoFirestore document: ' + error);
   }
 
-  return key;
+  return coordinates;
 }
 
 /**

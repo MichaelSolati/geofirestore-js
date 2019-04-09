@@ -1,7 +1,7 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoDocumentReference } from './GeoDocumentReference';
 import { GeoQuery } from './GeoQuery';
-import { findCoordinatesKey, encodeGeohash, encodeGeoDocument } from './utils';
+import { findCoordinates, encodeGeohash, encodeGeoDocument } from './utils';
 
 /**
  * A `GeoCollectionReference` object can be used for adding documents, getting document references, and querying for documents (using the
@@ -48,8 +48,7 @@ export class GeoCollectionReference extends GeoQuery {
     customKey?: string
   ): Promise<GeoDocumentReference> {
     if (Object.prototype.toString.call(data) === '[object Object]') {
-      const locationKey: string = findCoordinatesKey(data, customKey);
-      const location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint = data[locationKey];
+      const location = findCoordinates(data, customKey);
       const geohash: string = encodeGeohash(location);
       return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
         .add(encodeGeoDocument(location, geohash, data)).then(doc => new GeoDocumentReference(doc));

@@ -6,7 +6,7 @@ import { GeoCollectionReference } from '../src/GeoCollectionReference';
 import { GeoDocumentReference } from '../src/GeoDocumentReference';
 import {
   afterEachHelper, beforeEachHelper, collection, dummyData, geocollection,
-  geofirestore, invalidFirestores, invalidObjects, sortObject, stubDatabase
+  geofirestore, invalidFirestores, invalidObjects, sortObject, stubDatabase, wait
 } from './common';
 
 const expect = chai.expect;
@@ -191,6 +191,33 @@ describe('GeoDocumentReference Tests:', () => {
         // @ts-ignore
         expect(() => geocollection.doc(`loc${index}`).set(invalidObject)).to.throw();
       });
+    });
+
+    it('set() adds a new object with a custom key', () => {
+      const documentReference = geocollection.doc('loc1');
+      return documentReference.set({ geopoint: new firebase.firestore.GeoPoint(0, 0) }, { customKey: 'geopoint' })
+        .then(() =>  wait(100))
+        .then(() => documentReference.get())
+        .then(d1 => {
+          return geocollection.doc(d1.id).get().then(d2 => {
+            expect(d2.exists).to.equal(true);
+          });
+        });
+    });
+
+    it('set() adds a new object with an embedded custom key', () => {
+      const documentReference = geocollection.doc('loc1');
+      return documentReference.set(
+        { geopoint: { coordinates: new firebase.firestore.GeoPoint(0, 0) } },
+        { customKey: 'geopoint.coordinates' }
+      )
+        .then(() =>  wait(100))
+        .then(() => documentReference.get())
+        .then(d1 => {
+          return geocollection.doc(d1.id).get().then(d2 => {
+            expect(d2.exists).to.equal(true);
+          });
+        });
     });
   });
 

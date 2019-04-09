@@ -4,7 +4,7 @@ import 'firebase/firestore';
 
 import {
   boundingBoxBits, boundingBoxCoordinates, calculateDistance, decodeGeoDocumentData, decodeGeoQueryDocumentSnapshotData,
-  degreesToRadians, encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinatesKey,
+  degreesToRadians, encodeGeohash, encodeGeoDocument, encodeSetDocument, encodeUpdateDocument, findCoordinates,
   generateGeoQueryDocumentSnapshot, geohashQueries, GEOHASH_PRECISION, geohashQuery, latitudeBitsForResolution, log2,
   longitudeBitsForResolution, metersToLongitudeDegrees, sanitizeSetOptions, toGeoPoint, validateGeoDocument, validateGeohash,
   validateLimit, validateLocation, validateQueryCriteria, wrapLongitude
