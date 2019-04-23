@@ -94,6 +94,26 @@ describe('GeoCollectionReference Tests:', () => {
         expect(() => geocollection.add(invalidObject)).to.throw();
       });
     });
+
+    it('add() adds a new object with a custom key', () => {
+      return geocollection.add({ geopoint: new firebase.firestore.GeoPoint(0, 0) }, 'geopoint').then(d1 => {
+        return wait(100).then(() => {
+          return geocollection.doc(d1.id).get().then(d2 => {
+            expect(d2.exists).to.equal(true);
+          });
+        });
+      });
+    });
+
+    it('add() adds a new object with an embedded custom key', () => {
+      return geocollection.add({ geopoint: { coordinates: new firebase.firestore.GeoPoint(0, 0) } }, 'geopoint.coordinates').then(d1 => {
+        return wait(100).then(() => {
+          return geocollection.doc(d1.id).get().then(d2 => {
+            expect(d2.exists).to.equal(true);
+          });
+        });
+      });
+    });
   });
 
   describe('doc():', () => {
