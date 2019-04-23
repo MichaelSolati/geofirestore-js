@@ -1,3 +1,22 @@
+### 3.3.0 (2019-04-23)
+
+##### Chores
+
+*  tighten firestore rules ([941a8dd8](https://github.com/geofirestore/geofirestore-js/commit/941a8dd8dfd73400b005d3f96f7fbdadca7b6d74))
+
+##### New Features
+
+* **findCoordinates:**  `findCoordinatesKey` now `findCoordinates` as it returns GeoPoint rather than the key of the GeoPoint, can also find embedded keys, fixes [#88](https://github.com/geofirestore/geofirestore-js/pull/88) ([94161a4e](https://github.com/geofirestore/geofirestore-js/commit/94161a4e996ec4c9cb93c58201b67793e4b785b3))
+
+##### Bug Fixes
+
+*  very small typo in README ([69c9ae19](https://github.com/geofirestore/geofirestore-js/commit/69c9ae19c41aeba620815db035ea8a3e38adebc8))
+*  very small typo in README ([f2266663](https://github.com/geofirestore/geofirestore-js/commit/f2266663d37e3da7c88b1d49327965600af49021))
+
+##### Refactors
+
+* **examples:**  update viewers firebase version and separate add/update functions ([f90c4cab](https://github.com/geofirestore/geofirestore-js/commit/f90c4cab381e29c8d9345973ad90c53512c35257))
+
 #### 3.2.3 (2019-03-26)
 
 ##### Bug Fixes
