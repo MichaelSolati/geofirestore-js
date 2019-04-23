@@ -46,28 +46,37 @@ function getInFirestore(location) {
   const hash = geokit.Geokit.hash(location);
 
   geoCollectionRef.doc(hash).get().then((snapshot) => {
-    let document = snapshot.data();
-    if (!document) {
-      document = {
+    let data = snapshot.data();
+    if (!data) {
+      data = {
         count: 1,
         coordinates: new firebase.firestore.GeoPoint(location.lat, location.lng)
       };
-      console.log('Provided key is not in Firestore, adding document: ', JSON.stringify(document));
-      setInFirestore(hash, document);
+      console.log('Provided key is not in Firestore, adding document: ', JSON.stringify(data));
+      createInFirestore(hash, data);
     } else {
-      document.count++;
-      console.log('Provided key is in Firestore, updating document: ', JSON.stringify(document));
-      setInFirestore(hash, document);
+      data.count++;
+      console.log('Provided key is in Firestore, updating document: ', JSON.stringify(data));
+      updateInFirestore(hash, data);
     }
   }, (error) => {
     console.log('Error: ' + error);
   });
 }
 
-// Set viewer's location in Firestore
-function setInFirestore(key, document) {
-  geoCollectionRef.doc(key).set(document).then(() => {
-    console.log('Provided document has been set in Firestore');
+// Create/set viewer's location in Firestore
+function createInFirestore(key, data) {
+  geoCollectionRef.doc(key).set(data).then(() => {
+    console.log('Provided document has been added in Firestore');
+  }, (error) => {
+    console.log('Error: ' + error);
+  });
+}
+
+// Update viewer's location in Firestore
+function updateInFirestore(key, data) {
+  geoCollectionRef.doc(key).update(data).then(() => {
+    console.log('Provided document has been updated in Firestore');
   }, (error) => {
     console.log('Error: ' + error);
   });
@@ -121,16 +130,16 @@ function initMap() {
 }
 
 // Add Marker to Google Maps
-function addMarker(key, document) {
+function addMarker(key, data) {
   if (!markers[key]) {
     var infowindow = new google.maps.InfoWindow({
-      content: document.count + ' people from this area have viewed this page'
+      content: data.count + ' people from this area have viewed this page'
     });
 
     markers[key] = new google.maps.Marker({
       position: {
-        lat: document.coordinates.latitude,
-        lng: document.coordinates.longitude
+        lat: data.coordinates.latitude,
+        lng: data.coordinates.longitude
       },
       map: map
     });
@@ -151,15 +160,15 @@ function removeMarker(key) {
 }
 
 // Update Marker on Google Maps
-function updateMarker(key, document) {
+function updateMarker(key, data) {
   if (markers[key]) {
     var infowindow = new google.maps.InfoWindow({
-      content: document.count + ' people from this area have viewed this page'
+      content: data.count + ' people from this area have viewed this page'
     });
 
     markers[key].setPosition({
-      lat: document.coordinates.latitude,
-      lng: document.coordinates.longitude
+      lat: data.coordinates.latitude,
+      lng: data.coordinates.longitude
     });
 
     google.maps.event.clearListeners(markers[key], 'click');
@@ -168,6 +177,6 @@ function updateMarker(key, document) {
       infowindow.open(map, markers[key]);
     });
   } else {
-    addMarker(key, document);
+    addMarker(key, data);
   }
 }

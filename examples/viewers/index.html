@@ -8,8 +8,8 @@
   <title>GeoFirestore Viewers</title>
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.10.0/firebase-firestore.js"></script>
 
   <!-- Firebase Configuration -->
   <script>
@@ -21,14 +21,10 @@
     firebase.initializeApp(config);
 
     const firestore = firebase.firestore();
-    const settings = {
-      timestampsInSnapshots: true
-    };
-    firestore.settings(settings);
   </script>
 
   <!-- GeoFirestore -->
-  <script src="https://unpkg.com/geofirestore@3.0.0/dist/geofirestore.js"></script>
+  <script src="https://unpkg.com/geofirestore@3.2.3/dist/geofirestore.js"></script>
 
   <!-- Geokit -->
   <script src="https://unpkg.com/geokit@0.1.2/dist/geokit.js"></script>
