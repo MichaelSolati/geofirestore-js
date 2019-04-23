@@ -5,10 +5,19 @@ service cloud.firestore {
       allow read: if true;
     }
     match /viewers/{key} {
-      allow create, update: if true;
+      allow create, update: if request.resource.data.size() == 3
+														&& request.resource.data.keys().hasAll(['g', 'd', 'l'])
+                            && request.resource.data.g is string
+                            && request.resource.data.l is latlng
+                            && request.resource.data.d.size() == 2
+                            && request.resource.data.d.keys().hasAll(['coordinates', 'count'])
+                            && request.resource.data.d.coordinates is latlng
+                            && request.resource.data.d.count is number;
     }
     match /tests/{key} {
-      allow write: if true;
+      allow create: if request.resource.data.size() <= 3;
+    	allow update: if request.resource.data.size() <= 3;
+      allow delete: if true;
     }
   }
 }
