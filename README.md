@@ -31,7 +31,7 @@ npm install geofirestore
 Or you can use GeoFirestore via CDN:
 
 ```HTML
-<script src="https://unpkg.com/geofirestore@3.2.0/dist/geofirestore.js"></script>
+<script src="https://unpkg.com/geofirestore/dist/geofirestore.js"></script>
 ```
 
 ## Example Usage
@@ -49,7 +49,12 @@ Full documentation is available at [https://geofirestore.com](https://geofiresto
 ```TypeScript
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+
+// If you're using ES6+/imports/ESM syntax for imports you can do this:
 import { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } from 'geofirestore';
+
+// If you're using CommonJS/require syntax for imports you can do this:
+const { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } = require('geofirestore');
 
 // Initialize the Firebase SDK
 firebase.initializeApp({
