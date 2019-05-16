@@ -78,7 +78,7 @@ export class GeoQuery {
    * @return A Promise that will be resolved with the results of the GeoQuery.
    */
   public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
-    if (this._center && this._radius) {
+    if (this._center && typeof this._radius !== 'undefined') {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
       return Promise.all(queries).then(value => new GeoJoinerGet(value, this._queryCriteria).getGeoQuerySnapshot());
     } else {
