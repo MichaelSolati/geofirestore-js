@@ -33,8 +33,8 @@ export class GeoWriteBatch {
     options?: GeoFirestoreTypes.SetOptions
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).set(
+      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).set(
       ref,
       encodeSetDocument(data, options),
       sanitizeSetOptions(options)
@@ -58,8 +58,8 @@ export class GeoWriteBatch {
     customKey?: string
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).update(ref, encodeUpdateDocument(data, customKey));
+      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).update(ref, encodeUpdateDocument(data, customKey));
     return this;
   }
 
@@ -73,8 +73,8 @@ export class GeoWriteBatch {
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.web.DocumentReference;
-    (this._writeBatch as GeoFirestoreTypes.web.WriteBatch).delete(ref);
+      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).delete(ref);
     return this;
   }
 

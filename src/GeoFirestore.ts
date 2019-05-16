@@ -68,6 +68,6 @@ export class GeoFirestore {
   public runTransaction(
     updateFunction: (transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
   ): Promise<any> {
-    return (this._firestore as GeoFirestoreTypes.web.Firestore).runTransaction(updateFunction);
+    return (this._firestore as GeoFirestoreTypes.cloud.Firestore).runTransaction(updateFunction);
   }
 }

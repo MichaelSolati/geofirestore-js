@@ -24,8 +24,8 @@ export class GeoQuerySnapshot {
       validateLocation(_center);
     }
 
-    this._docs = (_querySnapshot as GeoFirestoreTypes.web.QuerySnapshot).docs
-      .map((snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot) => generateGeoQueryDocumentSnapshot(snapshot, _center));
+    this._docs = (_querySnapshot as GeoFirestoreTypes.cloud.QuerySnapshot).docs
+      .map((snapshot: GeoFirestoreTypes.cloud.QueryDocumentSnapshot) => generateGeoQueryDocumentSnapshot(snapshot, _center));
   }
 
   /** An array of all the documents in the GeoQuerySnapshot. */

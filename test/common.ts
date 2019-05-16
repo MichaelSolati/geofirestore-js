@@ -71,8 +71,8 @@ export const validQueryCriterias: GeoFirestoreTypes.QueryCriteria[] = [
 ];
 
 // Create global constiables to hold the Firebasestore and GeoFirestore constiables
-export let firestore: GeoFirestoreTypes.web.Firestore;
-export let collection: GeoFirestoreTypes.web.CollectionReference;
+export let firestore: firebase.firestore.Firestore;
+export let collection: firebase.firestore.CollectionReference;
 export let geofirestore: GeoFirestore;
 export let geocollection: GeoCollectionReference;
 

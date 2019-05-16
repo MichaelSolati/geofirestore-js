@@ -369,7 +369,7 @@ export function geohashQueries(center: GeoFirestoreTypes.cloud.GeoPoint | GeoFir
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
   const geohashPrecision = Math.ceil(queryBits / BITS_PER_CHAR);
-  const coordinates = boundingBoxCoordinates(center, radius);
+  const coordinates: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint[] = boundingBoxCoordinates(center, radius);
   const queries = coordinates.map((coordinate) => {
     return geohashQuery(encodeGeohash(coordinate, geohashPrecision), queryBits);
   });

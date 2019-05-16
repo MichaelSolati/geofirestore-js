@@ -110,10 +110,10 @@ export class GeoDocumentReference {
     other: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): boolean {
     if (other instanceof GeoDocumentReference) {
-      return (this._document as GeoFirestoreTypes.web.DocumentReference)
-        .isEqual(other['_document'] as GeoFirestoreTypes.web.DocumentReference);
+      return (this._document as GeoFirestoreTypes.cloud.DocumentReference)
+        .isEqual(other['_document'] as GeoFirestoreTypes.cloud.DocumentReference);
     }
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).isEqual(other as GeoFirestoreTypes.web.DocumentReference);
+    return (this._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(other as GeoFirestoreTypes.cloud.DocumentReference);
   }
 
   /**
