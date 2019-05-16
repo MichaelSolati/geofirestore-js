@@ -1,3 +1,21 @@
+#### 3.3.1 (2019-05-16)
+
+##### Build System / Dependencies
+
+*  copy modified `protobufjs` module into `@firebase/firestore`'s node modules ([6b05ccfc](https://github.com/geofirestore/geofirestore-js/commit/6b05ccfc320fab9c728870290f532dbc8ed19653))
+
+##### Chores
+
+*  extend support for firebase 6.x.x ([d0080f1a](https://github.com/geofirestore/geofirestore-js/commit/d0080f1ac0e57f9022b61e820b0b5c8c983c70ce))
+
+##### Documentation Changes
+
+* **README:**  update CDN and import sample ([256df9b7](https://github.com/geofirestore/geofirestore-js/commit/256df9b7107a50a161a4d354510bc99d442d1bf0))
+
+##### Bug Fixes
+
+* **GeoQuery:**  check if typeof `_radius` is "undefined" incase it is set to 0, fixes [#102](https://github.com/geofirestore/geofirestore-js/pull/102) ([62682118](https://github.com/geofirestore/geofirestore-js/commit/626821187c49c66ce23c6a146b872eee58b58295))
+
 ### 3.3.0 (2019-04-23)
 
 ##### Chores
