@@ -4,7 +4,7 @@
 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
-GeoFirestore is an open-source library that allows extend the Firestore library in order to store and query documents based on their geographic location. At its heart, GeoFirestore is just a wrapper for the Firestore library, exposing many of the same functions and features of Firestore. Its main benefit, however, is the possibility of retrieving only those documents within a given geographic area - all in realtime.
+GeoFirestore is an open-source library that extends the Firestore library in order to store and query documents based on their geographic location. At its heart, GeoFirestore is just a wrapper for the Firestore library, exposing many of the same functions and features of Firestore. Its main benefit, however, is the possibility of retrieving only those documents within a given geographic area - all in realtime.
 
 GeoFirestore uses the [Firebase Cloud Firestore](https://firebase.google.com/docs/firestore/) for data storage, allowing query results to be updated in realtime as they change. GeoFirestore *selectively loads only the data near certain locations, keeping your applications light and responsive*, even with extremely large datasets.
 
