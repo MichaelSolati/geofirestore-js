@@ -1,0 +1,15 @@
+{
+  "name": "GeoFirestore for JavaScript",
+  "platforms": [
+    "Web"
+  ],
+  "content": "README.md",
+  "pages": [],
+  "related": [
+    "firebase/geofire-js"
+  ],
+  "tabs": [{
+    "title": "Reference Docs",
+    "href": "https://geofirestore.com"
+  }]
+}
