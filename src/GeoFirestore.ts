@@ -15,6 +15,11 @@ export class GeoFirestore {
     }
   }
 
+  /** The native `Firestore` instance. */
+  get native(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
+    return this._firestore;
+  }
+
   /**
    * Creates a write batch, used for performing multiple writes as a single atomic operation.
    *

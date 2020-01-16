@@ -28,6 +28,11 @@ export class GeoQuerySnapshot {
       .map((snapshot: GeoFirestoreTypes.cloud.QueryDocumentSnapshot) => generateGeoQueryDocumentSnapshot(snapshot, _center));
   }
 
+  /** The native `QuerySnapshot` instance. */
+  get native(): GeoFirestoreTypes.cloud.QuerySnapshot | GeoFirestoreTypes.web.QuerySnapshot {
+    return this._querySnapshot;
+  }
+
   /** An array of all the documents in the GeoQuerySnapshot. */
   get docs(): GeoFirestoreTypes.QueryDocumentSnapshot[] {
     return this._docs;

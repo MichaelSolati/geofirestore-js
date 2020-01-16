@@ -8,10 +8,18 @@ import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './u
  * write data within the transaction context. See `GeoFirestore.runTransaction()`.
  */
 export class GeoTransaction {
+  /**
+   * @param _transaction The `Transaction` instance.
+   */
   constructor(private _transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) {
     if (Object.prototype.toString.call(_transaction) !== '[object Object]') {
       throw new Error('Transaction must be an instance of a Firestore Transaction');
     }
+  }
+
+  /** The native `Transaction` instance. */
+  get native(): GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction {
+    return this._transaction;
   }
 
   /**

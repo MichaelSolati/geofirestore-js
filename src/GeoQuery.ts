@@ -41,6 +41,11 @@ export class GeoQuery {
     }
   }
 
+  /** The native `Query` instance. */
+  get native(): GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query {
+    return this._query;
+  }
+
   /**
    * The `Firestore` for the Firestore database (useful for performing transactions, etc.).
    */

@@ -15,6 +15,11 @@ export class GeoCollectionReference extends GeoQuery {
     super(_collection);
   }
 
+  /** The native `CollectionReference` instance. */
+  get native(): GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference {
+    return this._collection;
+  }
+
   /** The identifier of the collection. */
   get id(): string {
     return this._collection.id;

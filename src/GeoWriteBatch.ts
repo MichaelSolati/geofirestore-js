@@ -12,10 +12,18 @@ import { GeoDocumentReference } from './GeoDocumentReference';
  * read data.
  */
 export class GeoWriteBatch {
+  /**
+   * @param _writeBatch The `WriteBatch` instance.
+   */
   constructor(private _writeBatch: GeoFirestoreTypes.cloud.WriteBatch | GeoFirestoreTypes.web.WriteBatch) {
     if (Object.prototype.toString.call(_writeBatch) !== '[object Object]') {
       throw new Error('WriteBatch must be an instance of a Firestore WriteBatch');
     }
+  }
+
+  /** The native `WriteBatch` instance. */
+  get native(): GeoFirestoreTypes.cloud.WriteBatch | GeoFirestoreTypes.web.WriteBatch {
+    return this._writeBatch;
   }
 
   /**

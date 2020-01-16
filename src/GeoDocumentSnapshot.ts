@@ -23,6 +23,11 @@ export class GeoDocumentSnapshot {
       .call((_snapshot as GeoFirestoreTypes.web.DocumentSnapshot).ref.firestore.enablePersistence) === '[object Function]';
   }
 
+  /** The native `DocumentSnapshot` instance. */
+  get native(): GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot {
+    return this._snapshot;
+  }
+
   /** True if the document exists. */
   get exists(): boolean {
     return this._snapshot.exists;

@@ -23,6 +23,11 @@ export class GeoDocumentReference {
       .call((_document as GeoFirestoreTypes.web.DocumentReference).firestore.enablePersistence) === '[object Function]';
   }
 
+  /** The native `DocumentReference` instance. */
+  get native(): GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference {
+    return this._document;
+  }
+
   /** The identifier of the document within its collection. */
   get id(): string {
     return this._document.id;
