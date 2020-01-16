@@ -51,8 +51,8 @@ describe('GeoJoinerOnSnapshot Tests:', () => {
         .then(() => {
           return new Promise((resolve) => {
             let count = 0;
-            let timer;
-            const joiner = new GeoJoinerOnSnapshot([collection], validQueryCriterias[0], (da) => {
+            let timer: any;
+            const joiner = new GeoJoinerOnSnapshot([collection], validQueryCriterias[0], () => {
               if (!timer) {
                 joiner.unsubscribe()();
                 geocollection.add({ coordinates: validQueryCriterias[0].center });

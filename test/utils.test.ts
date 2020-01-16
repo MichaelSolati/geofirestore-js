@@ -418,7 +418,7 @@ describe('Utils Tests:', () => {
     });
 
     it('Queries from geohashQueries must contain points in circle', () => {
-      function inQuery(queries, hash) {
+      function inQuery(queries: any, hash: any) {
         for (let i = 0; i < queries.length; i++) {
           if (hash >= queries[i][0] && hash < queries[i][1]) {
             return true;

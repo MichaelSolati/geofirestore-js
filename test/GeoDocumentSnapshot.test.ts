@@ -84,7 +84,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
     });
 
     it('ref returns a GeoDocumentReference of the selected document', (done) => {
-      let geoQuerySnapshot;
+      let geoQuerySnapshot: any;
       stubDatabase()
         .then(() => geocollection.doc(dummyData[0].key).get())
         .then((snapshot) => geoQuerySnapshot = snapshot)
@@ -180,7 +180,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
     });
 
     it('isEqual() returns false when given non-corresponding DocumentSnapshot', (done) => {
-      let snapshotDoc0;
+      let snapshotDoc0: any;
       stubDatabase()
         .then(() => geocollection.doc(dummyData[0].key).get())
         .then((snapshot) => snapshotDoc0 = snapshot)
@@ -192,7 +192,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
     });
 
     it('isEqual() returns false when given different GeoDocumentSnapshot', (done) => {
-      let snapshotDoc0;
+      let snapshotDoc0: any;
       stubDatabase()
         .then(() => geocollection.doc(dummyData[0].key).get())
         .then((snapshot) => snapshotDoc0 = snapshot)

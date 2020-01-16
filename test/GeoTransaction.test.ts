@@ -238,8 +238,9 @@ describe('GeoTransaction Tests:', () => {
           expect(e).to.not.be.equal(undefined);
           if (!isDone) {
             isDone = true;
-            return Promise.resolve(isDone);
           }
+
+          return Promise.resolve(isDone);
         });
     });
   });

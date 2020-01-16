@@ -10,7 +10,7 @@ import { calculateDistance } from '../src/utils';
 /*************/
 const expect = chai.expect;
 // Define dummy data for database
-export const dummyData = [
+export const dummyData: any[] = [
   { key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0 },
   { key: 'loc2', coordinates: new firebase.firestore.GeoPoint(50, -7), count: 1 },
   { key: 'loc3', coordinates: new firebase.firestore.GeoPoint(16, -150), count: 2 },
@@ -25,21 +25,21 @@ export const dummySetOptions:GeoFirestoreTypes.SetOptions = {
   mergeFields: ['a', 'b']
 };
 // Define examples of valid and invalid parameters
-export const invalidFirestores = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
-export const invalidGeoFirestoreDocuments = [
+export const invalidFirestores: any[] = [null, undefined, NaN, true, false, [], 0, 5, '', 'a', ['hi', 1]];
+export const invalidGeoFirestoreDocuments: any[] = [
   { d: null, g: '6gydkcbqwf', l: new firebase.firestore.GeoPoint(-23.5, -46.9) },
   { d: { coordinates: new firebase.firestore.GeoPoint(-73.5, 153) }, g: false, l: new firebase.firestore.GeoPoint(-73.5, 153) },
   { d: { coordinates: new firebase.firestore.GeoPoint(52.3, 7.1) }, g: 'u1m198fj9f', l: [52.3, 7.1] }
 ];
-export const invalidGeohashes = ['', 'aaa', 1, true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
-export const invalidLocations = [
+export const invalidGeohashes: any[] = ['', 'aaa', 1, true, false, [], [1], {}, { a: 1 }, null, undefined, NaN];
+export const invalidLocations: any[] = [
   { latitude: -91, longitude: 0 }, { latitude: 91, longitude: 0 }, { latitude: 0, longitude: 181 }, { latitude: 0, longitude: -181 },
   { latitude: [0, 0], longitude: 0 }, { latitude: 'a', longitude: 0 }, { latitude: 0, longitude: 'a' }, { latitude: 'a', longitude: 'a' },
   { latitude: NaN, longitude: 0 }, { latitude: 0, longitude: NaN }, { latitude: undefined, longitude: NaN },
   { latitude: null, longitude: 0 }, { latitude: null, longitude: null }, { latitude: 0, longitude: undefined },
   { latitude: undefined, longitude: undefined }, '', 'a', true, false, [], [1], {}, { a: 1 }, null, undefined, NaN
 ];
-export const invalidQueryCriterias = [
+export const invalidQueryCriterias: any[] = [
   {}, { random: 100 }, { center: { latitude: 91, longitude: 2 }, radius: 1000, random: 'a' },
   { center: { latitude: 91, longitude: 2 }, radius: 1000 }, { center: { latitude: 1, longitude: -181 }, radius: 1000 },
   { center: { latitude: 'a', longitude: 2 }, radius: 1000 }, { center: { latitude: 1, longitude: [1, 2] }, radius: 1000 },
@@ -50,15 +50,15 @@ export const invalidQueryCriterias = [
   false, undefined, NaN, [], 'a', 1, { center: new firebase.firestore.GeoPoint(1, 2), radius: 2, query: false },
   { center: new firebase.firestore.GeoPoint(1, 2), radius: 2, query: 23 }
 ];
-export const invalidObjects = [false, true, 'pie', 3, null, undefined, NaN];
+export const invalidObjects: any[] = [false, true, 'pie', 3, null, undefined, NaN];
 export const testCollectionName = 'tests';
 export const validGeoFirestoreDocuments: GeoFirestoreTypes.Document[] = [
   { d: { coordinates: new firebase.firestore.GeoPoint(-23.5, -46.9) }, g: '6gydkcbqwf', l: new firebase.firestore.GeoPoint(-23.5, -46.9) },
   { d: { coordinates: new firebase.firestore.GeoPoint(-73.5, 153) }, g: 'r7hg99g0yk', l: new firebase.firestore.GeoPoint(-73.5, 153) },
   { d: { coordinates: new firebase.firestore.GeoPoint(52.3, 7.1) }, g: 'u1m198fj9f', l: new firebase.firestore.GeoPoint(52.3, 7.1) }
 ];
-export const validGeohashes = ['4', 'd62dtu', '000000000000'];
-export const validLocations = [
+export const validGeohashes: string[] = ['4', 'd62dtu', '000000000000'];
+export const validLocations: firebase.firestore.GeoPoint[] = [
   new firebase.firestore.GeoPoint(0, 0), new firebase.firestore.GeoPoint(-90, 180),
   new firebase.firestore.GeoPoint(90, -180), new firebase.firestore.GeoPoint(23, 74),
   new firebase.firestore.GeoPoint(47.235124363, 127.2379654226)
@@ -87,7 +87,7 @@ firebase.initializeApp({
 /*  HELPER FUNCTIONS  */
 /**********************/
 /* Helper functions which runs before each Jasmine test has started */
-export function beforeEachHelper(done): void {
+export function beforeEachHelper(done: any): void {
   // Create a new Firebase database ref at a random node
   firestore = firebase.firestore();
   collection = firestore.collection(testCollectionName);
@@ -97,7 +97,7 @@ export function beforeEachHelper(done): void {
 }
 
 /* Helper functions which runs after each Jasmine test has completed */
-export function afterEachHelper(done): void {
+export function afterEachHelper(done: any): void {
   deleteCollection().then(() => {
     // Wait for 50 milliseconds after each test to give enough time for old query events to expire
     return wait(50);
@@ -122,7 +122,7 @@ export function generateDocs(
  * tend to fail due to the Jasmine ASYNC timeout and provide no details of what actually
  * went wrong.
  **/
-export function failTestOnCaughtError(error) {
+export function failTestOnCaughtError(error: any) {
   expect(error).to.throw();
 }
 
@@ -173,7 +173,7 @@ export function stubDatabase(docs: Array<{ [key: string]: any; }> = dummyData): 
 }
 
 export function sortObject(data: { [key: string]: any }): { [key: string]: any } {
-  const result = {};
+  const result: any = {};
   const primitives = ['boolean', 'null', 'number', 'string', 'undefined'];
   Object.getOwnPropertyNames(data).sort().forEach((key) => {
     result[key] = primitives.includes(data[key]) ? data[key] : sortObject(data[key]);
