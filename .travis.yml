@@ -5,7 +5,6 @@ sudo: required
 install:
   - npm install
 script:
-  - cp -a ./node_modules/protobufjs/. ./node_modules/@firebase/firestore/node_modules/protobufjs/
   - npm run lint
   - npm run test
 after_success:

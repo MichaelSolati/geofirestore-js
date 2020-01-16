@@ -27,7 +27,7 @@ export class GeoWriteBatch {
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return This `GeoWriteBatch` instance. Used for chaining method calls.
    */
-  public set(
+  set(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
@@ -52,7 +52,7 @@ export class GeoWriteBatch {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @return This `GeoWriteBatch` instance. Used for chaining method calls.
    */
-  public update(
+  update(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
     customKey?: string
@@ -69,7 +69,7 @@ export class GeoWriteBatch {
    * @param documentRef A reference to the document to be deleted.
    * @return This `WriteBatch` instance. Used for chaining method calls.
    */
-  public delete(
+  delete(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): GeoWriteBatch {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
@@ -84,7 +84,7 @@ export class GeoWriteBatch {
    * @return A Promise resolved once all of the writes in the batch have been successfully written to the backend as an atomic unit. Note
    * that it won't resolve while you're offline.
    */
-  public commit(): Promise<any> {
+  commit(): Promise<any> {
     return this._writeBatch.commit();
   }
 }

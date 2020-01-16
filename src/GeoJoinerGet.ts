@@ -40,7 +40,7 @@ export class GeoJoinerGet {
    * 
    * @return A new `GeoQuerySnapshot` of the filtered documents from the `get`.
    */
-  public getGeoQuerySnapshot(): GeoQuerySnapshot {
+  getGeoQuerySnapshot(): GeoQuerySnapshot {
     const docs = Array.from(this._docs.values());
     return new GeoQuerySnapshot(
       { docs, docChanges: () => docs.map((doc, index) => {

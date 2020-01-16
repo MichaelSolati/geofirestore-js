@@ -77,7 +77,7 @@ export class GeoQuery {
    * @param options An object to configure the get behavior.
    * @return A Promise that will be resolved with the results of the GeoQuery.
    */
-  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
+  get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoQuerySnapshot> {
     if (this._center && typeof this._radius !== 'undefined') {
       const queries = this._generateQuery().map((query) => this._isWeb ? query.get(options) : query.get());
       return Promise.all(queries).then(value => new GeoJoinerGet(value, this._queryCriteria).getGeoQuerySnapshot());
@@ -100,7 +100,7 @@ export class GeoQuery {
    * @param limit The maximum number of items to return.
    * @return The created GeoQuery.
    */
-  public limit(limit: number): GeoQuery {
+  limit(limit: number): GeoQuery {
     validateLimit(limit);
     this._limit = limit;
     return new GeoQuery(this._query, this._queryCriteria);
@@ -114,7 +114,7 @@ export class GeoQuery {
    * @param newQueryCriteria The criteria which specifies the query's center and radius.
    * @return The created GeoQuery.
    */
-  public near(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
+  near(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
     // Validate and save the new query criteria
     validateQueryCriteria(newGeoQueryCriteria);
     this._center = newGeoQueryCriteria.center || this._center;
@@ -134,7 +134,7 @@ export class GeoQuery {
    * @param value The value for comparison
    * @return The created GeoQuery.
    */
-  public where(
+  where(
     fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any

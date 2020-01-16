@@ -43,7 +43,7 @@ export class GeoCollectionReference extends GeoQuery {
    * @return A Promise resolved with a `GeoDocumentReference` pointing to the newly created document after it has been written to the
    * backend.
    */
-  public add(
+  add(
     data: GeoFirestoreTypes.DocumentData,
     customKey?: string
   ): Promise<GeoDocumentReference> {
@@ -64,7 +64,7 @@ export class GeoCollectionReference extends GeoQuery {
    * @param documentPath A slash-separated path to a document.
    * @return The `GeoDocumentReference` instance.
    */
-  public doc(documentPath?: string): GeoDocumentReference {
+  doc(documentPath?: string): GeoDocumentReference {
     return (documentPath) ? new GeoDocumentReference(this._collection.doc(documentPath)) : new GeoDocumentReference(this._collection.doc());
   }
 }

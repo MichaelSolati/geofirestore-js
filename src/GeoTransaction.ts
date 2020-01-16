@@ -20,7 +20,7 @@ export class GeoTransaction {
    * @param documentRef A reference to the document to be deleted.
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
-  public delete(
+  delete(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): GeoTransaction {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
@@ -35,7 +35,7 @@ export class GeoTransaction {
    * @param documentRef A reference to the document to be read.
    * @return A GeoDocumentSnapshot for the read data.
    */
-  public get(
+  get(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): Promise<GeoDocumentSnapshot> {
     const ref = ((documentRef instanceof GeoDocumentReference) ?
@@ -53,7 +53,7 @@ export class GeoTransaction {
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
-  public set(
+  set(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
@@ -78,7 +78,7 @@ export class GeoTransaction {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
-  public update(
+  update(
     documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
     customKey?: string

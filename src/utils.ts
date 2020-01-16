@@ -277,7 +277,7 @@ export function encodeSetDocument(
  */
 export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customKey?: string): GeoFirestoreTypes.UpdateData {
   if (Object.prototype.toString.call(data) === '[object Object]') {
-    const result = {};
+    const result: any = {};
     const location = findCoordinates(data, customKey, true);
     if (location) {
       result['l'] = location;

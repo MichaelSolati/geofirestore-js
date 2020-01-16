@@ -20,7 +20,7 @@ export class GeoFirestore {
    *
    * @return A new `GeoWriteBatch` instance.
    */
-  public batch(): GeoWriteBatch {
+  batch(): GeoWriteBatch {
     return new GeoWriteBatch(this._firestore.batch());
   }
 
@@ -30,7 +30,7 @@ export class GeoFirestore {
    * @param collectionPath A slash-separated path to a collection.
    * @return A new `GeoCollectionReference` instance.
    */
-  public collection(collectionPath: string): GeoCollectionReference {
+  collection(collectionPath: string): GeoCollectionReference {
     return new GeoCollectionReference(this._firestore.collection(collectionPath));
   }
 
@@ -65,7 +65,7 @@ export class GeoFirestore {
    * Promise returned by the updateFunction will be returned here. Else if the transaction failed, a rejected Promise with the
    * corresponding failure error will be returned.
    */
-  public runTransaction(
+  runTransaction(
     updateFunction: (transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
   ): Promise<any> {
     return (this._firestore as GeoFirestoreTypes.cloud.Firestore).runTransaction(updateFunction);

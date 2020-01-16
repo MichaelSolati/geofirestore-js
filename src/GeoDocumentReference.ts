@@ -71,7 +71,7 @@ export class GeoDocumentReference {
    * @param collectionPath A slash-separated path to a collection.
    * @return The `GeoCollectionReference` instance.
    */
-  public collection(collectionPath: string): GeoCollectionReference {
+  collection(collectionPath: string): GeoCollectionReference {
     return new GeoCollectionReference(this._document.collection(collectionPath));
   }
 
@@ -81,7 +81,7 @@ export class GeoDocumentReference {
    * @return A Promise resolved once the document has been successfully deleted from the backend (Note that it won't resolve while you're
    * offline).
    */
-  public delete(): Promise<void> {
+  delete(): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).delete().then(() => null);
   }
 
@@ -94,7 +94,7 @@ export class GeoDocumentReference {
    * @param options An object to configure the get behavior.
    * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
    */
-  public get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
+  get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
     return this._isWeb ?
       (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
       (this._document as GeoFirestoreTypes.cloud.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
@@ -106,7 +106,7 @@ export class GeoDocumentReference {
    * @param other The `DocumentReference` or `GeoDocumentReference` to compare against.
    * @return true if this `DocumentReference` or `GeoDocumentReference` is equal to the provided one.
    */
-  public isEqual(
+  isEqual(
     other: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
   ): boolean {
     if (other instanceof GeoDocumentReference) {
@@ -124,7 +124,7 @@ export class GeoDocumentReference {
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
-  public set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
+  set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
       encodeSetDocument(data, options), 
       sanitizeSetOptions(options)
@@ -140,7 +140,7 @@ export class GeoDocumentReference {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
-  public update(data: GeoFirestoreTypes.UpdateData, customKey?: string): Promise<void> {
+  update(data: GeoFirestoreTypes.UpdateData, customKey?: string): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference).update(encodeUpdateDocument(data, customKey)).then(() => null);
   }
 }

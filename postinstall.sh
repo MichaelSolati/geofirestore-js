@@ -1,0 +1,1 @@
+cp -a ./node_modules/protobufjs/. ./node_modules/@grpc/proto-loader/node_modules/protobufjs/

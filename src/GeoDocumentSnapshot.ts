@@ -50,7 +50,7 @@ export class GeoDocumentSnapshot {
    * behavior for server timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return An Object containing all fields in the document or 'undefined' if the document doesn't exist.
    */
-  public data(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
+  data(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
     const d = (this._isWeb && options) ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(options) : this._snapshot.data();
     return (d) ? decodeGeoDocumentData(d as GeoFirestoreTypes.Document) : null;
   }
@@ -66,7 +66,7 @@ export class GeoDocumentSnapshot {
    * timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return The data at the specified field location or undefined if no such field exists in the document.
    */
-  public get(
+  get(
     fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
     options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
@@ -81,7 +81,7 @@ export class GeoDocumentSnapshot {
    * @param other The `DocumentSnapshot` or `GeoDocumentSnapshot` to compare against.
    * @return true if this `GeoDocumentSnapshot` is equal to the provided one.
    */
-  public isEqual(other: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): boolean {
+  isEqual(other: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): boolean {
     if (other instanceof GeoDocumentSnapshot) {
       return (this._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot)
         .isEqual(other['_snapshot'] as GeoFirestoreTypes.cloud.DocumentSnapshot);

@@ -2,38 +2,54 @@ import commonjs from 'rollup-plugin-commonjs';
 import copier from 'rollup-plugin-copier';
 import resolveModule from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const copy = copier({
-  items: [{
-    src: 'src/GeoFirestoreTypes.ts',
-    dest: 'dist/GeoFirestoreTypes.ts',
-    createPath: true
-  }]
+  items: [
+    {
+      src: 'src/GeoFirestoreTypes.ts',
+      dest: 'dist/GeoFirestoreTypes.ts',
+      createPath: true,
+    },
+  ],
 });
+
+const onwarn = (warning, rollupWarn) => {
+  if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+    rollupWarn(warning);
+  }
+};
 
 const plugins = [
   resolveModule(),
   typescript({
-    typescript: require('typescript')
+    tsconfig: 'tsconfig.json',
+    tsconfigOverride: {
+      compilerOptions: {
+        module: 'ESNext',
+      },
+    },
   }),
   commonjs(),
-  copy
+  copy,
 ];
 
-const completeBuilds = [{
+export default [
+  {
     input: 'src/index.ts',
-    output: [{
+    output: [
+      {
         file: pkg.main,
-        format: 'cjs'
+        format: 'cjs',
       },
       {
         file: pkg.module,
-        format: 'es'
-      }
+        format: 'es',
+      },
     ],
-    plugins
+    plugins,
+    onwarn,
   },
   {
     input: 'src/index.ts',
@@ -41,13 +57,8 @@ const completeBuilds = [{
       file: pkg.browser,
       format: 'umd',
       name: 'window',
-      extend: true
+      extend: true,
     },
-    plugins: [
-      ...plugins,
-      uglify()
-    ]
-  }
+    plugins: [...plugins, terser(), onwarn],
+  },
 ];
-
-export default [...completeBuilds];

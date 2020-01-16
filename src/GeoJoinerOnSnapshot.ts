@@ -43,7 +43,7 @@ export class GeoJoinerOnSnapshot {
    *
    * @return An unsubscribe function that can be called to cancel all snapshot listener.
    */
-  public unsubscribe(): () => void {
+  unsubscribe(): () => void {
     return () => {
       clearInterval(this._interval);
       this._subscriptions.forEach(subscription => subscription());

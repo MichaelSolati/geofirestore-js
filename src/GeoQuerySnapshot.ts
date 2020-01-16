@@ -50,7 +50,7 @@ export class GeoQuerySnapshot {
    * 
    * @returns Array of DocumentChanges.
    */
-  public docChanges(): GeoFirestoreTypes.DocumentChange[] {
+  docChanges(): GeoFirestoreTypes.DocumentChange[] {
     const docChanges = Array.isArray(this._querySnapshot.docChanges) ?
       this._querySnapshot.docChanges as any as GeoFirestoreTypes.web.DocumentChange[]: this._querySnapshot.docChanges();
     return (docChanges as GeoFirestoreTypes.web.DocumentChange[])
@@ -71,7 +71,7 @@ export class GeoQuerySnapshot {
    * each document in the snapshot.
    * @param thisArg The `this` binding for the callback.
    */
-  public forEach(callback: (result: GeoFirestoreTypes.QueryDocumentSnapshot) => void, thisArg?: any): void {
+  forEach(callback: (result: GeoFirestoreTypes.QueryDocumentSnapshot) => void, thisArg?: any): void {
     this.docs.forEach(callback, thisArg);
   }
 }
