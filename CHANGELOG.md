@@ -1,3 +1,35 @@
+### 3.4.0 (2020-01-16)
+
+##### Build System / Dependencies
+
+* **deps:**
+  *  bump mixin-deep from 1.3.1 to 1.3.2 ([1ba81a18](https://github.com/geofirestore/geofirestore-js/commit/1ba81a180bd3e752d91b525c29ad87e56d3d18e7))
+  *  bump mixin-deep from 1.3.1 to 1.3.2 ([676f0794](https://github.com/geofirestore/geofirestore-js/commit/676f0794d9d2483677b67530f10dcaa4dfa64549))
+
+##### Chores
+
+*  loosen and update dependencies, use google typescript style guide ([9d848d75](https://github.com/geofirestore/geofirestore-js/commit/9d848d75c203b2ffc5894772a3b5f38c1971befb))
+*  add `project.json` for firebaseopensource.com ([e0500546](https://github.com/geofirestore/geofirestore-js/commit/e05005464d16bc4538c4eacaedac72332af4ba6f))
+*  update dependencies ([e29f80d7](https://github.com/geofirestore/geofirestore-js/commit/e29f80d74ce3cc91b77bcc494fee745c9f9a03c9))
+
+##### Documentation Changes
+
+*  fix typo ([6548096e](https://github.com/geofirestore/geofirestore-js/commit/6548096ed5bdc29c68381c5b3d3154b2ff09be09))
+*  fix typo in README ([bd8a9389](https://github.com/geofirestore/geofirestore-js/commit/bd8a938904c49ef0bb23815bc4737c5ceccae93c))
+* **README:**  add example to add a GeoDocument, fixes [#134](https://github.com/geofirestore/geofirestore-js/pull/134) ([e7c5d136](https://github.com/geofirestore/geofirestore-js/commit/e7c5d1362cf2a4284385a442d7fef3a455f4d465))
+
+##### New Features
+
+*  expose `native` classes ([29ef5c4a](https://github.com/geofirestore/geofirestore-js/commit/29ef5c4ade42ce4ce2ffa414d09c0fb8a16f04a5))
+
+##### Bug Fixes
+
+*  set `postinstall` to `pretest` for npm installs ([1fa16169](https://github.com/geofirestore/geofirestore-js/commit/1fa16169767f9c2dd9d1e5d2000d5609430bba35))
+
+##### Tests
+
+*  fix typing issues in tests ([d2131b5e](https://github.com/geofirestore/geofirestore-js/commit/d2131b5ef0cae26fabbc5a19294edc8cc45a4117))
+
 #### 3.3.1 (2019-05-16)
 
 ##### Build System / Dependencies
