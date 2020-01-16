@@ -12,7 +12,7 @@
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
     "prepare": "npm run build",
-    "postinstall": "sh postinstall.sh",
+    "pretest": "node pretest.js",
     "deploy": "firebase deploy",
     "deploy:travis": "firebase deploy --non-interactive --token $FIREBASE_TOKEN"
   },
@@ -50,11 +50,9 @@
     "package.json",
     "README.md"
   ],
-  "dependencies": {
-    "@types/node": ">= 8.0.0"
-  },
   "optionalDependencies": {
     "@google-cloud/firestore": ">= 2.0.0",
+    "@types/node": ">= 8.0.0",
     "firebase": ">= 6.0.0"
   },
   "devDependencies": {

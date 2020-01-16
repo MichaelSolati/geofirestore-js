@@ -59,6 +59,7 @@ export default [
       name: 'window',
       extend: true,
     },
-    plugins: [...plugins, terser(), onwarn],
+    plugins: [...plugins, terser()],
+    onwarn,
   },
 ];
