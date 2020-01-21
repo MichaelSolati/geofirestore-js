@@ -1,3 +1,9 @@
+#### 3.4.1 (2020-01-21)
+
+##### Bug Fixes
+
+* **typescript:**  rollback to typescript 3.6.x, fixes [#156](https://github.com/geofirestore/geofirestore-js/pull/156) ([21b40d62](https://github.com/geofirestore/geofirestore-js/commit/21b40d629319516d3f5f38e6333de9c92556b182))
+
 ### 3.4.0 (2020-01-16)
 
 ##### Build System / Dependencies
