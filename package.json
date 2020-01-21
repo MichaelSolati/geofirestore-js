@@ -76,7 +76,7 @@
     "rollup-plugin-typescript2": "0.x.x",
     "ts-node": "8.x.x",
     "typedoc": "0.x.x",
-    "typescript": "3.x.x"
+    "typescript": "3.6.x"
   },
   "nyc": {
     "extension": [
