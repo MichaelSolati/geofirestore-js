@@ -47,42 +47,49 @@ You can find a full list of our demos and view the code for each of them in the 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com). It mostly provides the same functionality as the Firestore library, in almost the same way as the Firestore library. Many questions can be addressed by looking at the [Firestore docs](https://firebase.google.com/docs/firestore/). However there are a few differences, and below is a little example of how to make a location based query.
 
 ```TypeScript
+// If you're using TypeScript
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 // If you're using ES6+/imports/ESM syntax for imports you can do this:
 import { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } from 'geofirestore';
+```
 
-// If you're using CommonJS/require syntax for imports you can do this:
+```Javascript
+// If you're using JavaScript
+var admin = require("firebase-admin");
+var serviceAccount = require("./service-account-key.json");
+
 const { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } = require('geofirestore');
 
-// Initialize the Firebase SDK
-firebase.initializeApp({
-  // ...
+// Initialize the Firebase App
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "YOUR PROJECT DATABASE URL"
 });
 
-// Create a Firestore reference
-const firestore = firebase.firestore();
+const Firestore = admin.firestore;
+const db = Firestore();
 
 // Create a GeoFirestore reference
-const geofirestore: GeoFirestore = new GeoFirestore(firestore);
+const geofirestore = new GeoFirestore(db);
 
 // Create a GeoCollection reference
-const geocollection: GeoCollectionReference = geofirestore.collection('restaurants');
+const geocollection = geofirestore.collection('restaurants');
 
 // Add a GeoDocument to a GeoCollection
 geocollection.add({
   name: 'Geofirestore',
   score: 100,
   // The coordinates field must be a GeoPoint!
-  coordinates: new firebase.firestore.GeoPoint(40.7589, -73.9851)
+  coordinates: new admin.firestore.GeoPoint(40.7589, -73.9851)
 })
 
 // Create a GeoQuery based on a location
-const query: GeoQuery = geocollection.near({ center: new firebase.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
+const query = geocollection.near({ center: new admin.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
 
 // Get query (as Promise)
-query.get().then((value: GeoQuerySnapshot) => {
+query.get().then((value) => {
   // All GeoDocument returned by GeoQuery, like the GeoDocument added above
   console.log(value.docs);
 });
