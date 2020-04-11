@@ -93,7 +93,7 @@ Simple. Easy. And very similar with how Firestore handles a `get` from a Firesto
 
 ## Limitations & Considerations
 
-Internally GeoFirestore creates multiple geohashes around a requested area. It queries them and furter calculations on the seperate results are done within the libary. Because of this the additional filtering methods such as `orderBy`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/) at this time.
+Internally GeoFirestore creates multiple geohashes around a requested area. It queries them and further calculations on the separate results are done within the library. Because of this the additional filtering methods such as `orderBy`, `startAt` and `endAt` can not be passed though GeoFirestore to [Cloud Firestore](https://firebase.google.com/docs/firestore/) at this time.
 
 ### Data Structure
 
