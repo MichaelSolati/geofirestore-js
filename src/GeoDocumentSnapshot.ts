@@ -1,6 +1,6 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { GeoDocumentReference } from './GeoDocumentReference';
-import { decodeGeoDocumentData } from './utils';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoDocumentReference} from './GeoDocumentReference';
+import {decodeGeoDocumentData} from './utils';
 
 /**
  * A `GeoDocumentSnapshot` contains data read from a document in your Firestore database. The data can be extracted with `.data()` or
@@ -15,16 +15,27 @@ export class GeoDocumentSnapshot {
   /**
    * @param _snapshot The `DocumentSnapshot` instance.
    */
-  constructor(private _snapshot: GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot) {
+  constructor(
+    private _snapshot:
+      | GeoFirestoreTypes.cloud.DocumentSnapshot
+      | GeoFirestoreTypes.web.DocumentSnapshot
+  ) {
     if (Object.prototype.toString.call(_snapshot) !== '[object Object]') {
-      throw new Error('DocumentSnapshot must be an instance of a Firestore DocumentSnapshot');
+      throw new Error(
+        'DocumentSnapshot must be an instance of a Firestore DocumentSnapshot'
+      );
     }
-    this._isWeb = Object.prototype.toString
-      .call((_snapshot as GeoFirestoreTypes.web.DocumentSnapshot).ref.firestore.enablePersistence) === '[object Function]';
+    this._isWeb =
+      Object.prototype.toString.call(
+        (_snapshot as GeoFirestoreTypes.web.DocumentSnapshot).ref.firestore
+          .enablePersistence
+      ) === '[object Function]';
   }
 
   /** The native `DocumentSnapshot` instance. */
-  get native(): GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot {
+  get native():
+    | GeoFirestoreTypes.cloud.DocumentSnapshot
+    | GeoFirestoreTypes.web.DocumentSnapshot {
     return this._snapshot;
   }
 
@@ -55,9 +66,16 @@ export class GeoDocumentSnapshot {
    * behavior for server timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return An Object containing all fields in the document or 'undefined' if the document doesn't exist.
    */
-  data(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
-    const d = (this._isWeb && options) ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(options) : this._snapshot.data();
-    return (d) ? decodeGeoDocumentData(d as GeoFirestoreTypes.Document) : null;
+  data(
+    options?: GeoFirestoreTypes.SnapshotOptions
+  ): GeoFirestoreTypes.DocumentData | undefined {
+    const d =
+      this._isWeb && options
+        ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(
+            options
+          )
+        : this._snapshot.data();
+    return d ? decodeGeoDocumentData(d as GeoFirestoreTypes.Document) : null;
   }
 
   /**
@@ -72,12 +90,19 @@ export class GeoDocumentSnapshot {
    * @return The data at the specified field location or undefined if no such field exists in the document.
    */
   get(
-    fieldPath: string | GeoFirestoreTypes.cloud.FieldPath | GeoFirestoreTypes.web.FieldPath,
+    fieldPath:
+      | string
+      | GeoFirestoreTypes.cloud.FieldPath
+      | GeoFirestoreTypes.web.FieldPath,
     options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
     const path = 'd.' + fieldPath;
-    return (this._isWeb && options) ?
-      (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(path, options) : this._snapshot.get(path);
+    return this._isWeb && options
+      ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(
+          path,
+          options
+        )
+      : this._snapshot.get(path);
   }
 
   /**
@@ -86,11 +111,20 @@ export class GeoDocumentSnapshot {
    * @param other The `DocumentSnapshot` or `GeoDocumentSnapshot` to compare against.
    * @return true if this `GeoDocumentSnapshot` is equal to the provided one.
    */
-  isEqual(other: GeoDocumentSnapshot | GeoFirestoreTypes.cloud.DocumentSnapshot | GeoFirestoreTypes.web.DocumentSnapshot): boolean {
+  isEqual(
+    other:
+      | GeoDocumentSnapshot
+      | GeoFirestoreTypes.cloud.DocumentSnapshot
+      | GeoFirestoreTypes.web.DocumentSnapshot
+  ): boolean {
     if (other instanceof GeoDocumentSnapshot) {
-      return (this._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot)
-        .isEqual(other['_snapshot'] as GeoFirestoreTypes.cloud.DocumentSnapshot);
+      return (this
+        ._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot).isEqual(
+        other['_snapshot'] as GeoFirestoreTypes.cloud.DocumentSnapshot
+      );
     }
-    return (this._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot).isEqual(other as GeoFirestoreTypes.cloud.DocumentSnapshot);
+    return (this._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot).isEqual(
+      other as GeoFirestoreTypes.cloud.DocumentSnapshot
+    );
   }
 }

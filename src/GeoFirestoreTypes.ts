@@ -1,6 +1,6 @@
 /* tslint:disable:no-import-side-effect no-namespace no-shadowed-variable */
 import * as cloudfirestore from '@google-cloud/firestore';
-import { firestore as webfirestore } from 'firebase/app';
+import {firestore as webfirestore} from 'firebase/app';
 import '@types/node';
 
 export namespace GeoFirestoreTypes {
@@ -9,7 +9,9 @@ export namespace GeoFirestoreTypes {
     l: web.GeoPoint | cloud.GeoPoint;
     d: DocumentData;
   }
-  export type DocumentData = {  [field: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint; } | undefined;
+  export type DocumentData =
+    | {[field: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint}
+    | undefined;
   export interface DocumentChange {
     doc: QueryDocumentSnapshot;
     newIndex: number;
@@ -33,7 +35,10 @@ export namespace GeoFirestoreTypes {
     mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
   }
   export type SnapshotOptions = webfirestore.SnapshotOptions;
-  export interface UpdateData { [fieldPath: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint; }
+  export interface UpdateData {
+    [fieldPath: string]: any;
+    coordinates?: cloud.GeoPoint | web.GeoPoint;
+  }
   export type WhereFilterOp =
     | '<'
     | '<='

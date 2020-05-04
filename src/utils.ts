@@ -1,4 +1,4 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -38,14 +38,24 @@ export const METERS_PER_DEGREE_LATITUDE = 110574;
  * @param size The size of the bounding box.
  * @return The number of bits necessary for the geohash.
  */
-export function boundingBoxBits(coordinate: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, size: number): number {
+export function boundingBoxBits(
+  coordinate: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  size: number
+): number {
   const latDeltaDegrees = size / METERS_PER_DEGREE_LATITUDE;
   const latitudeNorth = Math.min(90, coordinate.latitude + latDeltaDegrees);
   const latitudeSouth = Math.max(-90, coordinate.latitude - latDeltaDegrees);
   const bitsLat = Math.floor(latitudeBitsForResolution(size)) * 2;
-  const bitsLongNorth = Math.floor(longitudeBitsForResolution(size, latitudeNorth)) * 2 - 1;
-  const bitsLongSouth = Math.floor(longitudeBitsForResolution(size, latitudeSouth)) * 2 - 1;
-  return Math.min(bitsLat, bitsLongNorth, bitsLongSouth, MAXIMUM_BITS_PRECISION);
+  const bitsLongNorth =
+    Math.floor(longitudeBitsForResolution(size, latitudeNorth)) * 2 - 1;
+  const bitsLongSouth =
+    Math.floor(longitudeBitsForResolution(size, latitudeSouth)) * 2 - 1;
+  return Math.min(
+    bitsLat,
+    bitsLongNorth,
+    bitsLongSouth,
+    MAXIMUM_BITS_PRECISION
+  );
 }
 
 /**
@@ -75,7 +85,7 @@ export function boundingBoxCoordinates(
     toGeoPoint(latitudeNorth, wrapLongitude(center.longitude + longDegs)),
     toGeoPoint(latitudeSouth, center.longitude),
     toGeoPoint(latitudeSouth, wrapLongitude(center.longitude - longDegs)),
-    toGeoPoint(latitudeSouth, wrapLongitude(center.longitude + longDegs))
+    toGeoPoint(latitudeSouth, wrapLongitude(center.longitude + longDegs)),
   ];
 }
 
@@ -98,9 +108,12 @@ export function calculateDistance(
   const latDelta = degreesToRadians(location2.latitude - location1.latitude);
   const lonDelta = degreesToRadians(location2.longitude - location1.longitude);
 
-  const a = (Math.sin(latDelta / 2) * Math.sin(latDelta / 2)) +
-    (Math.cos(degreesToRadians(location1.latitude)) * Math.cos(degreesToRadians(location2.latitude)) *
-      Math.sin(lonDelta / 2) * Math.sin(lonDelta / 2));
+  const a =
+    Math.sin(latDelta / 2) * Math.sin(latDelta / 2) +
+    Math.cos(degreesToRadians(location1.latitude)) *
+      Math.cos(degreesToRadians(location2.latitude)) *
+      Math.sin(lonDelta / 2) *
+      Math.sin(lonDelta / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -113,8 +126,10 @@ export function calculateDistance(
  * @param data The data encoded as a GeoDocument object.
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
-export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFirestoreTypes.DocumentData {
-  return (validateGeoDocument(data, true)) ? data.d : data;
+export function decodeGeoDocumentData(
+  data: GeoFirestoreTypes.Document
+): GeoFirestoreTypes.DocumentData {
+  return validateGeoDocument(data, true) ? data.d : data;
 }
 
 /**
@@ -127,12 +142,12 @@ export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFire
 export function decodeGeoQueryDocumentSnapshotData(
   data: GeoFirestoreTypes.Document,
   center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
-): { data: () => GeoFirestoreTypes.DocumentData; distance: number; } {
+): {data: () => GeoFirestoreTypes.DocumentData; distance: number} {
   if (validateGeoDocument(data, true)) {
-    const distance = (center) ? calculateDistance(data.l, center) : null;
-    return { data: () => data.d, distance };
+    const distance = center ? calculateDistance(data.l, center) : null;
+    return {data: () => data.d, distance};
   }
-  return { data: () => data, distance: null };
+  return {data: () => data, distance: null};
 }
 
 /**
@@ -146,7 +161,7 @@ export function degreesToRadians(degrees: number): number {
     throw new Error('Error: degrees must be a number');
   }
 
-  return (degrees * Math.PI / 180);
+  return (degrees * Math.PI) / 180;
 }
 
 /**
@@ -175,11 +190,11 @@ export function encodeGeohash(
 
   const latitudeRange = {
     min: -90,
-    max: 90
+    max: 90,
   };
   const longitudeRange = {
     min: -180,
-    max: 180
+    max: 180,
   };
   let hash = '';
   let hashVal = 0;
@@ -226,7 +241,7 @@ export function encodeGeoDocument(
 ): GeoFirestoreTypes.Document {
   validateLocation(location);
   validateGeohash(geohash);
-  return { g: geohash, l: location, d: document };
+  return {g: geohash, l: location, d: document};
 }
 
 /**
@@ -238,7 +253,7 @@ export function encodeGeoDocument(
 export function sanitizeSetOptions(
   options: GeoFirestoreTypes.SetOptions
 ): GeoFirestoreTypes.SetOptions {
-  const clone = { ...options };
+  const clone = {...options};
   delete clone.customKey;
   return clone;
 }
@@ -255,14 +270,19 @@ export function encodeSetDocument(
   options?: GeoFirestoreTypes.SetOptions
 ): GeoFirestoreTypes.Document {
   if (Object.prototype.toString.call(data) === '[object Object]') {
-    const customKey = (options) ? options.customKey : null;
-    const unparsed: GeoFirestoreTypes.DocumentData = ('d' in data) ? data.d : data;
-    const location = findCoordinates(unparsed, customKey, (options && (options.merge || !!options.mergeFields)));
+    const customKey = options ? options.customKey : null;
+    const unparsed: GeoFirestoreTypes.DocumentData =
+      'd' in data ? data.d : data;
+    const location = findCoordinates(
+      unparsed,
+      customKey,
+      options && (options.merge || !!options.mergeFields)
+    );
     if (location) {
       const geohash: string = encodeGeohash(location);
       return encodeGeoDocument(location, geohash, unparsed);
     }
-    return { d: unparsed } as GeoFirestoreTypes.Document;
+    return {d: unparsed} as GeoFirestoreTypes.Document;
   } else {
     throw new Error('document must be an object');
   }
@@ -275,7 +295,10 @@ export function encodeSetDocument(
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @return The document encoded as GeoDocument object.
  */
-export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customKey?: string): GeoFirestoreTypes.UpdateData {
+export function encodeUpdateDocument(
+  data: GeoFirestoreTypes.UpdateData,
+  customKey?: string
+): GeoFirestoreTypes.UpdateData {
   if (Object.prototype.toString.call(data) === '[object Object]') {
     const result: any = {};
     const location = findCoordinates(data, customKey, true);
@@ -298,10 +321,12 @@ export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customK
  * @param document A Firestore document.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @param flag Tells function supress errors.
- * @return The GeoPoint for the location field of a document. 
+ * @return The GeoPoint for the location field of a document.
  */
 export function findCoordinates(
-  document: GeoFirestoreTypes.DocumentData, customKey?: string, flag = false
+  document: GeoFirestoreTypes.DocumentData,
+  customKey?: string,
+  flag = false
 ): GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint {
   let error: string;
   let coordinates;
@@ -346,14 +371,19 @@ export function findCoordinates(
  * @return The snapshot as a GeoFirestore QueryDocumentSnapshot.
  */
 export function generateGeoQueryDocumentSnapshot(
-  snapshot: GeoFirestoreTypes.web.QueryDocumentSnapshot | GeoFirestoreTypes.cloud.QueryDocumentSnapshot,
+  snapshot:
+    | GeoFirestoreTypes.web.QueryDocumentSnapshot
+    | GeoFirestoreTypes.cloud.QueryDocumentSnapshot,
   center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
 ): GeoFirestoreTypes.QueryDocumentSnapshot {
-  const decoded = decodeGeoQueryDocumentSnapshotData(snapshot.data() as GeoFirestoreTypes.Document, center);
+  const decoded = decodeGeoQueryDocumentSnapshotData(
+    snapshot.data() as GeoFirestoreTypes.Document,
+    center
+  );
   return {
     exists: snapshot.exists,
     id: snapshot.id,
-    ...decoded
+    ...decoded,
   };
 }
 
@@ -365,18 +395,25 @@ export function generateGeoQueryDocumentSnapshot(
  * @param radius The radius of the circle.
  * @return An array of geohashes containing a GeoPoint.
  */
-export function geohashQueries(center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint, radius: number): string[][] {
+export function geohashQueries(
+  center: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  radius: number
+): string[][] {
   validateLocation(center);
   const queryBits = Math.max(1, boundingBoxBits(center, radius));
   const geohashPrecision = Math.ceil(queryBits / BITS_PER_CHAR);
-  const coordinates: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint[] = boundingBoxCoordinates(center, radius);
-  const queries = coordinates.map((coordinate) => {
+  const coordinates:
+    | GeoFirestoreTypes.cloud.GeoPoint
+    | GeoFirestoreTypes.web.GeoPoint[] = boundingBoxCoordinates(center, radius);
+  const queries = coordinates.map(coordinate => {
     return geohashQuery(encodeGeohash(coordinate, geohashPrecision), queryBits);
   });
   // remove duplicates
   return queries.filter((query, index) => {
     return !queries.some((other, otherIndex) => {
-      return index > otherIndex && query[0] === other[0] && query[1] === other[1];
+      return (
+        index > otherIndex && query[0] === other[0] && query[1] === other[1]
+      );
     });
   });
 }
@@ -397,8 +434,8 @@ export function geohashQuery(geohash: string, bits: number): string[] {
   const ghash = geohash.substring(0, precision);
   const base = ghash.substring(0, ghash.length - 1);
   const lastValue = BASE32.indexOf(ghash.charAt(ghash.length - 1));
-  const significantBits = bits - (base.length * BITS_PER_CHAR);
-  const unusedBits = (BITS_PER_CHAR - significantBits);
+  const significantBits = bits - base.length * BITS_PER_CHAR;
+  const unusedBits = BITS_PER_CHAR - significantBits;
   // delete unused bits
   const startValue = (lastValue >> unusedBits) << unusedBits;
   const endValue = startValue + (1 << unusedBits);
@@ -416,7 +453,10 @@ export function geohashQuery(geohash: string, bits: number): string[] {
  * @return Bits necessary to reach a given resolution, in meters, for the latitude.
  */
 export function latitudeBitsForResolution(resolution: number): number {
-  return Math.min(log2(EARTH_MERI_CIRCUMFERENCE / 2 / resolution), MAXIMUM_BITS_PRECISION);
+  return Math.min(
+    log2(EARTH_MERI_CIRCUMFERENCE / 2 / resolution),
+    MAXIMUM_BITS_PRECISION
+  );
 }
 
 /**
@@ -436,9 +476,12 @@ export function log2(x: number): number {
  * @param latitude The latitude used in the conversion.
  * @return The bits necessary to reach a given resolution, in meters.
  */
-export function longitudeBitsForResolution(resolution: number, latitude: number): number {
+export function longitudeBitsForResolution(
+  resolution: number,
+  latitude: number
+): number {
   const degs = metersToLongitudeDegrees(resolution, latitude);
-  return (Math.abs(degs) > 0.000001) ? Math.max(1, log2(360 / degs)) : 1;
+  return Math.abs(degs) > 0.000001 ? Math.max(1, log2(360 / degs)) : 1;
 }
 
 /**
@@ -448,9 +491,12 @@ export function longitudeBitsForResolution(resolution: number, latitude: number)
  * @param latitude The latitude at which to calculate.
  * @return The number of degrees the distance corresponds to.
  */
-export function metersToLongitudeDegrees(distance: number, latitude: number): number {
+export function metersToLongitudeDegrees(
+  distance: number,
+  latitude: number
+): number {
   const radians = degreesToRadians(latitude);
-  const num = Math.cos(radians) * EARTH_EQ_RADIUS * Math.PI / 180;
+  const num = (Math.cos(radians) * EARTH_EQ_RADIUS * Math.PI) / 180;
   const denom = 1 / Math.sqrt(1 - E2 * Math.sin(radians) * Math.sin(radians));
   const deltaDeg = num * denom;
   if (deltaDeg < EPSILON) {
@@ -467,9 +513,15 @@ export function metersToLongitudeDegrees(distance: number, latitude: number): nu
  * @param longitude Longitude for GeoPoint.
  * @return Firestore "GeoPoint"
  */
-export function toGeoPoint(latitude: number, longitude: number): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
-  const fakeGeoPoint: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint =
-    { latitude, longitude } as GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+export function toGeoPoint(
+  latitude: number,
+  longitude: number
+): GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint {
+  const fakeGeoPoint:
+    | GeoFirestoreTypes.cloud.GeoPoint
+    | GeoFirestoreTypes.web.GeoPoint = {latitude, longitude} as
+    | GeoFirestoreTypes.cloud.GeoPoint
+    | GeoFirestoreTypes.web.GeoPoint;
   validateLocation(fakeGeoPoint);
   return fakeGeoPoint;
 }
@@ -479,13 +531,18 @@ export function toGeoPoint(latitude: number, longitude: number): GeoFirestoreTyp
  *
  * @param data The GeoDocument object to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
- * @return Flag if data is valid 
+ * @return Flag if data is valid
  */
-export function validateGeoDocument(data: GeoFirestoreTypes.Document, flag = false): boolean {
+export function validateGeoDocument(
+  data: GeoFirestoreTypes.Document,
+  flag = false
+): boolean {
   let error: string;
 
-  error = (!validateGeohash(data.g, true)) ? 'invalid geohash on object' : null;
-  error = (!validateLocation(data.l, true)) ? 'invalid location on object' : error;
+  error = !validateGeohash(data.g, true) ? 'invalid geohash on object' : null;
+  error = !validateLocation(data.l, true)
+    ? 'invalid location on object'
+    : error;
 
   if (!data || !('d' in data) || typeof data.d !== 'object') {
     error = 'no valid document found';
@@ -514,13 +571,13 @@ export function validateGeohash(geohash: string, flag = false): boolean {
   } else {
     for (const letter of geohash) {
       if (BASE32.indexOf(letter) === -1) {
-        error = 'geohash cannot contain \'' + letter + '\'';
+        error = "geohash cannot contain '" + letter + "'";
       }
     }
   }
 
   if (typeof error !== 'undefined' && !flag) {
-    throw new Error('Invalid GeoFire geohash \'' + geohash + '\': ' + error);
+    throw new Error("Invalid GeoFire geohash '" + geohash + "': " + error);
   } else {
     return !error;
   }
@@ -553,7 +610,10 @@ export function validateLimit(limit: number, flag = false): boolean {
  * @param location The Firestore GeoPoint to be verified.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  */
-export function validateLocation(location: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint, flag = false): boolean {
+export function validateLocation(
+  location: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint,
+  flag = false
+): boolean {
   let error: string;
 
   if (!location) {
@@ -590,20 +650,34 @@ export function validateLocation(location: GeoFirestoreTypes.web.GeoPoint | GeoF
  * @param newQueryCriteria The criteria which specifies the query's center and/or radius.
  * @param requireCenterAndRadius The criteria which center and radius required.
  */
-export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryCriteria, requireCenterAndRadius = false): void {
+export function validateQueryCriteria(
+  newQueryCriteria: GeoFirestoreTypes.QueryCriteria,
+  requireCenterAndRadius = false
+): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('QueryCriteria must be an object');
-  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
+  } else if (
+    typeof newQueryCriteria.center === 'undefined' &&
+    typeof newQueryCriteria.radius === 'undefined'
+  ) {
     throw new Error('radius and/or center must be specified');
-  } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
-    throw new Error('QueryCriteria for a new query must contain both a center and a radius');
+  } else if (
+    requireCenterAndRadius &&
+    (typeof newQueryCriteria.center === 'undefined' ||
+      typeof newQueryCriteria.radius === 'undefined')
+  ) {
+    throw new Error(
+      'QueryCriteria for a new query must contain both a center and a radius'
+    );
   }
 
   // Throw an error if there are any extraneous attributes
   const keys: string[] = Object.keys(newQueryCriteria);
   for (const key of keys) {
     if (!['center', 'radius', 'limit'].includes(key)) {
-      throw new Error('Unexpected attribute \'' + key + '\' found in query criteria');
+      throw new Error(
+        "Unexpected attribute '" + key + "' found in query criteria"
+      );
     }
   }
 
@@ -614,7 +688,10 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
 
   // Validate the 'radius' attribute
   if (typeof newQueryCriteria.radius !== 'undefined') {
-    if (typeof newQueryCriteria.radius !== 'number' || isNaN(newQueryCriteria.radius)) {
+    if (
+      typeof newQueryCriteria.radius !== 'number' ||
+      isNaN(newQueryCriteria.radius)
+    ) {
       throw new Error('radius must be a number');
     } else if (newQueryCriteria.radius < 0) {
       throw new Error('radius must be greater than or equal to 0');

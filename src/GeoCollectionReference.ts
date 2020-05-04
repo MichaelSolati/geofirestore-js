@@ -1,7 +1,7 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { GeoDocumentReference } from './GeoDocumentReference';
-import { GeoQuery } from './GeoQuery';
-import { findCoordinates, encodeGeohash, encodeGeoDocument } from './utils';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoDocumentReference} from './GeoDocumentReference';
+import {GeoQuery} from './GeoQuery';
+import {findCoordinates, encodeGeohash, encodeGeoDocument} from './utils';
 
 /**
  * A `GeoCollectionReference` object can be used for adding documents, getting document references, and querying for documents (using the
@@ -11,12 +11,18 @@ export class GeoCollectionReference extends GeoQuery {
   /**
    * @param _collection The `CollectionReference` instance.
    */
-  constructor(private _collection: GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference) {
+  constructor(
+    private _collection:
+      | GeoFirestoreTypes.cloud.CollectionReference
+      | GeoFirestoreTypes.web.CollectionReference
+  ) {
     super(_collection);
   }
 
   /** The native `CollectionReference` instance. */
-  get native(): GeoFirestoreTypes.cloud.CollectionReference | GeoFirestoreTypes.web.CollectionReference {
+  get native():
+    | GeoFirestoreTypes.cloud.CollectionReference
+    | GeoFirestoreTypes.web.CollectionReference {
     return this._collection;
   }
 
@@ -29,7 +35,9 @@ export class GeoCollectionReference extends GeoQuery {
    * A reference to the containing Document if this is a subcollection, else null.
    */
   get parent(): GeoDocumentReference | null {
-    return this._collection.parent ? new GeoDocumentReference(this._collection.parent) : null;
+    return this._collection.parent
+      ? new GeoDocumentReference(this._collection.parent)
+      : null;
   }
 
   /**
@@ -56,7 +64,8 @@ export class GeoCollectionReference extends GeoQuery {
       const location = findCoordinates(data, customKey);
       const geohash: string = encodeGeohash(location);
       return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
-        .add(encodeGeoDocument(location, geohash, data)).then(doc => new GeoDocumentReference(doc));
+        .add(encodeGeoDocument(location, geohash, data))
+        .then(doc => new GeoDocumentReference(doc));
     } else {
       throw new Error('document must be an object');
     }
@@ -70,6 +79,8 @@ export class GeoCollectionReference extends GeoQuery {
    * @return The `GeoDocumentReference` instance.
    */
   doc(documentPath?: string): GeoDocumentReference {
-    return (documentPath) ? new GeoDocumentReference(this._collection.doc(documentPath)) : new GeoDocumentReference(this._collection.doc());
+    return documentPath
+      ? new GeoDocumentReference(this._collection.doc(documentPath))
+      : new GeoDocumentReference(this._collection.doc());
   }
 }

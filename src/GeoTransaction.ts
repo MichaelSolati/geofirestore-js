@@ -1,7 +1,11 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { GeoDocumentReference } from './GeoDocumentReference';
-import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
-import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './utils';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoDocumentReference} from './GeoDocumentReference';
+import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
+import {
+  encodeSetDocument,
+  encodeUpdateDocument,
+  sanitizeSetOptions,
+} from './utils';
 
 /**
  * A reference to a transaction. The `GeoTransaction` object passed to a transaction's updateFunction provides the methods to read and
@@ -11,14 +15,22 @@ export class GeoTransaction {
   /**
    * @param _transaction The `Transaction` instance.
    */
-  constructor(private _transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) {
+  constructor(
+    private _transaction:
+      | GeoFirestoreTypes.cloud.Transaction
+      | GeoFirestoreTypes.web.Transaction
+  ) {
     if (Object.prototype.toString.call(_transaction) !== '[object Object]') {
-      throw new Error('Transaction must be an instance of a Firestore Transaction');
+      throw new Error(
+        'Transaction must be an instance of a Firestore Transaction'
+      );
     }
   }
 
   /** The native `Transaction` instance. */
-  get native(): GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction {
+  get native():
+    | GeoFirestoreTypes.cloud.Transaction
+    | GeoFirestoreTypes.web.Transaction {
     return this._transaction;
   }
 
@@ -29,10 +41,14 @@ export class GeoTransaction {
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
   delete(
-    documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
+    documentRef:
+      | GeoDocumentReference
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference
   ): GeoTransaction {
-    const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    const ref = (documentRef instanceof GeoDocumentReference
+      ? documentRef['_document']
+      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).delete(ref);
     return this;
   }
@@ -44,11 +60,17 @@ export class GeoTransaction {
    * @return A GeoDocumentSnapshot for the read data.
    */
   get(
-    documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
+    documentRef:
+      | GeoDocumentReference
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference
   ): Promise<GeoDocumentSnapshot> {
-    const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
-    return (this._transaction as GeoFirestoreTypes.cloud.Transaction).get(ref).then(snpashot => new GeoDocumentSnapshot(snpashot));
+    const ref = (documentRef instanceof GeoDocumentReference
+      ? documentRef['_document']
+      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    return (this._transaction as GeoFirestoreTypes.cloud.Transaction)
+      .get(ref)
+      .then(snpashot => new GeoDocumentSnapshot(snpashot));
   }
 
   /**
@@ -62,15 +84,19 @@ export class GeoTransaction {
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
   set(
-    documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
+    documentRef:
+      | GeoDocumentReference
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): GeoTransaction {
-    const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    const ref = (documentRef instanceof GeoDocumentReference
+      ? documentRef['_document']
+      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
-      ref, 
-      encodeSetDocument(data, options), 
+      ref,
+      encodeSetDocument(data, options),
       sanitizeSetOptions(options)
     );
     return this;
@@ -87,13 +113,20 @@ export class GeoTransaction {
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
   update(
-    documentRef: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference,
+    documentRef:
+      | GeoDocumentReference
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
     customKey?: string
   ): GeoTransaction {
-    const ref = ((documentRef instanceof GeoDocumentReference) ?
-      documentRef['_document'] : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
-    (this._transaction as GeoFirestoreTypes.cloud.Transaction).update(ref, encodeUpdateDocument(data, customKey));
+    const ref = (documentRef instanceof GeoDocumentReference
+      ? documentRef['_document']
+      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    (this._transaction as GeoFirestoreTypes.cloud.Transaction).update(
+      ref,
+      encodeUpdateDocument(data, customKey)
+    );
     return this;
   }
 }

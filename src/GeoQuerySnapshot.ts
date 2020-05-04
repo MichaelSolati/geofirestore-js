@@ -1,5 +1,5 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { generateGeoQueryDocumentSnapshot, validateLocation } from './utils';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {generateGeoQueryDocumentSnapshot, validateLocation} from './utils';
 
 /**
  * A `GeoQuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects
@@ -16,20 +16,28 @@ export class GeoQuerySnapshot {
    * @param geoQueryCriteria The center and radius of geo based queries.
    */
   constructor(
-    private _querySnapshot: GeoFirestoreTypes.web.QuerySnapshot | GeoFirestoreTypes.cloud.QuerySnapshot,
-    private _center?: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint
+    private _querySnapshot:
+      | GeoFirestoreTypes.web.QuerySnapshot
+      | GeoFirestoreTypes.cloud.QuerySnapshot,
+    private _center?:
+      | GeoFirestoreTypes.cloud.GeoPoint
+      | GeoFirestoreTypes.web.GeoPoint
   ) {
     if (_center) {
       // Validate the _center coordinates
       validateLocation(_center);
     }
 
-    this._docs = (_querySnapshot as GeoFirestoreTypes.cloud.QuerySnapshot).docs
-      .map((snapshot: GeoFirestoreTypes.cloud.QueryDocumentSnapshot) => generateGeoQueryDocumentSnapshot(snapshot, _center));
+    this._docs = (_querySnapshot as GeoFirestoreTypes.cloud.QuerySnapshot).docs.map(
+      (snapshot: GeoFirestoreTypes.cloud.QueryDocumentSnapshot) =>
+        generateGeoQueryDocumentSnapshot(snapshot, _center)
+    );
   }
 
   /** The native `QuerySnapshot` instance. */
-  get native(): GeoFirestoreTypes.cloud.QuerySnapshot | GeoFirestoreTypes.web.QuerySnapshot {
+  get native():
+    | GeoFirestoreTypes.cloud.QuerySnapshot
+    | GeoFirestoreTypes.web.QuerySnapshot {
     return this._querySnapshot;
   }
 
@@ -52,21 +60,24 @@ export class GeoQuerySnapshot {
    * Returns an array of the documents changes since the last snapshot. If
    * this is the first snapshot, all documents will be in the list as added
    * changes.
-   * 
+   *
    * @returns Array of DocumentChanges.
    */
   docChanges(): GeoFirestoreTypes.DocumentChange[] {
-    const docChanges = Array.isArray(this._querySnapshot.docChanges) ?
-      this._querySnapshot.docChanges as any as GeoFirestoreTypes.web.DocumentChange[]: this._querySnapshot.docChanges();
-    return (docChanges as GeoFirestoreTypes.web.DocumentChange[])
-      .map((change: GeoFirestoreTypes.web.DocumentChange) => {
+    const docChanges = Array.isArray(this._querySnapshot.docChanges)
+      ? ((this._querySnapshot
+          .docChanges as any) as GeoFirestoreTypes.web.DocumentChange[])
+      : this._querySnapshot.docChanges();
+    return (docChanges as GeoFirestoreTypes.web.DocumentChange[]).map(
+      (change: GeoFirestoreTypes.web.DocumentChange) => {
         return {
           doc: generateGeoQueryDocumentSnapshot(change.doc, this._center),
           newIndex: change.newIndex,
           oldIndex: change.oldIndex,
-          type: change.type
+          type: change.type,
         };
-      });
+      }
+    );
   }
 
   /**
@@ -76,7 +87,10 @@ export class GeoQuerySnapshot {
    * each document in the snapshot.
    * @param thisArg The `this` binding for the callback.
    */
-  forEach(callback: (result: GeoFirestoreTypes.QueryDocumentSnapshot) => void, thisArg?: any): void {
+  forEach(
+    callback: (result: GeoFirestoreTypes.QueryDocumentSnapshot) => void,
+    thisArg?: any
+  ): void {
     this.docs.forEach(callback, thisArg);
   }
 }

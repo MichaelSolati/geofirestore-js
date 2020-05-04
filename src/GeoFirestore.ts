@@ -1,6 +1,6 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { GeoCollectionReference } from './GeoCollectionReference';
-import { GeoWriteBatch } from './GeoWriteBatch';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoCollectionReference} from './GeoCollectionReference';
+import {GeoWriteBatch} from './GeoWriteBatch';
 
 /**
  * `GeoFirestore` represents a Firestore Database and is the entry point for all GeoFirestore operations.
@@ -9,14 +9,20 @@ export class GeoFirestore {
   /**
    * @param _firestore Firestore represents a Firestore Database and is the entry point for all Firestore operations.
    */
-  constructor(private _firestore: GeoFirestoreTypes.web.Firestore | GeoFirestoreTypes.cloud.Firestore) {
+  constructor(
+    private _firestore:
+      | GeoFirestoreTypes.web.Firestore
+      | GeoFirestoreTypes.cloud.Firestore
+  ) {
     if (Object.prototype.toString.call(_firestore) !== '[object Object]') {
       throw new Error('Firestore must be an instance of Firestore');
     }
   }
 
   /** The native `Firestore` instance. */
-  get native(): GeoFirestoreTypes.cloud.Firestore | GeoFirestoreTypes.web.Firestore {
+  get native():
+    | GeoFirestoreTypes.cloud.Firestore
+    | GeoFirestoreTypes.web.Firestore {
     return this._firestore;
   }
 
@@ -36,7 +42,9 @@ export class GeoFirestore {
    * @return A new `GeoCollectionReference` instance.
    */
   collection(collectionPath: string): GeoCollectionReference {
-    return new GeoCollectionReference(this._firestore.collection(collectionPath));
+    return new GeoCollectionReference(
+      this._firestore.collection(collectionPath)
+    );
   }
 
   /**
@@ -50,7 +58,7 @@ export class GeoFirestore {
    * ```typescript
    * const geofirestore = new GeoFirestore(firebase.firestore());
    * const sfDocRef = geofirestore.collection('cities').doc('SF');
-   * 
+   *
    * geofirestore.runTransaction((transaction) => {
    *  // Immediateley create a `GeoTransaction` from the `transaction`
    *  const geotransaction = new GeoTransaction(transaction);
@@ -71,8 +79,15 @@ export class GeoFirestore {
    * corresponding failure error will be returned.
    */
   runTransaction(
-    updateFunction: (transaction: GeoFirestoreTypes.cloud.Transaction | GeoFirestoreTypes.web.Transaction) => Promise<any>
+    updateFunction: (
+      transaction:
+        | GeoFirestoreTypes.cloud.Transaction
+        | GeoFirestoreTypes.web.Transaction
+    ) => Promise<any>
   ): Promise<any> {
-    return (this._firestore as GeoFirestoreTypes.cloud.Firestore).runTransaction(updateFunction);
+    return (this
+      ._firestore as GeoFirestoreTypes.cloud.Firestore).runTransaction(
+      updateFunction
+    );
   }
 }

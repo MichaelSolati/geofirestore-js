@@ -1,8 +1,12 @@
-import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions } from './utils';
-import { GeoCollectionReference } from './GeoCollectionReference';
-import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
-import { GeoFirestore } from './GeoFirestore';
+import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {
+  encodeSetDocument,
+  encodeUpdateDocument,
+  sanitizeSetOptions,
+} from './utils';
+import {GeoCollectionReference} from './GeoCollectionReference';
+import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
+import {GeoFirestore} from './GeoFirestore';
 
 /**
  * A `GeoDocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen to the
@@ -15,16 +19,27 @@ export class GeoDocumentReference {
   /**
    * @param _document The `DocumentReference` instance.
    */
-  constructor(private _document: GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference) {
+  constructor(
+    private _document:
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference
+  ) {
     if (Object.prototype.toString.call(_document) !== '[object Object]') {
-      throw new Error('DocumentReference must be an instance of a Firestore DocumentReference');
+      throw new Error(
+        'DocumentReference must be an instance of a Firestore DocumentReference'
+      );
     }
-    this._isWeb = Object.prototype.toString
-      .call((_document as GeoFirestoreTypes.web.DocumentReference).firestore.enablePersistence) === '[object Function]';
+    this._isWeb =
+      Object.prototype.toString.call(
+        (_document as GeoFirestoreTypes.web.DocumentReference).firestore
+          .enablePersistence
+      ) === '[object Function]';
   }
 
   /** The native `DocumentReference` instance. */
-  get native(): GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference {
+  get native():
+    | GeoFirestoreTypes.cloud.DocumentReference
+    | GeoFirestoreTypes.web.DocumentReference {
     return this._document;
   }
 
@@ -47,11 +62,22 @@ export class GeoDocumentReference {
    * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
    * @return An unsubscribe function that can be called to cancel the snapshot listener.
    */
-  get onSnapshot(): ((onNext: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => () => void) {
-    return (onNext?: (snapshot: GeoDocumentSnapshot) => void, onError?: (error: Error) => void) => {
-      return (this._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot(
-        (snapshot) => onNext(new GeoDocumentSnapshot(snapshot)),
-        (error) => { if (onError) { onError(error); } }
+  get onSnapshot(): (
+    onNext: (snapshot: GeoDocumentSnapshot) => void,
+    onError?: (error: Error) => void
+  ) => () => void {
+    return (
+      onNext?: (snapshot: GeoDocumentSnapshot) => void,
+      onError?: (error: Error) => void
+    ) => {
+      return (this
+        ._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot(
+        snapshot => onNext(new GeoDocumentSnapshot(snapshot)),
+        error => {
+          if (onError) {
+            onError(error);
+          }
+        }
       );
     };
   }
@@ -77,7 +103,9 @@ export class GeoDocumentReference {
    * @return The `GeoCollectionReference` instance.
    */
   collection(collectionPath: string): GeoCollectionReference {
-    return new GeoCollectionReference(this._document.collection(collectionPath));
+    return new GeoCollectionReference(
+      this._document.collection(collectionPath)
+    );
   }
 
   /**
@@ -87,7 +115,9 @@ export class GeoDocumentReference {
    * offline).
    */
   delete(): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).delete().then(() => null);
+    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+      .delete()
+      .then(() => null);
   }
 
   /**
@@ -99,10 +129,16 @@ export class GeoDocumentReference {
    * @param options An object to configure the get behavior.
    * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
    */
-  get(options: GeoFirestoreTypes.web.GetOptions = { source: 'default' }): Promise<GeoDocumentSnapshot> {
-    return this._isWeb ?
-      (this._document as GeoFirestoreTypes.web.DocumentReference).get(options).then(snapshot => new GeoDocumentSnapshot(snapshot)) :
-      (this._document as GeoFirestoreTypes.cloud.DocumentReference).get().then(snapshot => new GeoDocumentSnapshot(snapshot));
+  get(
+    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
+  ): Promise<GeoDocumentSnapshot> {
+    return this._isWeb
+      ? (this._document as GeoFirestoreTypes.web.DocumentReference)
+          .get(options)
+          .then(snapshot => new GeoDocumentSnapshot(snapshot))
+      : (this._document as GeoFirestoreTypes.cloud.DocumentReference)
+          .get()
+          .then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 
   /**
@@ -112,13 +148,21 @@ export class GeoDocumentReference {
    * @return true if this `DocumentReference` or `GeoDocumentReference` is equal to the provided one.
    */
   isEqual(
-    other: GeoDocumentReference | GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference
+    other:
+      | GeoDocumentReference
+      | GeoFirestoreTypes.cloud.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference
   ): boolean {
     if (other instanceof GeoDocumentReference) {
-      return (this._document as GeoFirestoreTypes.cloud.DocumentReference)
-        .isEqual(other['_document'] as GeoFirestoreTypes.cloud.DocumentReference);
+      return (this
+        ._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(
+        other['_document'] as GeoFirestoreTypes.cloud.DocumentReference
+      );
     }
-    return (this._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(other as GeoFirestoreTypes.cloud.DocumentReference);
+    return (this
+      ._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(
+      other as GeoFirestoreTypes.cloud.DocumentReference
+    );
   }
 
   /**
@@ -129,11 +173,13 @@ export class GeoDocumentReference {
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
-  set(data: GeoFirestoreTypes.DocumentData, options?: GeoFirestoreTypes.SetOptions): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).set(
-      encodeSetDocument(data, options), 
-      sanitizeSetOptions(options)
-    ).then(() => null);
+  set(
+    data: GeoFirestoreTypes.DocumentData,
+    options?: GeoFirestoreTypes.SetOptions
+  ): Promise<void> {
+    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+      .set(encodeSetDocument(data, options), sanitizeSetOptions(options))
+      .then(() => null);
   }
 
   /**
@@ -145,7 +191,12 @@ export class GeoDocumentReference {
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
-  update(data: GeoFirestoreTypes.UpdateData, customKey?: string): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference).update(encodeUpdateDocument(data, customKey)).then(() => null);
+  update(
+    data: GeoFirestoreTypes.UpdateData,
+    customKey?: string
+  ): Promise<void> {
+    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+      .update(encodeUpdateDocument(data, customKey))
+      .then(() => null);
   }
 }

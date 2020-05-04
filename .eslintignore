@@ -1,0 +1,5 @@
+**/*.json
+**/*.js
+dist/
+node_modules/
+test/
