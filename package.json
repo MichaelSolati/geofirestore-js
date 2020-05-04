@@ -24,10 +24,10 @@
   "homepage": "https://geofirestore.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/geofirestore/geofirestore-js.git"
+    "url": "https://github.com/MichaelSolati/geofirestore-js.git"
   },
   "bugs": {
-    "url": "https://github.com/geofirestore/geofirestore-js/issues"
+    "url": "https://github.com/MichaelSolati/geofirestore-js/issues"
   },
   "readme": "README.md",
   "license": "MIT",

@@ -2,235 +2,235 @@
 
 ##### Bug Fixes
 
-* **typescript:**  rollback to typescript 3.6.x, fixes [#156](https://github.com/geofirestore/geofirestore-js/pull/156) ([21b40d62](https://github.com/geofirestore/geofirestore-js/commit/21b40d629319516d3f5f38e6333de9c92556b182))
+* **typescript:**  rollback to typescript 3.6.x, fixes [#156](https://github.com/MichaelSolati/geofirestore-js/pull/156) ([21b40d62](https://github.com/MichaelSolati/geofirestore-js/commit/21b40d629319516d3f5f38e6333de9c92556b182))
 
 ### 3.4.0 (2020-01-16)
 
 ##### Build System / Dependencies
 
 * **deps:**
-  *  bump mixin-deep from 1.3.1 to 1.3.2 ([1ba81a18](https://github.com/geofirestore/geofirestore-js/commit/1ba81a180bd3e752d91b525c29ad87e56d3d18e7))
-  *  bump mixin-deep from 1.3.1 to 1.3.2 ([676f0794](https://github.com/geofirestore/geofirestore-js/commit/676f0794d9d2483677b67530f10dcaa4dfa64549))
+  *  bump mixin-deep from 1.3.1 to 1.3.2 ([1ba81a18](https://github.com/MichaelSolati/geofirestore-js/commit/1ba81a180bd3e752d91b525c29ad87e56d3d18e7))
+  *  bump mixin-deep from 1.3.1 to 1.3.2 ([676f0794](https://github.com/MichaelSolati/geofirestore-js/commit/676f0794d9d2483677b67530f10dcaa4dfa64549))
 
 ##### Chores
 
-*  loosen and update dependencies, use google typescript style guide ([9d848d75](https://github.com/geofirestore/geofirestore-js/commit/9d848d75c203b2ffc5894772a3b5f38c1971befb))
-*  add `project.json` for firebaseopensource.com ([e0500546](https://github.com/geofirestore/geofirestore-js/commit/e05005464d16bc4538c4eacaedac72332af4ba6f))
-*  update dependencies ([e29f80d7](https://github.com/geofirestore/geofirestore-js/commit/e29f80d74ce3cc91b77bcc494fee745c9f9a03c9))
+*  loosen and update dependencies, use google typescript style guide ([9d848d75](https://github.com/MichaelSolati/geofirestore-js/commit/9d848d75c203b2ffc5894772a3b5f38c1971befb))
+*  add `project.json` for firebaseopensource.com ([e0500546](https://github.com/MichaelSolati/geofirestore-js/commit/e05005464d16bc4538c4eacaedac72332af4ba6f))
+*  update dependencies ([e29f80d7](https://github.com/MichaelSolati/geofirestore-js/commit/e29f80d74ce3cc91b77bcc494fee745c9f9a03c9))
 
 ##### Documentation Changes
 
-*  fix typo ([6548096e](https://github.com/geofirestore/geofirestore-js/commit/6548096ed5bdc29c68381c5b3d3154b2ff09be09))
-*  fix typo in README ([bd8a9389](https://github.com/geofirestore/geofirestore-js/commit/bd8a938904c49ef0bb23815bc4737c5ceccae93c))
-* **README:**  add example to add a GeoDocument, fixes [#134](https://github.com/geofirestore/geofirestore-js/pull/134) ([e7c5d136](https://github.com/geofirestore/geofirestore-js/commit/e7c5d1362cf2a4284385a442d7fef3a455f4d465))
+*  fix typo ([6548096e](https://github.com/MichaelSolati/geofirestore-js/commit/6548096ed5bdc29c68381c5b3d3154b2ff09be09))
+*  fix typo in README ([bd8a9389](https://github.com/MichaelSolati/geofirestore-js/commit/bd8a938904c49ef0bb23815bc4737c5ceccae93c))
+* **README:**  add example to add a GeoDocument, fixes [#134](https://github.com/MichaelSolati/geofirestore-js/pull/134) ([e7c5d136](https://github.com/MichaelSolati/geofirestore-js/commit/e7c5d1362cf2a4284385a442d7fef3a455f4d465))
 
 ##### New Features
 
-*  expose `native` classes ([29ef5c4a](https://github.com/geofirestore/geofirestore-js/commit/29ef5c4ade42ce4ce2ffa414d09c0fb8a16f04a5))
+*  expose `native` classes ([29ef5c4a](https://github.com/MichaelSolati/geofirestore-js/commit/29ef5c4ade42ce4ce2ffa414d09c0fb8a16f04a5))
 
 ##### Bug Fixes
 
-*  set `postinstall` to `pretest` for npm installs ([1fa16169](https://github.com/geofirestore/geofirestore-js/commit/1fa16169767f9c2dd9d1e5d2000d5609430bba35))
+*  set `postinstall` to `pretest` for npm installs ([1fa16169](https://github.com/MichaelSolati/geofirestore-js/commit/1fa16169767f9c2dd9d1e5d2000d5609430bba35))
 
 ##### Tests
 
-*  fix typing issues in tests ([d2131b5e](https://github.com/geofirestore/geofirestore-js/commit/d2131b5ef0cae26fabbc5a19294edc8cc45a4117))
+*  fix typing issues in tests ([d2131b5e](https://github.com/MichaelSolati/geofirestore-js/commit/d2131b5ef0cae26fabbc5a19294edc8cc45a4117))
 
 #### 3.3.1 (2019-05-16)
 
 ##### Build System / Dependencies
 
-*  copy modified `protobufjs` module into `@firebase/firestore`'s node modules ([6b05ccfc](https://github.com/geofirestore/geofirestore-js/commit/6b05ccfc320fab9c728870290f532dbc8ed19653))
+*  copy modified `protobufjs` module into `@firebase/firestore`'s node modules ([6b05ccfc](https://github.com/MichaelSolati/geofirestore-js/commit/6b05ccfc320fab9c728870290f532dbc8ed19653))
 
 ##### Chores
 
-*  extend support for firebase 6.x.x ([d0080f1a](https://github.com/geofirestore/geofirestore-js/commit/d0080f1ac0e57f9022b61e820b0b5c8c983c70ce))
+*  extend support for firebase 6.x.x ([d0080f1a](https://github.com/MichaelSolati/geofirestore-js/commit/d0080f1ac0e57f9022b61e820b0b5c8c983c70ce))
 
 ##### Documentation Changes
 
-* **README:**  update CDN and import sample ([256df9b7](https://github.com/geofirestore/geofirestore-js/commit/256df9b7107a50a161a4d354510bc99d442d1bf0))
+* **README:**  update CDN and import sample ([256df9b7](https://github.com/MichaelSolati/geofirestore-js/commit/256df9b7107a50a161a4d354510bc99d442d1bf0))
 
 ##### Bug Fixes
 
-* **GeoQuery:**  check if typeof `_radius` is "undefined" incase it is set to 0, fixes [#102](https://github.com/geofirestore/geofirestore-js/pull/102) ([62682118](https://github.com/geofirestore/geofirestore-js/commit/626821187c49c66ce23c6a146b872eee58b58295))
+* **GeoQuery:**  check if typeof `_radius` is "undefined" incase it is set to 0, fixes [#102](https://github.com/MichaelSolati/geofirestore-js/pull/102) ([62682118](https://github.com/MichaelSolati/geofirestore-js/commit/626821187c49c66ce23c6a146b872eee58b58295))
 
 ### 3.3.0 (2019-04-23)
 
 ##### Chores
 
-*  tighten firestore rules ([941a8dd8](https://github.com/geofirestore/geofirestore-js/commit/941a8dd8dfd73400b005d3f96f7fbdadca7b6d74))
+*  tighten firestore rules ([941a8dd8](https://github.com/MichaelSolati/geofirestore-js/commit/941a8dd8dfd73400b005d3f96f7fbdadca7b6d74))
 
 ##### New Features
 
-* **findCoordinates:**  `findCoordinatesKey` now `findCoordinates` as it returns GeoPoint rather than the key of the GeoPoint, can also find embedded keys, fixes [#88](https://github.com/geofirestore/geofirestore-js/pull/88) ([94161a4e](https://github.com/geofirestore/geofirestore-js/commit/94161a4e996ec4c9cb93c58201b67793e4b785b3))
+* **findCoordinates:**  `findCoordinatesKey` now `findCoordinates` as it returns GeoPoint rather than the key of the GeoPoint, can also find embedded keys, fixes [#88](https://github.com/MichaelSolati/geofirestore-js/pull/88) ([94161a4e](https://github.com/MichaelSolati/geofirestore-js/commit/94161a4e996ec4c9cb93c58201b67793e4b785b3))
 
 ##### Bug Fixes
 
-*  very small typo in README ([69c9ae19](https://github.com/geofirestore/geofirestore-js/commit/69c9ae19c41aeba620815db035ea8a3e38adebc8))
-*  very small typo in README ([f2266663](https://github.com/geofirestore/geofirestore-js/commit/f2266663d37e3da7c88b1d49327965600af49021))
+*  very small typo in README ([69c9ae19](https://github.com/MichaelSolati/geofirestore-js/commit/69c9ae19c41aeba620815db035ea8a3e38adebc8))
+*  very small typo in README ([f2266663](https://github.com/MichaelSolati/geofirestore-js/commit/f2266663d37e3da7c88b1d49327965600af49021))
 
 ##### Refactors
 
-* **examples:**  update viewers firebase version and separate add/update functions ([f90c4cab](https://github.com/geofirestore/geofirestore-js/commit/f90c4cab381e29c8d9345973ad90c53512c35257))
+* **examples:**  update viewers firebase version and separate add/update functions ([f90c4cab](https://github.com/MichaelSolati/geofirestore-js/commit/f90c4cab381e29c8d9345973ad90c53512c35257))
 
 #### 3.2.3 (2019-03-26)
 
 ##### Bug Fixes
 
-*  sanitize `customKey` in `set` methods ([cee17d76](https://github.com/geofirestore/geofirestore-js/commit/cee17d76475a39738df2b719f82fcf1236b00232))
+*  sanitize `customKey` in `set` methods ([cee17d76](https://github.com/MichaelSolati/geofirestore-js/commit/cee17d76475a39738df2b719f82fcf1236b00232))
 
 ##### Refactors
 
-* **test:**  lint test code ([1ed836a3](https://github.com/geofirestore/geofirestore-js/commit/1ed836a3295cadfa25bfa01c356375227d36cf91))
+* **test:**  lint test code ([1ed836a3](https://github.com/MichaelSolati/geofirestore-js/commit/1ed836a3295cadfa25bfa01c356375227d36cf91))
 
 #### 3.2.2 (2019-02-17)
 
 ##### Bug Fixes
 
-* **react-native-firebase:**  check if `docChanges` is an array ([fc1622e4](https://github.com/geofirestore/geofirestore-js/commit/fc1622e41a6afb9aa98c2be85e3b9bcd354506b4))
+* **react-native-firebase:**  check if `docChanges` is an array ([fc1622e4](https://github.com/MichaelSolati/geofirestore-js/commit/fc1622e41a6afb9aa98c2be85e3b9bcd354506b4))
 
 #### 3.2.1 (2019-02-11)
 
 ##### Chores
 
-* **package.json:**  update homepage ([52df32b2](https://github.com/geofirestore/geofirestore-js/commit/52df32b2543ac974d1163fec52a502ddf838bd63))
+* **package.json:**  update homepage ([52df32b2](https://github.com/MichaelSolati/geofirestore-js/commit/52df32b2543ac974d1163fec52a502ddf838bd63))
 
 ##### Bug Fixes
 
-* **travis:**  fix `after_deploy` script ([eaef13ef](https://github.com/geofirestore/geofirestore-js/commit/eaef13efced565bd3bde743c0388a33384484313))
+* **travis:**  fix `after_deploy` script ([eaef13ef](https://github.com/MichaelSolati/geofirestore-js/commit/eaef13efced565bd3bde743c0388a33384484313))
 
 ### 3.2.0 (2019-02-10)
 
 ##### Build System / Dependencies
 
-* **rollup:**  change copy plugin for `GeoFirestoreTypes.ts` ([2a585845](https://github.com/geofirestore/geofirestore-js/commit/2a585845e1b6fe1682c22e9380629cef3e591031))
+* **rollup:**  change copy plugin for `GeoFirestoreTypes.ts` ([2a585845](https://github.com/MichaelSolati/geofirestore-js/commit/2a585845e1b6fe1682c22e9380629cef3e591031))
 
 ##### Chores
 
-*  update dependencies ([ca387c00](https://github.com/geofirestore/geofirestore-js/commit/ca387c0004b06f2f9a879ea42e9e9c599721326b))
+*  update dependencies ([ca387c00](https://github.com/MichaelSolati/geofirestore-js/commit/ca387c0004b06f2f9a879ea42e9e9c599721326b))
 
 ##### Documentation Changes
 
-*  add details to `README.md` and a code example for `runTransaction` ([167e0728](https://github.com/geofirestore/geofirestore-js/commit/167e0728d3fe1610bb817e9572e771e175606018))
+*  add details to `README.md` and a code example for `runTransaction` ([167e0728](https://github.com/MichaelSolati/geofirestore-js/commit/167e0728d3fe1610bb817e9572e771e175606018))
 
 ##### New Features
 
 * **GeoTransaction:**
-  *  add remaining transaction functions ([6b1bbb8b](https://github.com/geofirestore/geofirestore-js/commit/6b1bbb8bb60260ff63dac0a4592d2fa95a34714b))
-  *  add delete function ([e48a7427](https://github.com/geofirestore/geofirestore-js/commit/e48a742728c6ae2987deb802cf9b25c377aca9d8))
-  *  stub GeoTransaction class ([0b68729e](https://github.com/geofirestore/geofirestore-js/commit/0b68729eaac78d57a8a379ff561c03fe47451e9e))
+  *  add remaining transaction functions ([6b1bbb8b](https://github.com/MichaelSolati/geofirestore-js/commit/6b1bbb8bb60260ff63dac0a4592d2fa95a34714b))
+  *  add delete function ([e48a7427](https://github.com/MichaelSolati/geofirestore-js/commit/e48a742728c6ae2987deb802cf9b25c377aca9d8))
+  *  stub GeoTransaction class ([0b68729e](https://github.com/MichaelSolati/geofirestore-js/commit/0b68729eaac78d57a8a379ff561c03fe47451e9e))
 
 ##### Bug Fixes
 
-* **GeoFirestoreTypes:**  ignore `no-shadowed-variable` tslint rule, fixes [#83](https://github.com/geofirestore/geofirestore-js/pull/83) ([5e8684e5](https://github.com/geofirestore/geofirestore-js/commit/5e8684e5cb4319b7ec14cef57994c9fb38133836))
+* **GeoFirestoreTypes:**  ignore `no-shadowed-variable` tslint rule, fixes [#83](https://github.com/MichaelSolati/geofirestore-js/pull/83) ([5e8684e5](https://github.com/MichaelSolati/geofirestore-js/commit/5e8684e5cb4319b7ec14cef57994c9fb38133836))
 
 ##### Refactors
 
-* **GeoDocumentReference:**  reorder functions ([cc8cf1bf](https://github.com/geofirestore/geofirestore-js/commit/cc8cf1bfe8f3eb82205e781209077e3f0a181b5f))
-* **GeoQuery:**  where() -> startAt() ([51be1b20](https://github.com/geofirestore/geofirestore-js/commit/51be1b20075f2bbbab7fc3424f06af9ce5997849))
+* **GeoDocumentReference:**  reorder functions ([cc8cf1bf](https://github.com/MichaelSolati/geofirestore-js/commit/cc8cf1bfe8f3eb82205e781209077e3f0a181b5f))
+* **GeoQuery:**  where() -> startAt() ([51be1b20](https://github.com/MichaelSolati/geofirestore-js/commit/51be1b20075f2bbbab7fc3424f06af9ce5997849))
 
 ##### Tests
 
 * **GeoTransaction:**
-  *  adjust timing of promise resolution, fixes [#72](https://github.com/geofirestore/geofirestore-js/pull/72) ([4d668500](https://github.com/geofirestore/geofirestore-js/commit/4d668500ec0c0624d657b1900f9fcae06f6dfde8))
-  *  bring coverage to 100% ([b9a63743](https://github.com/geofirestore/geofirestore-js/commit/b9a63743c7901febc4653be2e27551a4fe40c35f))
-* **GeoFirestore:**  add tests for `runTransaction` ([23f59ce8](https://github.com/geofirestore/geofirestore-js/commit/23f59ce85640ed7b78e66ec239e5936894b90e6b))
+  *  adjust timing of promise resolution, fixes [#72](https://github.com/MichaelSolati/geofirestore-js/pull/72) ([4d668500](https://github.com/MichaelSolati/geofirestore-js/commit/4d668500ec0c0624d657b1900f9fcae06f6dfde8))
+  *  bring coverage to 100% ([b9a63743](https://github.com/MichaelSolati/geofirestore-js/commit/b9a63743c7901febc4653be2e27551a4fe40c35f))
+* **GeoFirestore:**  add tests for `runTransaction` ([23f59ce8](https://github.com/MichaelSolati/geofirestore-js/commit/23f59ce85640ed7b78e66ec239e5936894b90e6b))
 
 ### 3.1.0 (2019-01-19)
 
 ##### Documentation Changes
 
 * **README:**
-  *  added limitations, fixes [#75](https://github.com/geofirestore/geofirestore-js/pull/75) ([aa5e320f](https://github.com/geofirestore/geofirestore-js/commit/aa5e320fb2d6ef422527c55f826e3b29bf1fb836))
-  *  Added limitations ([659e2310](https://github.com/geofirestore/geofirestore-js/commit/659e2310413b18fe624ec90f5c0ff8c1ee70d363))
+  *  added limitations, fixes [#75](https://github.com/MichaelSolati/geofirestore-js/pull/75) ([aa5e320f](https://github.com/MichaelSolati/geofirestore-js/commit/aa5e320fb2d6ef422527c55f826e3b29bf1fb836))
+  *  Added limitations ([659e2310](https://github.com/MichaelSolati/geofirestore-js/commit/659e2310413b18fe624ec90f5c0ff8c1ee70d363))
 
 ##### New Features
 
-* **GeoQuery:**  expose limit function, fixes [#68](https://github.com/geofirestore/geofirestore-js/pull/68) [#26](https://github.com/geofirestore/geofirestore-js/pull/26) [#8](https://github.com/geofirestore/geofirestore-js/pull/8) ([5fb5de08](https://github.com/geofirestore/geofirestore-js/commit/5fb5de08833a6fe447a48b848e8baef8c7212767))
+* **GeoQuery:**  expose limit function, fixes [#68](https://github.com/MichaelSolati/geofirestore-js/pull/68) [#26](https://github.com/MichaelSolati/geofirestore-js/pull/26) [#8](https://github.com/MichaelSolati/geofirestore-js/pull/8) ([5fb5de08](https://github.com/MichaelSolati/geofirestore-js/commit/5fb5de08833a6fe447a48b848e8baef8c7212767))
 
 ##### Bug Fixes
 
 * **GeoJoinerOnSnapshot:**
-  *  remove unchanged docs from ([133e3d60](https://github.com/geofirestore/geofirestore-js/commit/133e3d603c2b7a63b60c5383f1131b0e44b2e5cc))
-  *  return properly computed `oldIndex` and `newIndex` ([ad9c657b](https://github.com/geofirestore/geofirestore-js/commit/ad9c657b6a7968695e1fd8f0f137cb02c2157584))
+  *  remove unchanged docs from ([133e3d60](https://github.com/MichaelSolati/geofirestore-js/commit/133e3d603c2b7a63b60c5383f1131b0e44b2e5cc))
+  *  return properly computed `oldIndex` and `newIndex` ([ad9c657b](https://github.com/MichaelSolati/geofirestore-js/commit/ad9c657b6a7968695e1fd8f0f137cb02c2157584))
 
 ##### Tests
 
-* **GeoQuery:**  add tests for new `limit` method ([d524789c](https://github.com/geofirestore/geofirestore-js/commit/d524789c8f27fc5d95e6fedd32600098d1bf37bb))
+* **GeoQuery:**  add tests for new `limit` method ([d524789c](https://github.com/MichaelSolati/geofirestore-js/commit/d524789c8f27fc5d95e6fedd32600098d1bf37bb))
 
 #### 3.0.2 (2019-01-15)
 
 ##### Chores
 
-*  update dev dependencies ([92a4c7b6](https://github.com/geofirestore/geofirestore-js/commit/92a4c7b6fda2b0b6c4081dd6dcea77570f289259))
+*  update dev dependencies ([92a4c7b6](https://github.com/MichaelSolati/geofirestore-js/commit/92a4c7b6fda2b0b6c4081dd6dcea77570f289259))
 
 ##### Bug Fixes
 
-* **GeoJoinerOnSnapshot:**  emit snapshot on empty queries and update docs array when doc removed, fixes [#73](https://github.com/geofirestore/geofirestore-js/pull/73) ([85f2e260](https://github.com/geofirestore/geofirestore-js/commit/85f2e2605ac69a08c6653a53ae8160e3f151883f))
+* **GeoJoinerOnSnapshot:**  emit snapshot on empty queries and update docs array when doc removed, fixes [#73](https://github.com/MichaelSolati/geofirestore-js/pull/73) ([85f2e260](https://github.com/MichaelSolati/geofirestore-js/commit/85f2e2605ac69a08c6653a53ae8160e3f151883f))
 
 #### 3.0.1 (2019-01-03)
 
 ##### Chores
 
-*  update dev dependencies ([b2ae17f4](https://github.com/geofirestore/geofirestore-js/commit/b2ae17f44cde95e421a45412122c9332907e9815))
+*  update dev dependencies ([b2ae17f4](https://github.com/MichaelSolati/geofirestore-js/commit/b2ae17f44cde95e421a45412122c9332907e9815))
 
 ##### Documentation Changes
 
-* **README:**  fix typo and add dependency badge, fixes [#69](https://github.com/geofirestore/geofirestore-js/pull/69) ([55fd7bd3](https://github.com/geofirestore/geofirestore-js/commit/55fd7bd39c6276c069d4c22bb12d819299e81b54))
+* **README:**  fix typo and add dependency badge, fixes [#69](https://github.com/MichaelSolati/geofirestore-js/pull/69) ([55fd7bd3](https://github.com/MichaelSolati/geofirestore-js/commit/55fd7bd39c6276c069d4c22bb12d819299e81b54))
 
 ## 3.0.0 (2019-01-02)
 
 ##### Chores
 
 * **README:**
-  *  add some badges ([d1f2c220](https://github.com/geofirestore/geofirestore-js/commit/d1f2c220157dc9065bb914b575d5c314a0169ef7))
-  *  update badges ([bb2aa25f](https://github.com/geofirestore/geofirestore-js/commit/bb2aa25fa6bc5e23d6d4805a982b35fa0a056926))
-* **examples:**  update viewers example ([aed1a369](https://github.com/geofirestore/geofirestore-js/commit/aed1a36903717ae8aa15f3993d46adf6b86944c9))
-*  update dependencies and typings ([36cd49d3](https://github.com/geofirestore/geofirestore-js/commit/36cd49d33bbaa1c2f116c00abccb3d551a3512ee))
-*  generate and deploy docs site ([5273128f](https://github.com/geofirestore/geofirestore-js/commit/5273128f8dad518de10130808d44fa9b99931afd))
+  *  add some badges ([d1f2c220](https://github.com/MichaelSolati/geofirestore-js/commit/d1f2c220157dc9065bb914b575d5c314a0169ef7))
+  *  update badges ([bb2aa25f](https://github.com/MichaelSolati/geofirestore-js/commit/bb2aa25fa6bc5e23d6d4805a982b35fa0a056926))
+* **examples:**  update viewers example ([aed1a369](https://github.com/MichaelSolati/geofirestore-js/commit/aed1a36903717ae8aa15f3993d46adf6b86944c9))
+*  update dependencies and typings ([36cd49d3](https://github.com/MichaelSolati/geofirestore-js/commit/36cd49d33bbaa1c2f116c00abccb3d551a3512ee))
+*  generate and deploy docs site ([5273128f](https://github.com/MichaelSolati/geofirestore-js/commit/5273128f8dad518de10130808d44fa9b99931afd))
 
 ##### Documentation Changes
 
-*  update README.md to reference https://geofirestore.com, as well as other tweaks ([d07efafc](https://github.com/geofirestore/geofirestore-js/commit/d07efafc765ba1ee7037c287207ef1564e34a3e7))
-*  fix up docs and max all lines to 140 characters ([06af76c7](https://github.com/geofirestore/geofirestore-js/commit/06af76c77f9d4af56a5e9216ff33b9dc7a435eae))
+*  update README.md to reference https://geofirestore.com, as well as other tweaks ([d07efafc](https://github.com/MichaelSolati/geofirestore-js/commit/d07efafc765ba1ee7037c287207ef1564e34a3e7))
+*  fix up docs and max all lines to 140 characters ([06af76c7](https://github.com/MichaelSolati/geofirestore-js/commit/06af76c77f9d4af56a5e9216ff33b9dc7a435eae))
 
 ##### New Features
 
-* **GeoJoinerGet:**  move join logic of `get` functions to own class with logic to filter out items not in radius of query ([5716654a](https://github.com/geofirestore/geofirestore-js/commit/5716654a63078d3a5f852a4a3d5a34a9d9fe4f55))
-* **GeoJoinerOnSnapshot:**  add ability to join `GeoQuerySnapshot` events from `onSnapshot` ([ba829244](https://github.com/geofirestore/geofirestore-js/commit/ba8292448c15612fa880ddb6079bea817c8e5b53))
-* **GeoDocumentSnapshot:**  add GeoDocumentSnapshot for for doc references and queries ([1abb499b](https://github.com/geofirestore/geofirestore-js/commit/1abb499b0147144fc5c7c0ea386217cddffe4203))
-* **GeoDocumentReference:**  add GeoDocumentReference for returns of doc and add ([9a5af9a5](https://github.com/geofirestore/geofirestore-js/commit/9a5af9a54aa463aec84dd436d29bcc9ad3f34e06))
-* **GeoQuery:**  implement remaining Firestore Query functions ([3cd3e0e3](https://github.com/geofirestore/geofirestore-js/commit/3cd3e0e33efe28d9f6a8dcc69d8bde70ced91701))
-* **GeoWriteBatch:**  add batch functionality to geofirestore ([f01de430](https://github.com/geofirestore/geofirestore-js/commit/f01de430bb6cdf8e924980afd2feb91519787825))
-* **GeoQuerySnapshot:**  filter out locations not in query ([b0ce13cb](https://github.com/geofirestore/geofirestore-js/commit/b0ce13cb317af14dd5b671695d618415b299ad7d))
-* **GeoFirestore:**  start rewrite to better align library to firestore sdk ([bf1d4273](https://github.com/geofirestore/geofirestore-js/commit/bf1d4273170e593ddef1da0d2c0fcbeef0e88586))
+* **GeoJoinerGet:**  move join logic of `get` functions to own class with logic to filter out items not in radius of query ([5716654a](https://github.com/MichaelSolati/geofirestore-js/commit/5716654a63078d3a5f852a4a3d5a34a9d9fe4f55))
+* **GeoJoinerOnSnapshot:**  add ability to join `GeoQuerySnapshot` events from `onSnapshot` ([ba829244](https://github.com/MichaelSolati/geofirestore-js/commit/ba8292448c15612fa880ddb6079bea817c8e5b53))
+* **GeoDocumentSnapshot:**  add GeoDocumentSnapshot for for doc references and queries ([1abb499b](https://github.com/MichaelSolati/geofirestore-js/commit/1abb499b0147144fc5c7c0ea386217cddffe4203))
+* **GeoDocumentReference:**  add GeoDocumentReference for returns of doc and add ([9a5af9a5](https://github.com/MichaelSolati/geofirestore-js/commit/9a5af9a54aa463aec84dd436d29bcc9ad3f34e06))
+* **GeoQuery:**  implement remaining Firestore Query functions ([3cd3e0e3](https://github.com/MichaelSolati/geofirestore-js/commit/3cd3e0e33efe28d9f6a8dcc69d8bde70ced91701))
+* **GeoWriteBatch:**  add batch functionality to geofirestore ([f01de430](https://github.com/MichaelSolati/geofirestore-js/commit/f01de430bb6cdf8e924980afd2feb91519787825))
+* **GeoQuerySnapshot:**  filter out locations not in query ([b0ce13cb](https://github.com/MichaelSolati/geofirestore-js/commit/b0ce13cb317af14dd5b671695d618415b299ad7d))
+* **GeoFirestore:**  start rewrite to better align library to firestore sdk ([bf1d4273](https://github.com/MichaelSolati/geofirestore-js/commit/bf1d4273170e593ddef1da0d2c0fcbeef0e88586))
 
 ##### Bug Fixes
 
-* **GeoFirestoreTypes:**  DocumentChange `doc` should return QueryDocumentSnapshot ([3b2e5d6c](https://github.com/geofirestore/geofirestore-js/commit/3b2e5d6cfc051c77c88e81471ccb58f929eeba9d))
-* **GeoDocumentReference:**  fix update function to use encodeUpdateDocument util function ([97baf212](https://github.com/geofirestore/geofirestore-js/commit/97baf212f41442264190806f7523fcdb7daa9864))
-* **GeoWriteBatch:**  fix update function to use fieldNames ([e27e668a](https://github.com/geofirestore/geofirestore-js/commit/e27e668ad89bb83bc6096fb93e147b0a584cf365))
+* **GeoFirestoreTypes:**  DocumentChange `doc` should return QueryDocumentSnapshot ([3b2e5d6c](https://github.com/MichaelSolati/geofirestore-js/commit/3b2e5d6cfc051c77c88e81471ccb58f929eeba9d))
+* **GeoDocumentReference:**  fix update function to use encodeUpdateDocument util function ([97baf212](https://github.com/MichaelSolati/geofirestore-js/commit/97baf212f41442264190806f7523fcdb7daa9864))
+* **GeoWriteBatch:**  fix update function to use fieldNames ([e27e668a](https://github.com/MichaelSolati/geofirestore-js/commit/e27e668ad89bb83bc6096fb93e147b0a584cf365))
 
 ##### Refactors
 
-*  small change to `onSnapshot` and how geoqueries are generated ([7beffe69](https://github.com/geofirestore/geofirestore-js/commit/7beffe691588fa9db871cde3e95554624e141230))
-*  simply GeoFirestoreTypes and remove incompatible GeoQuery functions ([0edef6de](https://github.com/geofirestore/geofirestore-js/commit/0edef6de4a1bf374c9e52606725a59a520376714))
-* **GeoQuery:**  remove unneeded function ([76fa5af1](https://github.com/geofirestore/geofirestore-js/commit/76fa5af10ed8b4aca8348380c7e991cc42919df3))
-* **GeoFirestoreTypes:**  rename and put together all interfaces into GeoFirestoreTypes ([9141fb37](https://github.com/geofirestore/geofirestore-js/commit/9141fb373dedcfd9006ef087a9c1c39efd8af3bb))
+*  small change to `onSnapshot` and how geoqueries are generated ([7beffe69](https://github.com/MichaelSolati/geofirestore-js/commit/7beffe691588fa9db871cde3e95554624e141230))
+*  simply GeoFirestoreTypes and remove incompatible GeoQuery functions ([0edef6de](https://github.com/MichaelSolati/geofirestore-js/commit/0edef6de4a1bf374c9e52606725a59a520376714))
+* **GeoQuery:**  remove unneeded function ([76fa5af1](https://github.com/MichaelSolati/geofirestore-js/commit/76fa5af10ed8b4aca8348380c7e991cc42919df3))
+* **GeoFirestoreTypes:**  rename and put together all interfaces into GeoFirestoreTypes ([9141fb37](https://github.com/MichaelSolati/geofirestore-js/commit/9141fb373dedcfd9006ef087a9c1c39efd8af3bb))
 
 ##### Tests
 
-* **GeoJoinerOnSnapshot:**  increase code coverage ([27803b3a](https://github.com/geofirestore/geofirestore-js/commit/27803b3a6eb8616268a4328f654d39da1f009bfb))
-* **utils:**  add code coverage for utils ([7872c290](https://github.com/geofirestore/geofirestore-js/commit/7872c290b406ca7d92ff3bae4bfc324e3d213357))
-* **GeoDocumentSnapshot:**  bring coverage to 100% ([5caa5b10](https://github.com/geofirestore/geofirestore-js/commit/5caa5b1008618fb7e59e7a2cbb57d7264f21f0b7))
-* **GeoDocumentReference:**  increase code coverage ([e9811ad1](https://github.com/geofirestore/geofirestore-js/commit/e9811ad13c989cf0b920ec1ff0b0dfb27e95d9d7))
-* **GeoQuerySnapshot:**  bring coverage to 100% ([51122f9d](https://github.com/geofirestore/geofirestore-js/commit/51122f9d1a13ae5105ee17a218ebe8d6ebf11e09))
+* **GeoJoinerOnSnapshot:**  increase code coverage ([27803b3a](https://github.com/MichaelSolati/geofirestore-js/commit/27803b3a6eb8616268a4328f654d39da1f009bfb))
+* **utils:**  add code coverage for utils ([7872c290](https://github.com/MichaelSolati/geofirestore-js/commit/7872c290b406ca7d92ff3bae4bfc324e3d213357))
+* **GeoDocumentSnapshot:**  bring coverage to 100% ([5caa5b10](https://github.com/MichaelSolati/geofirestore-js/commit/5caa5b1008618fb7e59e7a2cbb57d7264f21f0b7))
+* **GeoDocumentReference:**  increase code coverage ([e9811ad1](https://github.com/MichaelSolati/geofirestore-js/commit/e9811ad13c989cf0b920ec1ff0b0dfb27e95d9d7))
+* **GeoQuerySnapshot:**  bring coverage to 100% ([51122f9d](https://github.com/MichaelSolati/geofirestore-js/commit/51122f9d1a13ae5105ee17a218ebe8d6ebf11e09))
 * **GeoQuery:**
-  *  bring coverage to 100% ([6252222b](https://github.com/geofirestore/geofirestore-js/commit/6252222b569fbb159b69949800e705d29131d0aa))
-  *  add basic tests for GeoQuery ([56cc5c44](https://github.com/geofirestore/geofirestore-js/commit/56cc5c44d0217e3f9a4a3f96a1da31c6bc76e351))
-* **GeoCollectionReference:**  bring coverage to 100% ([47a17f6e](https://github.com/geofirestore/geofirestore-js/commit/47a17f6e0a938b4d5328a6594876c94bff7939c0))
-* **GeoWriteBatch:**  create basic tests for GeoWriteBatch ([687c3061](https://github.com/geofirestore/geofirestore-js/commit/687c306153f434bcc59b1c1739e98b9954fecc78))
-* **GeoFirestore:**  add basic tests for new GeoFirestore ([74f97d75](https://github.com/geofirestore/geofirestore-js/commit/74f97d75d40b283856cd1ef10128bfffd8f47911))
+  *  bring coverage to 100% ([6252222b](https://github.com/MichaelSolati/geofirestore-js/commit/6252222b569fbb159b69949800e705d29131d0aa))
+  *  add basic tests for GeoQuery ([56cc5c44](https://github.com/MichaelSolati/geofirestore-js/commit/56cc5c44d0217e3f9a4a3f96a1da31c6bc76e351))
+* **GeoCollectionReference:**  bring coverage to 100% ([47a17f6e](https://github.com/MichaelSolati/geofirestore-js/commit/47a17f6e0a938b4d5328a6594876c94bff7939c0))
+* **GeoWriteBatch:**  create basic tests for GeoWriteBatch ([687c3061](https://github.com/MichaelSolati/geofirestore-js/commit/687c306153f434bcc59b1c1739e98b9954fecc78))
+* **GeoFirestore:**  add basic tests for new GeoFirestore ([74f97d75](https://github.com/MichaelSolati/geofirestore-js/commit/74f97d75d40b283856cd1ef10128bfffd8f47911))
 
 ### 2.4.0 (2018-12-31)
 
