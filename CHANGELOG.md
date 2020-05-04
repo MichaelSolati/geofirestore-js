@@ -1,3 +1,20 @@
+#### 3.4.2 (2020-05-04)
+
+##### Build System / Dependencies
+
+* **deps:**
+  *  bump jquery from 3.4.1 to 3.5.0 ([#172](https://github.com/MichaelSolati/geofirestore-js/pull/172)) ([326ddaa1](https://github.com/MichaelSolati/geofirestore-js/commit/326ddaa13bbdbb6f4511afcce1ae0ba5b326776d))
+  *  bump acorn from 6.4.0 to 6.4.1 ([419e62ef](https://github.com/MichaelSolati/geofirestore-js/commit/419e62ef0d05c66bfbd0f280817f134ecbd1006a))
+
+##### Chores
+
+*  update GitHub repository ([b8a315c8](https://github.com/MichaelSolati/geofirestore-js/commit/b8a315c8a1fd6a87110fd38ab8f13727b883aba7))
+*  update dependencies ([02f42a5e](https://github.com/MichaelSolati/geofirestore-js/commit/02f42a5e0cebd6b184c6d5260bab9a549a90a0ea))
+
+##### Tests
+
+*  update linter ([b1ea40cd](https://github.com/MichaelSolati/geofirestore-js/commit/b1ea40cdd0ea4b2145356801702b8e56473e84e5))
+
 #### 3.4.1 (2020-01-21)
 
 ##### Bug Fixes
