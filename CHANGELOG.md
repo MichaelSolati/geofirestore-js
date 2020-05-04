@@ -1,3 +1,9 @@
+#### 3.4.3 (2020-05-04)
+
+##### Documentation Changes
+
+*  update ci url ([170fe26d](https://github.com/MichaelSolati/geofirestore-js/commit/170fe26d2b398fc6cb5d72e138349b33903334b5))
+
 #### 3.4.2 (2020-05-04)
 
 ##### Build System / Dependencies
