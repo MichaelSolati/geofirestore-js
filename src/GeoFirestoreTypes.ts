@@ -7,9 +7,17 @@ export namespace GeoFirestoreTypes {
   export interface Document {
     g: string;
     l: web.GeoPoint | cloud.GeoPoint;
-    d: DocumentData;
+    d?: DocumentData;
+    p?: number,
+    s?: number
   }
-  export type DocumentData = {  [field: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint; } | undefined;
+  export type DocumentData = {
+    [field: string]: any;
+    coordinates?: cloud.GeoPoint | web.GeoPoint;
+    id? : string;
+    pointId?: string;
+    path?: string;
+  } | undefined;
   export interface DocumentChange {
     doc: QueryDocumentSnapshot;
     newIndex: number;
@@ -25,6 +33,7 @@ export namespace GeoFirestoreTypes {
     exists: boolean;
     id: string;
     data: () => DocumentData | any;
+    dataAll?: () => DocumentData | any;
     distance: number;
   }
   export interface SetOptions {
@@ -33,7 +42,7 @@ export namespace GeoFirestoreTypes {
     mergeFields?: Array<string | cloud.FieldPath | web.FieldPath>;
   }
   export type SnapshotOptions = webfirestore.SnapshotOptions;
-  export interface UpdateData { [fieldPath: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint; }
+  export interface UpdateData { [fieldPath: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint;}
   export type WhereFilterOp =
     | '<'
     | '<='

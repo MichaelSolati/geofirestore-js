@@ -89,5 +89,8 @@
       "html"
     ],
     "all": true
+  },
+  "dependencies": {
+    "spherical-geometry-js": "^2.0.0"
   }
 }

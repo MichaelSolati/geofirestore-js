@@ -1,4 +1,9 @@
+// import { getUpdatedClusterObject } from './utils';
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+// import {Cluster} from "./interfaces";
+// import * as firebase from 'firebase/app';
+import { interpolate, LatLng } from 'spherical-geometry-js';
+import * as cloudfirestore from '@google-cloud/firestore';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -30,6 +35,162 @@ export const MAXIMUM_BITS_PRECISION = 22 * BITS_PER_CHAR;
 
 // Length of a degree latitude at the equator
 export const METERS_PER_DEGREE_LATITUDE = 110574;
+
+//Maximum point in array pointIds
+export const MAX_NUMBER_OF_POINTS_IN_ARRAY = 30;
+
+/**
+ * Allows to compute the new centroid without having to get all the old points
+ *
+ * @param oldCentroid
+ * @param newGeoPoint
+ * @param oldSize
+ */
+export const newCentroid = (
+    oldCentroid: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+    newGeoPoint: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+    oldSize: number,
+):GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint => {
+    // Computes weighted average using Google Maps' interpolate :
+    // newCentroid = (oldSize * oldCentroid + newGeoPoint) / (oldSize + 1)
+    const oldLatLng = new LatLng(oldCentroid.latitude, oldCentroid.longitude);
+    const newLatlng = new LatLng(newGeoPoint.latitude, newGeoPoint.longitude);
+    const { lat, lng } = interpolate(
+        oldLatLng,
+        newLatlng,
+        1 / (oldSize + 1)
+    ).toJSON();
+    return new cloudfirestore.GeoPoint(lat, lng);
+};
+
+/**
+ * Computes new centroid by removing a point
+ * @param oldCentroid
+ * @param geoPointToRemove
+ * @param oldSize
+ */
+export const deletingPointFromCentroid = (
+  oldCentroid: cloudfirestore.GeoPoint,
+  geoPointToRemove: cloudfirestore.GeoPoint,
+  oldSize: number,
+):cloudfirestore.GeoPoint => {
+  if (oldSize <= 1) throw Error("Can't remove a point from a single point centroid !");
+  // Computes weighted average using Google Maps' interpolate :
+  // newCentroid = (oldSize * oldCentroid - geoPointToRemove) / (oldSize - 1)
+  const oldLatLng = new LatLng(oldCentroid.latitude, oldCentroid.longitude);
+  const latLngToRemove = new LatLng(geoPointToRemove.latitude, geoPointToRemove.longitude);
+  const { lat, lng } = interpolate(
+      oldLatLng,
+      latLngToRemove,
+      -1 / (oldSize - 1)
+  ).toJSON();
+  return new cloudfirestore.GeoPoint(lat, lng);
+};
+
+/**
+ * Returns a new cluster, with one point added
+ *
+ * @param point The point you want to add to the new cluster
+ * @param oldCluster The cluster you want to be updated
+ */
+// export const getUpdatedClusterObject = (
+//   point: firebase.firestore.GeoPoint,
+//   oldCluster: Cluster
+// ): Cluster => {
+//   if (oldCluster.pointIds.length < MAX_NUMBER_OF_POINTS_IN_ARRAY) {
+//       // oldCluster.pointIds.push(point.id);
+//   }
+//   return {
+//       id: oldCluster.id,
+//       geohash: oldCluster.geohash,
+//       length: oldCluster.length,
+//       location: newCentroid(oldCluster.location, point, oldCluster.size),
+//       size: oldCluster.size+1,
+//       pointIds: oldCluster.pointIds
+//   };
+// };
+
+/**
+ * Returns a cluster object corresponding to a fresh one, with one point
+ *
+ * @param point The point you want to add to the new cluster
+ * @param curGeohash The geohash of the cluster you want to create
+ */
+// export const getNewClusterObject = (
+//   point: firebase.firestore.GeoPoint,
+//   curGeohash: string
+// ): Cluster => {
+//   return {
+//       id: curGeohash,
+//       location: point,
+//       size: 1,
+//       pointIds: [point.id],
+//       geohash: curGeohash,
+//       length: curGeohash.length
+//   };
+// }
+
+/**
+ * Get the firestore reference of the collection of clusters
+ *
+ * @param path The path in Firestore of the clustered collection
+ */
+// export const getClusterCollectionRef = async (
+//   path: string
+// ): Promise<GeoFirestoreTypes.cloud.CollectionReference> => {
+//   // A collection at a certain place as '/companies/sdfg48dsf/scans'
+//   // must be clustered in '/companies/sdfg48dsf/clusterCollections/scans/clusters'
+//   // so managing database rules stays easier
+//   const splittedPath = path.split(('/'));
+//   const collectionToClusterize = splittedPath.pop();
+//   const rootPath = splittedPath.join('/');
+//   let clusterCollectionSnap = await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).get();
+
+//   if(!clusterCollectionSnap.exists) {
+//       await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).set({
+//           path
+//       });
+//       clusterCollectionSnap = await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).get();
+//   }
+//   return clusterCollectionSnap.ref.collection('clusters');
+// };
+
+// export const getClusterRefFromGeohash = async (
+//   path: string,
+//   clusterGeogash: string,
+// ): Promise<GeoDocumentReference> => {
+// let ref;
+// const clusterSnap = await (await getClusterCollectionRef(path)).where('geohash', '==', clusterGeogash).get();
+// if(clusterSnap.empty) return null;
+// clusterSnap.forEach((doc) => ref = doc.ref);
+// return ref;
+// };
+
+// export const addPointTransaction = async (
+//   t: GeoFirestoreTypes.cloud.Transaction,
+//   path: string,
+//   point: firebase.firestore.GeoPoint,
+//   clusterRef: GeoFirestoreTypes.cloud.DocumentReference,
+//   curGeohash: string
+// ): Promise<GeoDocumentReference> => {
+//   let newCluster: Cluster;
+
+//   if (clusterRef) {
+//       const snapshot = await t.get(clusterRef);
+//       // Completing a cluster means actualizing the centroid and incrementing the size
+//       const curCluster = { id: curGeohash, ...snapshot.data() } as Cluster;
+
+//       newCluster = getUpdatedClusterObject(point, curCluster);
+
+//       await t.set(clusterRef, newCluster);
+//       return newCluster;
+//   }
+
+//   // If new cluster
+//   newCluster = getNewClusterObject(point, curGeohash);
+//   await t.set((await getClusterCollectionRef(path)).doc(curGeohash), newCluster);
+//   return newCluster;
+// };
 
 /**
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a given size at the given coordinate.
@@ -217,16 +378,30 @@ export function encodeGeohash(
  *
  * @param location The location as a Firestore GeoPoint.
  * @param geohash The geohash of the location.
+ * @param withClusters A Boolean which allow us to know if it's about a cluster or not.
+ * @param size A number which define how many pointsId contain the geohash.
  * @return The document encoded as GeoDocument object.
  */
 export function encodeGeoDocument(
   location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
   geohash: string,
-  document: GeoFirestoreTypes.DocumentData
+  document: GeoFirestoreTypes.DocumentData,
+  withClusters? : Boolean,
+  size? : number,
 ): GeoFirestoreTypes.Document {
   validateLocation(location);
   validateGeohash(geohash);
-  return { g: geohash, l: location, d: document };
+  if (withClusters){
+    var doc: GeoFirestoreTypes.DocumentData = {};
+    if (size == 1 && document && document.pointId)
+    {
+      doc.pointId = document.pointId;
+    }
+    if (document && document.path)
+      doc.path = document.path;
+    return { g: geohash, l: location, d: doc, s: size, p: geohash.length };
+  }
+  return { g: geohash, l: location, d: document};
 }
 
 /**
@@ -298,7 +473,7 @@ export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customK
  * @param document A Firestore document.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @param flag Tells function supress errors.
- * @return The GeoPoint for the location field of a document. 
+ * @return The GeoPoint for the location field of a document.
  */
 export function findCoordinates(
   document: GeoFirestoreTypes.DocumentData, customKey?: string, flag = false
@@ -353,7 +528,7 @@ export function generateGeoQueryDocumentSnapshot(
   return {
     exists: snapshot.exists,
     id: snapshot.id,
-    ...decoded
+    ...decoded,
   };
 }
 
@@ -479,7 +654,7 @@ export function toGeoPoint(latitude: number, longitude: number): GeoFirestoreTyp
  *
  * @param data The GeoDocument object to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
- * @return Flag if data is valid 
+ * @return Flag if data is valid
  */
 export function validateGeoDocument(data: GeoFirestoreTypes.Document, flag = false): boolean {
   let error: string;
