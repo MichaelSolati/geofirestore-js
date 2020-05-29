@@ -1,12 +1,10 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions, deletingPointFromCentroid, encodeGeoDocument} from './utils';
+import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions, deletingPointFromCentroid, encodeGeoDocument, GEOHASH_PRECISION} from './utils';
 import { GeoCollectionReference } from './GeoCollectionReference';
 import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
 import { GeoFirestore } from './GeoFirestore';
 
 // const cloudfirestore = require("@google-cloud/firestore");
-
-import { MAX_GEOHASH_PRECISION } from './utils';
 
 /**
  * A `GeoDocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen to the
@@ -96,7 +94,7 @@ export class GeoDocumentReference {
     if (withClusters){
       var data : GeoFirestoreTypes.DocumentData = {};
       let geohash = this.id;
-      let i = MAX_GEOHASH_PRECISION;
+      let i = GEOHASH_PRECISION;
       let ref;
       let GeopointToRemove : GeoFirestoreTypes.cloud.GeoPoint;
 

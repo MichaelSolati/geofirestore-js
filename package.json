@@ -91,6 +91,9 @@
     "all": true
   },
   "dependencies": {
+    "@rollup/plugin-json": "^4.0.3",
+    "@types/ngeohash": "^0.6.2",
+    "ngeohash": "^0.6.3",
     "spherical-geometry-js": "^2.0.0"
   }
 }

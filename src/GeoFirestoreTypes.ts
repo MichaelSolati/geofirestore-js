@@ -15,8 +15,6 @@ export namespace GeoFirestoreTypes {
     [field: string]: any;
     coordinates?: cloud.GeoPoint | web.GeoPoint;
     id? : string;
-    pointId?: string;
-    path?: string;
   } | undefined;
   export interface DocumentChange {
     doc: QueryDocumentSnapshot;
@@ -28,12 +26,14 @@ export namespace GeoFirestoreTypes {
     center?: cloud.GeoPoint | web.GeoPoint;
     radius?: number;
     limit?: number;
+    ne?: cloud.GeoPoint | web.GeoPoint;
+    sw?: cloud.GeoPoint | web.GeoPoint;
+    zoom?: number,
   }
   export interface QueryDocumentSnapshot {
     exists: boolean;
     id: string;
     data: () => DocumentData | any;
-    dataAll?: () => DocumentData | any;
     distance: number;
   }
   export interface SetOptions {

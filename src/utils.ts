@@ -36,6 +36,9 @@ export const MAXIMUM_BITS_PRECISION = 22 * BITS_PER_CHAR;
 // Length of a degree latitude at the equator
 export const METERS_PER_DEGREE_LATITUDE = 110574;
 
+// Maximum length of a geohash
+export const MAX_GEOHASH_PRECISION = 10;
+
 //Maximum point in array pointIds
 export const MAX_NUMBER_OF_POINTS_IN_ARRAY = 30;
 
@@ -46,6 +49,7 @@ export const MAX_NUMBER_OF_POINTS_IN_ARRAY = 30;
  * @param newGeoPoint
  * @param oldSize
  */
+
 export const newCentroid = (
     oldCentroid: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
     newGeoPoint: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
@@ -86,111 +90,6 @@ export const deletingPointFromCentroid = (
   ).toJSON();
   return new cloudfirestore.GeoPoint(lat, lng);
 };
-
-/**
- * Returns a new cluster, with one point added
- *
- * @param point The point you want to add to the new cluster
- * @param oldCluster The cluster you want to be updated
- */
-// export const getUpdatedClusterObject = (
-//   point: firebase.firestore.GeoPoint,
-//   oldCluster: Cluster
-// ): Cluster => {
-//   if (oldCluster.pointIds.length < MAX_NUMBER_OF_POINTS_IN_ARRAY) {
-//       // oldCluster.pointIds.push(point.id);
-//   }
-//   return {
-//       id: oldCluster.id,
-//       geohash: oldCluster.geohash,
-//       length: oldCluster.length,
-//       location: newCentroid(oldCluster.location, point, oldCluster.size),
-//       size: oldCluster.size+1,
-//       pointIds: oldCluster.pointIds
-//   };
-// };
-
-/**
- * Returns a cluster object corresponding to a fresh one, with one point
- *
- * @param point The point you want to add to the new cluster
- * @param curGeohash The geohash of the cluster you want to create
- */
-// export const getNewClusterObject = (
-//   point: firebase.firestore.GeoPoint,
-//   curGeohash: string
-// ): Cluster => {
-//   return {
-//       id: curGeohash,
-//       location: point,
-//       size: 1,
-//       pointIds: [point.id],
-//       geohash: curGeohash,
-//       length: curGeohash.length
-//   };
-// }
-
-/**
- * Get the firestore reference of the collection of clusters
- *
- * @param path The path in Firestore of the clustered collection
- */
-// export const getClusterCollectionRef = async (
-//   path: string
-// ): Promise<GeoFirestoreTypes.cloud.CollectionReference> => {
-//   // A collection at a certain place as '/companies/sdfg48dsf/scans'
-//   // must be clustered in '/companies/sdfg48dsf/clusterCollections/scans/clusters'
-//   // so managing database rules stays easier
-//   const splittedPath = path.split(('/'));
-//   const collectionToClusterize = splittedPath.pop();
-//   const rootPath = splittedPath.join('/');
-//   let clusterCollectionSnap = await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).get();
-
-//   if(!clusterCollectionSnap.exists) {
-//       await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).set({
-//           path
-//       });
-//       clusterCollectionSnap = await database.collection(rootPath+'/clusterCollections').doc(collectionToClusterize).get();
-//   }
-//   return clusterCollectionSnap.ref.collection('clusters');
-// };
-
-// export const getClusterRefFromGeohash = async (
-//   path: string,
-//   clusterGeogash: string,
-// ): Promise<GeoDocumentReference> => {
-// let ref;
-// const clusterSnap = await (await getClusterCollectionRef(path)).where('geohash', '==', clusterGeogash).get();
-// if(clusterSnap.empty) return null;
-// clusterSnap.forEach((doc) => ref = doc.ref);
-// return ref;
-// };
-
-// export const addPointTransaction = async (
-//   t: GeoFirestoreTypes.cloud.Transaction,
-//   path: string,
-//   point: firebase.firestore.GeoPoint,
-//   clusterRef: GeoFirestoreTypes.cloud.DocumentReference,
-//   curGeohash: string
-// ): Promise<GeoDocumentReference> => {
-//   let newCluster: Cluster;
-
-//   if (clusterRef) {
-//       const snapshot = await t.get(clusterRef);
-//       // Completing a cluster means actualizing the centroid and incrementing the size
-//       const curCluster = { id: curGeohash, ...snapshot.data() } as Cluster;
-
-//       newCluster = getUpdatedClusterObject(point, curCluster);
-
-//       await t.set(clusterRef, newCluster);
-//       return newCluster;
-//   }
-
-//   // If new cluster
-//   newCluster = getNewClusterObject(point, curGeohash);
-//   await t.set((await getClusterCollectionRef(path)).doc(curGeohash), newCluster);
-//   return newCluster;
-// };
 
 /**
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a given size at the given coordinate.
@@ -393,13 +292,11 @@ export function encodeGeoDocument(
   validateGeohash(geohash);
   if (withClusters){
     var doc: GeoFirestoreTypes.DocumentData = {};
-    if (size == 1 && document && document.pointId)
-    {
+    if (size == 1 && document && document.pointId){
       doc.pointId = document.pointId;
+      return { g: geohash, l: location, d: doc, s: size, p: geohash.length };
     }
-    if (document && document.path)
-      doc.path = document.path;
-    return { g: geohash, l: location, d: doc, s: size, p: geohash.length };
+    return { g: geohash, l: location, s: size, p: geohash.length };
   }
   return { g: geohash, l: location, d: document};
 }
@@ -530,6 +427,45 @@ export function generateGeoQueryDocumentSnapshot(
     id: snapshot.id,
     ...decoded,
   };
+}
+
+export function geohashClustersQueries(geohashArray : string[]): string[][] {
+  let result : string[][];
+  let tmpResult : string[];
+  let geohashBefore : string;
+  let startAt : string;
+  let endAt : string;
+
+  result = new Array();
+  geohashArray.forEach((geohash) => {
+    //compare both strings
+    if (geohashArray[0] == geohash) { //si c'est le premier geohash du tableau
+      startAt = geohash
+    } else {
+      let i = 0;
+
+      while (geohash[i] != '\0' && geohashBefore[i] != '\0' && geohash[i] == geohashBefore[i]) //parcourir la chaine de charactere jusqu'a ce qu'un des char soit different
+        i++;
+
+      if ((geohash.charCodeAt(i) - geohashBefore.charCodeAt(i)) != 1) { // comparaison ascii
+        endAt = geohashBefore;
+        tmpResult = []
+        tmpResult.push(startAt, endAt);
+        result.push(tmpResult);
+        startAt = geohash;
+      }
+
+      if (geohash == geohashArray[geohashArray.length - 1]) { //check si c'est la derniere case du tableau
+        endAt = geohash;
+        tmpResult = []
+        tmpResult.push(startAt, endAt);
+        result.push(tmpResult);
+      }
+
+    }
+    geohashBefore = geohash;
+  })
+  return (result)
 }
 
 /**
@@ -768,8 +704,8 @@ export function validateLocation(location: GeoFirestoreTypes.web.GeoPoint | GeoF
 export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('QueryCriteria must be an object');
-  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
-    throw new Error('radius and/or center must be specified');
+  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined' && typeof newQueryCriteria.ne === 'undefined' && typeof newQueryCriteria.sw === 'undefined') {
+    throw new Error('radius and/or center and/or NE and/or SW must be specified');
   } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
     throw new Error('QueryCriteria for a new query must contain both a center and a radius');
   }
@@ -777,7 +713,7 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
   // Throw an error if there are any extraneous attributes
   const keys: string[] = Object.keys(newQueryCriteria);
   for (const key of keys) {
-    if (!['center', 'radius', 'limit'].includes(key)) {
+    if (!['center', 'radius', 'limit', 'sw', 'ne', 'zoom'].includes(key)) {
       throw new Error('Unexpected attribute \'' + key + '\' found in query criteria');
     }
   }
@@ -795,6 +731,8 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
       throw new Error('radius must be greater than or equal to 0');
     }
   }
+
+  // Validate the 'ne, sw, zooom"
 
   // Validate the 'limit' attribute
   if (typeof newQueryCriteria.limit !== 'undefined') {

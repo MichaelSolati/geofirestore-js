@@ -134,7 +134,9 @@ export class GeoJoinerOnSnapshot {
     if (!this._firstRoundResolved) this._queriesResolved[index] = 1;
     if (docChanges.length) { // Snapshot has data, key during first snapshot
       docChanges.forEach((change) => {
-        const distance = change.doc.data().l ? calculateDistance(this._queryCriteria.center, change.doc.data().l) : null;
+        let distance;
+        if (this._queryCriteria.center)
+          distance = change.doc.data().l ? calculateDistance(this._queryCriteria.center, change.doc.data().l) : null;
         const id = change.doc.id;
         const fromMap = this._docs.get(id);
         const doc: any = {
@@ -145,8 +147,15 @@ export class GeoJoinerOnSnapshot {
             type: (fromMap && this._firstEmitted) ? change.type : 'added'
           }, distance, emitted: this._firstEmitted ? !!fromMap : false
         };
-
-        if (this._queryCriteria.radius >= distance) { // Ensure doc in query radius
+        if (this._queryCriteria.ne && this._queryCriteria.sw && (this._queryCriteria.zoom == id.length)){
+          // Ignore doc since it wasn't in map and was already 'removed'
+          if (!fromMap && doc.change.type === 'removed') return;
+          // Mark doc as 'added' doc since it wasn't in map and was 'modified' to be
+          if (!fromMap && doc.change.type === 'modified') doc.change.type = 'added';
+          this._newValues = true;
+          this._docs.set(id, doc);
+        }
+        else if (this._queryCriteria.radius >= distance) { // Ensure doc in query radius
           // Ignore doc since it wasn't in map and was already 'removed'
           if (!fromMap && doc.change.type === 'removed') return;
           // Mark doc as 'added' doc since it wasn't in map and was 'modified' to be
