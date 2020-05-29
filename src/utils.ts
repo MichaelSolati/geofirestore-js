@@ -437,17 +437,16 @@ export function geohashClustersQueries(geohashArray : string[]): string[][] {
   let endAt : string;
 
   result = new Array();
-  geohashArray.forEach((geohash) => {
+  geohashArray.sort().forEach((geohash) => {
     //compare both strings
-    if (geohashArray[0] == geohash) { //si c'est le premier geohash du tableau
+    if (geohashArray[0] == geohash) { //if this is the first geohash
       startAt = geohash
     } else {
       let i = 0;
 
-      while (geohash[i] != '\0' && geohashBefore[i] != '\0' && geohash[i] == geohashBefore[i]) //parcourir la chaine de charactere jusqu'a ce qu'un des char soit different
+      while (i < geohash.length - 1 && geohash[i] == geohashBefore[i]) //browse the character string until one of the chars is different
         i++;
-
-      if ((geohash.charCodeAt(i) - geohashBefore.charCodeAt(i)) != 1) { // comparaison ascii
+      if ((geohash.charCodeAt(i) - geohashBefore.charCodeAt(i)) != 1 || geohash.length -1 != i) { //ascii comparaison
         endAt = geohashBefore;
         tmpResult = []
         tmpResult.push(startAt, endAt);
@@ -455,7 +454,7 @@ export function geohashClustersQueries(geohashArray : string[]): string[][] {
         startAt = geohash;
       }
 
-      if (geohash == geohashArray[geohashArray.length - 1]) { //check si c'est la derniere case du tableau
+      if (geohash == geohashArray[geohashArray.length - 1]) { //check if this is the last box of the array
         endAt = geohash;
         tmpResult = []
         tmpResult.push(startAt, endAt);
