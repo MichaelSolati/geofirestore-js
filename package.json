@@ -51,6 +51,7 @@
     "README.md"
   ],
   "dependencies": {
+    "@babel/runtime": "^7.10.2",
     "@google-cloud/firestore": ">= 2.0.0",
     "@types/node": ">= 8.0.0",
     "firebase": ">= 6.0.0"
