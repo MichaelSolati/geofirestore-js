@@ -3,7 +3,7 @@
   "description": "Location-based querying and filtering using Firebase's Firestore",
   "version": "3.4.1",
   "scripts": {
-    "build": "rm -rf ./dist",
+    "build": "rm -rf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc --module node --target es5 --out docs/ src/",
     "lint": "gts check",
@@ -11,7 +11,7 @@
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "pretest": "node pretest.js",
     "deploy": "firebase deploy",
     "deploy:travis": "firebase deploy --non-interactive --token $FIREBASE_TOKEN"
