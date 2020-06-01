@@ -50,7 +50,7 @@
     "package.json",
     "README.md"
   ],
-  "optionalDependencies": {
+  "dependencies": {
     "@google-cloud/firestore": ">= 2.0.0",
     "@types/node": ">= 8.0.0",
     "firebase": ">= 6.0.0"
