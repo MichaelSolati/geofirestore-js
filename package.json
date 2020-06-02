@@ -50,14 +50,16 @@
     "package.json",
     "README.md"
   ],
-  "optionalDependencies": {
+  "dependencies": {
     "@google-cloud/firestore": ">= 2.0.0",
-    "@types/node": ">= 8.0.0",
-    "firebase": ">= 6.0.0"
+    "firebase": ">= 6.0.0",
+    "spherical-geometry-js": "^2.0.0"
   },
   "devDependencies": {
     "@types/chai": "4.x.x",
     "@types/mocha": "5.x.x",
+    "@types/node": ">= 8.0.0",
+    "@types/ngeohash": "^0.6.2",
     "chai": "4.x.x",
     "coveralls": "3.x.x",
     "firebase-tools": "7.x.x",

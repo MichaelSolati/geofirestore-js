@@ -1,4 +1,8 @@
+// import { getUpdatedClusterObject } from './utils';
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
+// import {Cluster} from "./interfaces";
+// import * as firebase from 'firebase/app';
+import { interpolate, LatLng } from 'spherical-geometry-js';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -30,6 +34,60 @@ export const MAXIMUM_BITS_PRECISION = 22 * BITS_PER_CHAR;
 
 // Length of a degree latitude at the equator
 export const METERS_PER_DEGREE_LATITUDE = 110574;
+
+// Maximum length of a geohash
+export const MAX_GEOHASH_PRECISION = 10;
+
+//Maximum point in array pointIds
+export const MAX_NUMBER_OF_POINTS_IN_ARRAY = 30;
+
+/**
+ * Allows to compute the new centroid without having to get all the old points
+ *
+ * @param oldCentroid
+ * @param newGeoPoint
+ * @param oldSize
+ */
+
+export const newCentroid = (
+    oldCentroid: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+    newGeoPoint: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+    oldSize: number,
+):GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint => {
+    // Computes weighted average using Google Maps' interpolate :
+    const oldLatLng = new LatLng(oldCentroid.latitude, oldCentroid.longitude);
+    const newLatlng = new LatLng(newGeoPoint.latitude, newGeoPoint.longitude);
+    const { lat, lng } = interpolate(
+        oldLatLng,
+        newLatlng,
+        1 / (oldSize + 1)
+    ).toJSON();
+    return toGeoPoint(lat, lng);
+};
+
+/**
+ * Computes new centroid by removing a point
+ * @param oldCentroid
+ * @param geoPointToRemove
+ * @param oldSize
+ */
+export const deletingPointFromCentroid = (
+  oldCentroid: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  geoPointToRemove: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  oldSize: number,
+):GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint => {
+  if (oldSize <= 1) throw Error("Can't remove a point from a single point centroid !");
+  // Computes weighted average using Google Maps' interpolate :
+  // newCentroid = (oldSize * oldCentroid - geoPointToRemove) / (oldSize - 1)
+  const oldLatLng = new LatLng(oldCentroid.latitude, oldCentroid.longitude);
+  const latLngToRemove = new LatLng(geoPointToRemove.latitude, geoPointToRemove.longitude);
+  const { lat, lng } = interpolate(
+      oldLatLng,
+      latLngToRemove,
+      -1 / (oldSize - 1)
+  ).toJSON();
+  return toGeoPoint(lat, lng);
+};
 
 /**
  * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a given size at the given coordinate.
@@ -217,16 +275,28 @@ export function encodeGeohash(
  *
  * @param location The location as a Firestore GeoPoint.
  * @param geohash The geohash of the location.
+ * @param withClusters A Boolean which allow us to know if it's about a cluster or not.
+ * @param size A number which define how many pointsId contain the geohash.
  * @return The document encoded as GeoDocument object.
  */
 export function encodeGeoDocument(
   location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
   geohash: string,
-  document: GeoFirestoreTypes.DocumentData
+  document: GeoFirestoreTypes.DocumentData,
+  withClusters? : Boolean,
+  size? : number,
 ): GeoFirestoreTypes.Document {
   validateLocation(location);
   validateGeohash(geohash);
-  return { g: geohash, l: location, d: document };
+  if (withClusters){
+    var doc: GeoFirestoreTypes.DocumentData = {};
+    if (size == 1 && document && document.pointId){
+      doc.pointId = document.pointId;
+      return { g: geohash, l: location, d: doc, s: size, p: geohash.length };
+    }
+    return { g: geohash, l: location, s: size, p: geohash.length };
+  }
+  return { g: geohash, l: location, d: document};
 }
 
 /**
@@ -298,7 +368,7 @@ export function encodeUpdateDocument(data: GeoFirestoreTypes.UpdateData, customK
  * @param document A Firestore document.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @param flag Tells function supress errors.
- * @return The GeoPoint for the location field of a document. 
+ * @return The GeoPoint for the location field of a document.
  */
 export function findCoordinates(
   document: GeoFirestoreTypes.DocumentData, customKey?: string, flag = false
@@ -353,8 +423,46 @@ export function generateGeoQueryDocumentSnapshot(
   return {
     exists: snapshot.exists,
     id: snapshot.id,
-    ...decoded
+    ...decoded,
   };
+}
+
+export function geohashClustersQueries(geohashArray : string[]): string[][] {
+  let result : string[][];
+  let tmpResult : string[];
+  let geohashBefore : string;
+  let startAt : string;
+  let endAt : string;
+
+  result = new Array();
+  geohashArray.sort().forEach((geohash) => {
+    //compare both strings
+    if (geohashArray[0] == geohash) { //if this is the first geohash
+      startAt = geohash
+    } else {
+      let i = 0;
+
+      while (i < geohash.length - 1 && geohash[i] == geohashBefore[i]) //browse the character string until one of the chars is different
+        i++;
+      if ((geohash.charCodeAt(i) - geohashBefore.charCodeAt(i)) != 1 || geohash.length -1 != i) { //ascii comparaison
+        endAt = geohashBefore;
+        tmpResult = []
+        tmpResult.push(startAt, endAt);
+        result.push(tmpResult);
+        startAt = geohash;
+      }
+
+      if (geohash == geohashArray[geohashArray.length - 1]) { //check if this is the last box of the array
+        endAt = geohash;
+        tmpResult = []
+        tmpResult.push(startAt, endAt);
+        result.push(tmpResult);
+      }
+
+    }
+    geohashBefore = geohash;
+  })
+  return (result)
 }
 
 /**
@@ -479,7 +587,7 @@ export function toGeoPoint(latitude: number, longitude: number): GeoFirestoreTyp
  *
  * @param data The GeoDocument object to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
- * @return Flag if data is valid 
+ * @return Flag if data is valid
  */
 export function validateGeoDocument(data: GeoFirestoreTypes.Document, flag = false): boolean {
   let error: string;
@@ -593,8 +701,8 @@ export function validateLocation(location: GeoFirestoreTypes.web.GeoPoint | GeoF
 export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryCriteria, requireCenterAndRadius = false): void {
   if (typeof newQueryCriteria !== 'object') {
     throw new Error('QueryCriteria must be an object');
-  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined') {
-    throw new Error('radius and/or center must be specified');
+  } else if (typeof newQueryCriteria.center === 'undefined' && typeof newQueryCriteria.radius === 'undefined' && typeof newQueryCriteria.ne === 'undefined' && typeof newQueryCriteria.sw === 'undefined') {
+    throw new Error('radius and/or center and/or NE and/or SW must be specified');
   } else if (requireCenterAndRadius && (typeof newQueryCriteria.center === 'undefined' || typeof newQueryCriteria.radius === 'undefined')) {
     throw new Error('QueryCriteria for a new query must contain both a center and a radius');
   }
@@ -602,7 +710,7 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
   // Throw an error if there are any extraneous attributes
   const keys: string[] = Object.keys(newQueryCriteria);
   for (const key of keys) {
-    if (!['center', 'radius', 'limit'].includes(key)) {
+    if (!['center', 'radius', 'limit', 'sw', 'ne', 'zoom'].includes(key)) {
       throw new Error('Unexpected attribute \'' + key + '\' found in query criteria');
     }
   }
@@ -620,6 +728,8 @@ export function validateQueryCriteria(newQueryCriteria: GeoFirestoreTypes.QueryC
       throw new Error('radius must be greater than or equal to 0');
     }
   }
+
+  // Validate the 'ne, sw, zooom"
 
   // Validate the 'limit' attribute
   if (typeof newQueryCriteria.limit !== 'undefined') {

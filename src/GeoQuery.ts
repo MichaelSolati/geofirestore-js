@@ -3,7 +3,8 @@ import { GeoFirestore } from './GeoFirestore';
 import { GeoJoinerGet } from './GeoJoinerGet';
 import { GeoJoinerOnSnapshot } from './GeoJoinerOnSnapshot';
 import { GeoQuerySnapshot } from './GeoQuerySnapshot';
-import { validateQueryCriteria, geohashQueries, validateLimit } from './utils';
+import { validateQueryCriteria, geohashQueries, validateLimit, geohashClustersQueries } from './utils';
+import * as ngeohash from 'ngeohash';
 
 /**
  * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
@@ -14,6 +15,9 @@ export class GeoQuery {
   private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
+  private _ne: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+  private _sw: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+  private _zoom: number;
 
   /**
    * @param _query The `Query` instance.
@@ -37,6 +41,13 @@ export class GeoQuery {
         validateQueryCriteria(queryCriteria);
         this._center = queryCriteria.center;
         this._radius = queryCriteria.radius;
+      }
+      if (queryCriteria.sw && queryCriteria.ne && queryCriteria.zoom){
+        // Validate and save the query criteria
+        validateQueryCriteria(queryCriteria);
+        this._sw = queryCriteria.sw;
+        this._ne = queryCriteria.ne;
+        this._zoom = queryCriteria.zoom;
       }
     }
   }
@@ -63,7 +74,7 @@ export class GeoQuery {
    */
   get onSnapshot(): ((onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void) => () => void) {
     return (onNext: (snapshot: GeoQuerySnapshot) => void, onError?: (error: Error) => void): (() => void) => {
-      if (this._center && this._radius) {
+      if ((this._center && this._radius) || (this._ne && this._sw && this._zoom)) {
         return new GeoJoinerOnSnapshot(this._generateQuery(), this._queryCriteria, onNext, onError).unsubscribe();
       } else {
         const query = this._limit ? this._query.limit(this._limit) : this._query;
@@ -128,6 +139,12 @@ export class GeoQuery {
     return new GeoQuery(this._query, this._queryCriteria);
   }
 
+  within(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
+    this._ne = newGeoQueryCriteria.ne || this._ne;
+    this._sw = newGeoQueryCriteria.sw || this._sw;
+    this._zoom = newGeoQueryCriteria.zoom || this._zoom;
+    return new GeoQuery(this._query, this._queryCriteria);
+  }
   /**
    * Creates and returns a new GeoQuery with the additional filter that documents must contain the specified field and that its value
    * should satisfy the relation constraint provided.
@@ -153,11 +170,17 @@ export class GeoQuery {
    * @return Array of Queries to search against.
    */
   private _generateQuery(): GeoFirestoreTypes.web.Query[] {
+    let geohashesToQuery: string[];
+
     // Get the list of geohashes to query
-    let geohashesToQuery: string[] = geohashQueries(this._center, this._radius * 1000).map(this._queryToString);
+    if (this._ne && this._sw && this._zoom) {
+      const geohashesArray = ngeohash.bboxes(this._sw.latitude, this._sw.longitude, this._ne.latitude, this._ne.longitude, this._zoom);
+      geohashesToQuery = geohashClustersQueries(geohashesArray).map(this._queryToString);
+    } else if (this._center && this._radius){
+      geohashesToQuery = geohashQueries(this._center, this._radius * 1000).map(this._queryToString);
+    }
     // Filter out duplicate geohashes
     geohashesToQuery = geohashesToQuery.filter((geohash: string, i: number) => geohashesToQuery.indexOf(geohash) === i);
-
     return geohashesToQuery.map((toQueryStr: string) => {
       // decode the geohash query string
       const query: string[] = this._stringToQuery(toQueryStr);
@@ -173,7 +196,10 @@ export class GeoQuery {
     return {
       center: this._center,
       limit: this._limit,
-      radius: this._radius
+      radius: this._radius,
+      ne: this._ne,
+      sw: this._sw,
+      zoom : this._zoom
     };
   }
 
