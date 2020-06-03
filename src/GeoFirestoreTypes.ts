@@ -26,8 +26,8 @@ export namespace GeoFirestoreTypes {
     center?: cloud.GeoPoint | web.GeoPoint;
     radius?: number;
     limit?: number;
-    ne?: cloud.GeoPoint | web.GeoPoint;
-    sw?: cloud.GeoPoint | web.GeoPoint;
+    ne?: {latitude: number, longitude: number};
+    sw?: {latitude: number, longitude: number};
     zoom?: number,
   }
   export interface QueryDocumentSnapshot {

@@ -15,8 +15,8 @@ export class GeoQuery {
   private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
-  private _ne: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
-  private _sw: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint;
+  private _ne: {latitude: number, longitude: number};
+  private _sw: {latitude: number, longitude: number};
   private _zoom: number;
 
   /**
@@ -139,6 +139,14 @@ export class GeoQuery {
     return new GeoQuery(this._query, this._queryCriteria);
   }
 
+   /**
+   * Creates and returns a new GeoQuery with the geoquery filter where `get` and `onSnapshot` will query around.
+   *
+   * This function returns a new (immutable) instance of the GeoQuery (rather than modify the existing instance) to impose the filter.
+   *
+   * @param newQueryCriteria The criteria which specifies the query's center and radius.
+   * @return The created GeoQuery.
+   */
   within(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
     this._ne = newGeoQueryCriteria.ne || this._ne;
     this._sw = newGeoQueryCriteria.sw || this._sw;
