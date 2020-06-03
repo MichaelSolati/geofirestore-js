@@ -70,7 +70,7 @@ export class GeoDocumentSnapshot {
    * behavior for server timestamps that have not yet been set to their final value). (WEB ONLY)
    * @return An Object containing all fields in the document or 'undefined' if the document doesn't exist.
    */
-  Alldata(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
+  allData(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
     const d = (this._isWeb && options) ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(options) : this._snapshot.data();
     return (d) ? (d as GeoFirestoreTypes.Document) : null;
   }
