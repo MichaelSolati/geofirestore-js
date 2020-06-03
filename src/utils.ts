@@ -172,7 +172,7 @@ export function calculateDistance(
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
 export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFirestoreTypes.DocumentData {
-  return (validateGeoDocument(data, true)) ? data.d : data;
+  return (validateGeoDocument(data, true)) ? data : data;
 }
 
 /**
@@ -188,7 +188,7 @@ export function decodeGeoQueryDocumentSnapshotData(
 ): { data: () => GeoFirestoreTypes.DocumentData; distance: number; } {
   if (validateGeoDocument(data, true)) {
     const distance = (center) ? calculateDistance(data.l, center) : null;
-    return { data: () => data.d, distance };
+    return { data: () => data, distance };
   }
   return { data: () => data, distance: null };
 }
