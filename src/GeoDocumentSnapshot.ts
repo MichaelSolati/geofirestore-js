@@ -61,6 +61,21 @@ export class GeoDocumentSnapshot {
   }
 
   /**
+   * Retrieves all fields in the document as an Object. Returns 'undefined' if the document doesn't exist.
+   *
+   * By default, `FieldValue.serverTimestamp()` values that have not yet been set to their final value will be returned as `null`. You can
+   * override this by passing an options object if you're on web.
+   *
+   * @param options Available on web only. An options object to configure how data is retrieved from the snapshot (e.g. the desired
+   * behavior for server timestamps that have not yet been set to their final value). (WEB ONLY)
+   * @return An Object containing all fields in the document or 'undefined' if the document doesn't exist.
+   */
+  Alldata(options?: GeoFirestoreTypes.SnapshotOptions): GeoFirestoreTypes.DocumentData | undefined {
+    const d = (this._isWeb && options) ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(options) : this._snapshot.data();
+    return (d) ? (d as GeoFirestoreTypes.Document) : null;
+  }
+
+  /**
    * Retrieves the field specified by `fieldPath`. Returns 'undefined' if the document or field doesn't exist.
    *
    * By default, a `FieldValue.serverTimestamp()` that has not yet been set to its final value will be returned as `null`. You can override
