@@ -15,8 +15,8 @@ export class GeoQuery {
   private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
-  private _ne: {latitude: number, longitude: number};
-  private _sw: {latitude: number, longitude: number};
+  private _ne: {lat: number, lng: number};
+  private _sw: {lat: number, lng: number};
   private _zoom: number;
 
   /**
@@ -182,7 +182,7 @@ export class GeoQuery {
 
     // Get the list of geohashes to query
     if (this._ne && this._sw && this._zoom) {
-      const geohashesArray = ngeohash.bboxes(this._sw.latitude, this._sw.longitude, this._ne.latitude, this._ne.longitude, this._zoom);
+      const geohashesArray = ngeohash.bboxes(this._sw.lat, this._sw.lng, this._ne.lat, this._ne.lng, this._zoom);
       geohashesToQuery = geohashClustersQueries(geohashesArray).map(this._queryToString);
     } else if (this._center && this._radius){
       geohashesToQuery = geohashQueries(this._center, this._radius * 1000).map(this._queryToString);
