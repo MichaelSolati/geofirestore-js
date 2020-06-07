@@ -11,7 +11,17 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
-const plugins = [typescript(), resolve(), commonjs()];
+const plugins = [
+  typescript({
+    tsconfigOverride: {
+      compilerOptions: {
+        module: 'ESNext',
+      },
+    },
+  }),
+  resolve(),
+  commonjs(),
+];
 
 export default [
   {
