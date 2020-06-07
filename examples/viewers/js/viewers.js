@@ -43,7 +43,7 @@ function queryFirestore(location) {
 function getInFirestore(location) {
   location.lat = Number(location.lat.toFixed(1));
   location.lng = Number(location.lng.toFixed(1));
-  const hash = geokit.Geokit.hash(location);
+  const hash = Geokit.hash(location);
 
   geoCollectionRef.doc(hash).get().then((snapshot) => {
     let data = snapshot.data();
@@ -122,7 +122,7 @@ function initMap() {
       lng: getCenter.lng()
     };
 
-    if (!mapCenter || geokit.Geokit.distance(mapCenter, center) > (radius * 0.7)) {
+    if (!mapCenter || Geokit.distance(mapCenter, center) > (radius * 0.7)) {
       mapCenter = center;
       queryFirestore(center);
     }
