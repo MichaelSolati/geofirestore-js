@@ -7,7 +7,7 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc --module node --target es5 --out docs/ src/",
     "lint": "gts check",
-    "test": "nyc --reporter=html --reporter=text mocha --package package.json",
+    "test": "nyc --reporter=html --reporter=text mocha --package package.json --exit",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
@@ -88,8 +88,7 @@
       "ts-node/register",
       "jsdom-global/register"
     ],
-    "timeout": 30000,
-    "exit": "test/**/*.ts"
+    "timeout": 30000
   },
   "nyc": {
     "extension": [
