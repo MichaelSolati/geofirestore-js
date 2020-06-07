@@ -1,28 +1,37 @@
 import * as chai from 'chai';
 
-import { GeoWriteBatch } from '../src/GeoWriteBatch';
+import {GeoWriteBatch} from '../src/GeoWriteBatch';
 import {
-  afterEachHelper, beforeEachHelper, collection, dummyData, failTestOnCaughtError,
-  firestore, geocollection, geofirestore, invalidFirestores, testCollectionName
+  afterEachHelper,
+  beforeEachHelper,
+  collection,
+  dummyData,
+  failTestOnCaughtError,
+  firestore,
+  geocollection,
+  geofirestore,
+  invalidFirestores,
 } from './common';
 
 const expect = chai.expect;
 
 describe('GeoWriteBatch Tests:', () => {
   // Reset the Firestore before each test
-  beforeEach((done) => {
+  beforeEach(done => {
     beforeEachHelper(done);
   });
 
-  afterEach((done) => {
+  afterEach(done => {
     afterEachHelper(done);
   });
 
   describe('Constructor:', () => {
     it('Constructor throws errors given invalid Firestore WriteBatch', () => {
-      invalidFirestores.forEach((invalidFirestore) => {
-        // @ts-ignore
-        expect(() => new GeoWriteBatch(invalidFirestore)).to.throw(null, 'WriteBatch must be an instance of a Firestore WriteBatch');
+      invalidFirestores.forEach(invalidFirestore => {
+        expect(() => new GeoWriteBatch(invalidFirestore)).to.throw(
+          null,
+          'WriteBatch must be an instance of a Firestore WriteBatch'
+        );
       });
     });
 
@@ -62,25 +71,25 @@ describe('GeoWriteBatch Tests:', () => {
 
       return doc.firestore
         .batch()
-        .set(doc, dummyData[0], { merge: true })
+        .set(doc, dummyData[0], {merge: true})
         .commit()
         .then(() => {
           return doc.firestore
             .batch()
-            .set(doc, { count: 10 }, { merge: true })
+            .set(doc, {count: 10}, {merge: true})
             .commit();
         })
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
-          expect(snapshot.data()).to.deep.equal({ ...dummyData[0], count: 10 });
+          expect(snapshot.data()).to.deep.equal({...dummyData[0], count: 10});
         });
     });
   });
 
   describe('update():', () => {
     it('update() returns the current GeoWriteBatch given a DocumentReference', () => {
-      return collection.add(dummyData[0]).then((value) => {
+      return collection.add(dummyData[0]).then(value => {
         const geowritebatch = geofirestore.batch();
         const update = geowritebatch.update(value, dummyData[1]);
         expect(update).to.deep.equal(geowritebatch);
@@ -96,12 +105,7 @@ describe('GeoWriteBatch Tests:', () => {
       const doc = geocollection.doc();
       return doc
         .set(dummyData[0])
-        .then(() =>
-          doc.firestore
-            .batch()
-            .update(doc, dummyData[1])
-            .commit()
-        )
+        .then(() => doc.firestore.batch().update(doc, dummyData[1]).commit())
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
@@ -130,12 +134,7 @@ describe('GeoWriteBatch Tests:', () => {
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
         })
-        .then(() =>
-          doc.firestore
-            .batch()
-            .delete(doc)
-            .commit()
-        )
+        .then(() => doc.firestore.batch().delete(doc).commit())
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(false);

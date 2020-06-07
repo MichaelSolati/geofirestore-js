@@ -10,5 +10,14 @@
     ],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-namespace": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "env": {
+        "browser": true,
+        "mocha": true
+      }
+    }
+  ]
 }
