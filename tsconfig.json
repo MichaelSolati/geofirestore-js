@@ -3,7 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
-    "module": "esnext",
     "moduleResolution": "node",
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
