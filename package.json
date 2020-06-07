@@ -7,7 +7,7 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc --module node --target es5 --out docs/ src/",
     "lint": "gts check",
-    "test": "nyc --reporter=html --reporter=text mocha",
+    "test": "nyc --reporter=html --reporter=text mocha --package package.json",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
@@ -55,28 +55,41 @@
     "firebase": ">= 6.0.0"
   },
   "devDependencies": {
-    "@types/chai": "4.x.x",
-    "@types/mocha": "7.x.x",
-    "@types/node": "10.x.x",
-    "chai": "4.x.x",
-    "coveralls": "3.x.x",
-    "firebase-tools": "8.x.x",
-    "generate-changelog": "1.x.x",
-    "gts": "2.x.x",
-    "jsdom": "16.x.x",
-    "jsdom-global": "3.x.x",
-    "mocha": "7.x.x",
-    "nyc": "15.x.x",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.0.0",
+    "chai": "^4.2.0",
+    "coveralls": "^3.1.0",
+    "firebase-tools": "^8.4.2",
+    "generate-changelog": "^1.8.0",
+    "gts": "^2.0.2",
+    "jsdom": "^16.2.2",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
     "protobufjs": "github:michaelsolati/protobuf.js",
-    "rollup": "2.x.x",
-    "rollup-plugin-commonjs": "10.x.x",
-    "rollup-plugin-copier": "1.x.x",
-    "rollup-plugin-node-resolve": "5.x.x",
-    "rollup-plugin-terser": "5.x.x",
-    "rollup-plugin-typescript2": "0.x.x",
-    "ts-node": "8.x.x",
-    "typedoc": "0.16.8",
-    "typescript": "3.6.x"
+    "rollup": "^2.14.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "ts-node": "^8.10.2",
+    "typedoc": "^0.17.7",
+    "typescript": "3.6.5"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "reporter": "spec",
+    "require": [
+      "ts-node/register",
+      "jsdom-global/register"
+    ],
+    "timeout": 30000,
+    "exit": "test/**/*.ts"
   },
   "nyc": {
     "extension": [

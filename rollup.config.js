@@ -1,19 +1,9 @@
-import commonjs from 'rollup-plugin-commonjs';
-import copier from 'rollup-plugin-copier';
-import resolveModule from 'rollup-plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import {terser} from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
-import { terser } from 'rollup-plugin-terser';
-import pkg from './package.json';
 
-const copy = copier({
-  items: [
-    {
-      src: 'src/GeoFirestoreTypes.ts',
-      dest: 'dist/GeoFirestoreTypes.ts',
-      createPath: true,
-    },
-  ],
-});
+import pkg from './package.json';
 
 const onwarn = (warning, rollupWarn) => {
   if (warning.code !== 'CIRCULAR_DEPENDENCY') {
@@ -21,19 +11,7 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
-const plugins = [
-  resolveModule(),
-  typescript({
-    tsconfig: 'tsconfig.json',
-    tsconfigOverride: {
-      compilerOptions: {
-        module: 'ESNext',
-      },
-    },
-  }),
-  commonjs(),
-  copy,
-];
+const plugins = [typescript(), resolve(), commonjs()];
 
 export default [
   {
@@ -48,6 +26,7 @@ export default [
         format: 'es',
       },
     ],
+    external: ['@types/node'],
     plugins,
     onwarn,
   },
@@ -59,6 +38,7 @@ export default [
       name: 'window',
       extend: true,
     },
+    external: ['@types/node'],
     plugins: [...plugins, terser()],
     onwarn,
   },

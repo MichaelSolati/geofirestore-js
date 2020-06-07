@@ -3,19 +3,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
+    "module": "esnext",
     "moduleResolution": "node",
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2016",
-      "dom"
-    ]
+    "declaration": true,
+    "removeComments": true,
+    "target": "es2017",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom"]
   },
-  "files": [
-    "./src/index.ts"
-  ]
+  "include": ["src/**/*"]
 }
