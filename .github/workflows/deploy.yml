@@ -1,0 +1,41 @@
+name: Deploy
+on:
+  release:
+    types: [published]
+env:
+  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+jobs:
+  deploy_to_npm:
+    name: Deploy to NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+          registry-url: https://registry.npmjs.org/
+      - name: Install
+        run: npm i
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        run: npm publish
+  deploy_to_firebase:
+    name: Deploy to Firebase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install
+        run: npm ci
+        run: npm i -g firebase-tools
+      - name: Deploy
+        run: firebase deploy --non-interactive --token $FIREBASE_TOKEN
+      

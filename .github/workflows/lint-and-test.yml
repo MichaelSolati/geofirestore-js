@@ -1,0 +1,23 @@
+name: Lint and Test
+on: [pull_request, push]
+env:
+  COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+jobs:
+  lint_and_test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install
+        run: npm i
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm run test
+      - name: Coverage
+        run: npm run coverage
