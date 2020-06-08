@@ -21,7 +21,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install
-        run: npm i
+        run: npm install --ignore-scripts
       - name: Lint
         run: npm run lint
       - name: Test

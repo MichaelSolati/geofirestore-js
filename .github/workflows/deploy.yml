@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install
-        run: npm i
+        run: npm install --ignore-scripts
       - name: Build
         run: npm run build
       - name: Deploy
@@ -56,7 +56,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install
-        run: npm i
+        run: npm install --ignore-scripts
       - name: Install Firebase Tools
         run: npm i -g firebase-tools
       - name: Deploy
