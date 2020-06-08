@@ -1,3 +1,29 @@
+### 3.5.0 (2020-06-08)
+
+##### Build System / Dependencies
+
+*  lint `/test` folder ([f00ff208](https://github.com/MichaelSolati/geofirestore-js/commit/f00ff20896ef83570645d1a2609ecb4fcffd5882))
+*  move to GitHub Actions for CI ([1bc2014c](https://github.com/MichaelSolati/geofirestore-js/commit/1bc2014cd600df9b938b10aa9b80b32c22159164))
+* **deps:**  bump websocket-extensions from 0.1.3 to 0.1.4 ([#177](https://github.com/MichaelSolati/geofirestore-js/pull/177)) ([91f00715](https://github.com/MichaelSolati/geofirestore-js/commit/91f007153a6f867fe50db22d253d06f7508f2d6f))
+
+##### Chores
+
+* **viewers:**  update viewers example ([95107175](https://github.com/MichaelSolati/geofirestore-js/commit/95107175e16203899940d9210f1ce49c33179ee8))
+*  update dependencies and build ([0d892c96](https://github.com/MichaelSolati/geofirestore-js/commit/0d892c96d23f0b2f95d4b00b8fe87944d1b237eb))
+*  re-add Firebase to license ([1aab19cd](https://github.com/MichaelSolati/geofirestore-js/commit/1aab19cd01a29b966515d1ce55cc34f8e1e2c6ff))
+
+##### Documentation Changes
+
+* **README:**  update badges and compound queries documentation ([a90c653e](https://github.com/MichaelSolati/geofirestore-js/commit/a90c653eb2a8c48a6b675a80438cb2ac65f30438))
+
+##### Bug Fixes
+
+*  set deploy on tag push and fix `firebase-tools` install ([ac410034](https://github.com/MichaelSolati/geofirestore-js/commit/ac41003457163bbb4a124e5f735c35cc0ab9c96f))
+* **mocha:**
+  *  exit tests ([886cd283](https://github.com/MichaelSolati/geofirestore-js/commit/886cd283bb2575c23e776e73b4ccd211c4d184bd))
+  *  remove module from `tsconfig.json` ([84786da8](https://github.com/MichaelSolati/geofirestore-js/commit/84786da875199f985f5e5052e9e3bf799902db8f))
+* **rollup:**  add `module` override ([a45529eb](https://github.com/MichaelSolati/geofirestore-js/commit/a45529eba595f2b160a318760c3e5abb3653a148))
+
 #### 3.4.3 (2020-05-04)
 
 ##### Documentation Changes
