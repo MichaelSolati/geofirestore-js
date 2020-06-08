@@ -1,3 +1,13 @@
+#### 3.5.1 (2020-06-08)
+
+##### New Features
+
+*  add issue template ([37c04989](https://github.com/MichaelSolati/geofirestore-js/commit/37c049896554460adcea529f269308e79eb5bf00))
+
+##### Bug Fixes
+
+* **docs:**  set typedoc to `0.15.0` ([8ce71a0f](https://github.com/MichaelSolati/geofirestore-js/commit/8ce71a0f42d16e60428bd9d09ad3751737e43e3b))
+
 ### 3.5.0 (2020-06-08)
 
 ##### Build System / Dependencies
