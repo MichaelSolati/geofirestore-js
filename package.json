@@ -1,7 +1,7 @@
 {
   "name": "geofirestore",
   "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "scripts": {
     "build": "rm -rf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
