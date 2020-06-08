@@ -1,3 +1,13 @@
+### 3.6.0 (2020-06-08)
+
+##### Bug Fixes
+
+* **GeoQuery:**  fix `near` when `radius` is set to `0`, fixes [#178](https://github.com/MichaelSolati/geofirestore-js/pull/178) ([65db67fa](https://github.com/MichaelSolati/geofirestore-js/commit/65db67fa0aab2e8beaa0b88b11e4dbc1f050266d))
+
+##### Tests
+
+*  add tests ([2b5fb326](https://github.com/MichaelSolati/geofirestore-js/commit/2b5fb32616058db0d2f32ff17a4986a4790c80ed))
+
 #### 3.5.2 (2020-06-08)
 
 ##### Build System / Dependencies
