@@ -52,7 +52,7 @@ describe('GeoQuery Tests:', () => {
   });
 
   describe('onSnapshot:', () => {
-    it('onSnapshot returns dummy data, without any geo related filters', done => {
+    it('onSnapshot returns data, without any geo related filters', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query.onSnapshot(snapshot => {
@@ -66,7 +66,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('onSnapshot returns dummy data, without any geo related filters and with a `where` statement', done => {
+    it('onSnapshot returns data, without any geo related filters and with a `where` statement', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query
@@ -96,7 +96,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('onSnapshot returns dummy data, with geo related filters', done => {
+    it('onSnapshot returns data, with geo related filters', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query
@@ -130,6 +130,34 @@ describe('GeoQuery Tests:', () => {
           .onSnapshot(snapshot => {
             subscription();
             expect(snapshot.empty).to.equal(true);
+            done();
+          });
+      });
+    });
+
+    it('onSnapshot returns data, when radius is set to 0 and point exists at exact coordinate', done => {
+      const center = new firebase.firestore.GeoPoint(2, 3);
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query
+          .near({center, radius: 0})
+          .onSnapshot(snapshot => {
+            subscription();
+            expect(snapshot.size).to.equal(1);
+            done();
+          });
+      });
+    });
+
+    it('onSnapshot returns no data, when radius is set to 0 and no point exists at exact coordinate', done => {
+      const center = new firebase.firestore.GeoPoint(0, 0);
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        const subscription = query
+          .near({center, radius: 0})
+          .onSnapshot(snapshot => {
+            subscription();
+            expect(snapshot.size).to.equal(0);
             done();
           });
       });
@@ -269,7 +297,7 @@ describe('GeoQuery Tests:', () => {
   });
 
   describe('get():', () => {
-    it('get() returns dummy data, without any geo related filters', done => {
+    it('get() returns data, without any geo related filters', done => {
       const query = new GeoQuery(collection);
       stubDatabase()
         .then(() => query.get())
@@ -280,7 +308,7 @@ describe('GeoQuery Tests:', () => {
         .then(done);
     });
 
-    it('get() returns dummy data, without any geo related filters and with a `where` statement', done => {
+    it('get() returns data, without any geo related filters and with a `where` statement', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
@@ -310,7 +338,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('get() returns dummy data, with geo related filters', done => {
+    it('get() returns data, with geo related filters', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
@@ -330,6 +358,34 @@ describe('GeoQuery Tests:', () => {
                 count: 3,
               },
             ]);
+          })
+          .then(done);
+      });
+    });
+
+    it('get() returns data, when radius is set to 0 and point exists at exact coordinate', done => {
+      const center = new firebase.firestore.GeoPoint(2, 3);
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query
+          .near({center, radius: 0})
+          .get()
+          .then(snapshot => {
+            expect(snapshot.size).to.equal(1);
+          })
+          .then(done);
+      });
+    });
+
+    it('get() returns no data, when radius is set to 0 and no point exists at exact coordinate', done => {
+      const center = new firebase.firestore.GeoPoint(0, 0);
+      const query = new GeoQuery(collection);
+      stubDatabase().then(() => {
+        query
+          .near({center, radius: 0})
+          .get()
+          .then(snapshot => {
+            expect(snapshot.size).to.equal(0);
           })
           .then(done);
       });
@@ -384,7 +440,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('get() returns dummy data, when not on web', done => {
+    it('get() returns data, when not on web', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query['_isWeb'] = false;
@@ -398,7 +454,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('get() returns dummy data, with geo related filters, when not on web', done => {
+    it('get() returns data, with geo related filters, when not on web', done => {
       let query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query = query.near({
@@ -427,7 +483,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('get() returns dummy data from server (web only)', done => {
+    it('get() returns data from server (web only)', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
@@ -440,7 +496,7 @@ describe('GeoQuery Tests:', () => {
       });
     });
 
-    it('get() returns dummy data, with geo related filters from server (web only)', done => {
+    it('get() returns data, with geo related filters from server (web only)', done => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
@@ -508,10 +564,14 @@ describe('GeoQuery Tests:', () => {
       expect(() =>
         query.near({center: new firebase.firestore.GeoPoint(0, 0), radius: 100})
       ).not.to.throw();
+    });
+
+    it('near() throws error with missing argument', () => {
+      const query = new GeoQuery(collection);
       expect(() =>
         query.near({center: new firebase.firestore.GeoPoint(1, 1)})
-      ).not.to.throw();
-      expect(() => query.near({radius: 500})).not.to.throw();
+      ).to.throw();
+      expect(() => query.near({radius: 500})).to.throw();
     });
 
     it('near() throws error with no arguments', () => {
@@ -584,17 +644,21 @@ describe('GeoQuery Tests:', () => {
           .near({center: new firebase.firestore.GeoPoint(0, 0), radius: 100})
           .where('count', '==', 0)
       ).not.to.throw();
+    });
+
+    it('near().where() does throw an error with missing arguments', () => {
+      const query = new GeoQuery(collection);
       expect(() =>
         query
           .near({center: new firebase.firestore.GeoPoint(1, 1)})
           .where('count', '>', 0)
-      ).not.to.throw();
+      ).to.throw();
       expect(() =>
         query.near({radius: 500}).where('count', '<=', 0)
-      ).not.to.throw();
+      ).to.throw();
       expect(() =>
         query.near({radius: 500}).where('array', 'array-contains', 'one')
-      ).not.to.throw();
+      ).to.throw();
     });
   });
 

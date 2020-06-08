@@ -34,10 +34,11 @@ export class GeoQuery {
           .enablePersistence
       ) === '[object Function]';
     if (queryCriteria) {
-      if (queryCriteria.limit) {
+      if (typeof queryCriteria.limit === 'number') {
         this._limit = queryCriteria.limit;
       }
-      if (queryCriteria.center && queryCriteria.radius) {
+
+      if (queryCriteria.center && typeof queryCriteria.radius === 'number') {
         // Validate and save the query criteria
         validateQueryCriteria(queryCriteria);
         this._center = queryCriteria.center;
@@ -74,7 +75,7 @@ export class GeoQuery {
       onNext: (snapshot: GeoQuerySnapshot) => void,
       onError?: (error: Error) => void
     ): (() => void) => {
-      if (this._center && this._radius) {
+      if (this._center && typeof this._radius === 'number') {
         return new GeoJoinerOnSnapshot(
           this._generateQuery(),
           this._queryCriteria,
@@ -106,7 +107,7 @@ export class GeoQuery {
   get(
     options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
   ): Promise<GeoQuerySnapshot> {
-    if (this._center && typeof this._radius !== 'undefined') {
+    if (this._center && typeof this._radius === 'number') {
       const queries = this._generateQuery().map(query =>
         this._isWeb ? query.get(options) : query.get()
       );
@@ -150,9 +151,9 @@ export class GeoQuery {
    */
   near(newGeoQueryCriteria: GeoFirestoreTypes.QueryCriteria): GeoQuery {
     // Validate and save the new query criteria
-    validateQueryCriteria(newGeoQueryCriteria);
-    this._center = newGeoQueryCriteria.center || this._center;
-    this._radius = newGeoQueryCriteria.radius || this._radius;
+    validateQueryCriteria(newGeoQueryCriteria, true);
+    this._center = newGeoQueryCriteria.center;
+    this._radius = newGeoQueryCriteria.radius;
 
     return new GeoQuery(this._query, this._queryCriteria);
   }
