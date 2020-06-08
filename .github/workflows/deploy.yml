@@ -25,6 +25,13 @@ jobs:
           echo "_auth=$NPM_TOKEN" >>  /home/runner/work/_temp/.npmrc
           echo "email=$NPM_EMAIL" >>  /home/runner/work/_temp/.npmrc
           echo "always-auth=true" >>  /home/runner/work/_temp/.npmrc
+      - name: NPM Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Install
         run: npm i
       - name: Build
@@ -41,6 +48,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
+      - name: NPM Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Install
         run: npm i
       - name: Install Firebase Tools
