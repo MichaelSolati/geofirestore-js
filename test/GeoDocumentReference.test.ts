@@ -94,6 +94,14 @@ describe('GeoDocumentReference Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore DocumentReference instance', () => {
+      const doc = collection.doc();
+      const geoDoc = new GeoDocumentReference(doc);
+      expect(geoDoc.native).to.equal(doc);
+    });
+  });
+
   describe('onSnapshot:', () => {
     it('onSnapshot returns data', done => {
       const documentReference = geocollection.doc('loc1');

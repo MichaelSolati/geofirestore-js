@@ -46,6 +46,14 @@ describe('GeoCollectionReference Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore CollectionReference instance', () => {
+      const collection = firestore.collection(testCollectionName);
+      const geoCollection = new GeoCollectionReference(collection);
+      expect(geoCollection.native).to.equal(collection);
+    });
+  });
+
   describe('id:', () => {
     it('id will the identifier of a Firestore CollectionReference', () => {
       expect(geocollection.id).to.equal(geocollection['_collection'].id);
