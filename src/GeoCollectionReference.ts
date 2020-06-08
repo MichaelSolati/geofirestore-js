@@ -1,7 +1,7 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 import { GeoDocumentReference } from './GeoDocumentReference';
 import { GeoQuery } from './GeoQuery';
-import { findCoordinates, encodeGeohash, encodeGeoDocument, MAX_GEOHASH_PRECISION, newCentroid} from './utils';
+import { findCoordinates, encodeGeohash, encodeGeoDocument, GEOHASH_PRECISION, newCentroid} from './utils';
 
 /**
  * A `GeoCollectionReference` object can be used for adding documents, getting document references, and querying for documents (using the
@@ -61,12 +61,12 @@ export class GeoCollectionReference extends GeoQuery {
       if (withClusters == true) {
         let i = 0;
 
-        while (i < MAX_GEOHASH_PRECISION) {
+        while (i < GEOHASH_PRECISION) {
           const curGeohash: string = geohash.substring(0, i + 1);
           var size : number;
 
           // We are looking inside the collection
-          (this._collection as GeoFirestoreTypes.cloud.CollectionReference).where('g', '==', curGeohash).get().then((snapshot) => {
+          await (this._collection as GeoFirestoreTypes.cloud.CollectionReference).where('g', '==', curGeohash).get().then((snapshot) => {
             // If the geohash already exist we can just complete all documents
             snapshot.docs.forEach(doc => {
               size = doc.data().s;

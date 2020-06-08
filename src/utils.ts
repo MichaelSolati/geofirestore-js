@@ -35,9 +35,6 @@ export const MAXIMUM_BITS_PRECISION = 22 * BITS_PER_CHAR;
 // Length of a degree latitude at the equator
 export const METERS_PER_DEGREE_LATITUDE = 110574;
 
-// Maximum length of a geohash
-export const MAX_GEOHASH_PRECISION = 10;
-
 //Maximum point in array pointIds
 export const MAX_NUMBER_OF_POINTS_IN_ARRAY = 30;
 

@@ -1,10 +1,12 @@
 import { GeoFirestoreTypes } from './GeoFirestoreTypes';
-import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions, deletingPointFromCentroid, encodeGeoDocument, GEOHASH_PRECISION} from './utils';
+import { encodeSetDocument, encodeUpdateDocument, sanitizeSetOptions, deletingPointFromCentroid, encodeGeoDocument} from './utils';
 import { GeoCollectionReference } from './GeoCollectionReference';
 import { GeoDocumentSnapshot } from './GeoDocumentSnapshot';
 import { GeoFirestore } from './GeoFirestore';
 
 // const cloudfirestore = require("@google-cloud/firestore");
+
+import { GEOHASH_PRECISION } from './utils';
 
 /**
  * A `GeoDocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen to the
@@ -90,12 +92,12 @@ export class GeoDocumentReference {
    * @param findPointId Callback that allows you to find the point id when the cluster size goes from 2 to 1.
    *
    */
-  delete = async (withClusters? : Boolean, findPointId? : any): Promise<void> => {
+  delete = async (withClusters? : Boolean, onUpdate? : (snapshot: FirebaseFirestore.DocumentData) => void): Promise<void> => {
     if (withClusters){
       var data : GeoFirestoreTypes.DocumentData = {};
       let geohash = this.id;
       let i = GEOHASH_PRECISION;
-      let ref;
+      let ref : GeoFirestoreTypes.cloud.DocumentReference | GeoFirestoreTypes.web.DocumentReference;
       let GeopointToRemove : GeoFirestoreTypes.cloud.GeoPoint;
 
       while (i > 0) {
@@ -106,25 +108,17 @@ export class GeoDocumentReference {
         if (snapshot.exists){
           ref = snapshot.ref;
           // Stock the geopoint to remove from the centroid
-          if (curGeohash.length == 10)
+          if (curGeohash.length === 10)
             GeopointToRemove = curCluster.l;
-
           // deleting the document if the size is <= 1
           if (curCluster.s <= 1)
             await ref.delete();
           else
           {
-            const location = deletingPointFromCentroid(curCluster.l, GeopointToRemove, curCluster.s);
-            const size = curCluster.s -1;
-            data.path = curCluster.d.path;
-            if (size == 1) {
-              try {
-                data.pointId = await findPointId(curGeohash, geohash, data.path);
-              } catch (e) {
-                  throw new Error(e);
-              }
-            }
-            await ref.set(encodeGeoDocument(location, curGeohash, data, true, size));
+            curCluster.l = deletingPointFromCentroid(curCluster.l, GeopointToRemove, curCluster.s);
+            curCluster.s -= 1;
+            onUpdate(curCluster);
+            await ref.set(encodeGeoDocument(curCluster.l, curGeohash, data, true, curCluster.s));
           }
         }
         else {
