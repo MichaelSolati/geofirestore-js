@@ -1,3 +1,14 @@
+#### 3.5.2 (2020-06-08)
+
+##### Build System / Dependencies
+
+*  `--ignore-scripts` on `npm install` ([a78dc597](https://github.com/MichaelSolati/geofirestore-js/commit/a78dc597a52ea446bf234d04c7ae50f850c10b55))
+*  use `npm-cache` ([f14ab269](https://github.com/MichaelSolati/geofirestore-js/commit/f14ab269220f77df74406374c78a1dee9bba3a2a))
+
+##### Documentation Changes
+
+* **README:**  add links for badges ([bde3c166](https://github.com/MichaelSolati/geofirestore-js/commit/bde3c1669ca6771cddbf27c4cb09d23fdfc81172))
+
 #### 3.5.1 (2020-06-08)
 
 ##### New Features
