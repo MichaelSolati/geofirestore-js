@@ -204,7 +204,7 @@ export class GeoQuery {
       const query: string[] = this._stringToQuery(toQueryStr);
       // Create the Firebase query
       return this._query
-        .orderBy('g')
+        .orderBy('g.geohash')
         .startAt(query[0])
         .endAt(query[1]) as GeoFirestoreTypes.web.Query;
     });

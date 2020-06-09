@@ -133,7 +133,7 @@ export function decodeGeoQueryDocumentSnapshotData(
 ): {data: () => GeoFirestoreTypes.GeoDocumentData; distance: number} {
   if (validateGeoDocument(data, true)) {
     const distance = center
-      ? calculateDistance(data['.g'].coordinates, center)
+      ? calculateDistance(data.g.coordinates, center)
       : null;
     return {data: () => data, distance};
   }
@@ -233,7 +233,7 @@ export function encodeGeoDocument(
 ): GeoFirestoreTypes.GeoDocumentData {
   validateLocation(coordinates);
   validateGeohash(geohash);
-  document['.g'] = {
+  document.g = {
     coordinates,
     geohash,
   };
@@ -294,16 +294,14 @@ export function encodeUpdateDocument(
   customKey?: string
 ): GeoFirestoreTypes.UpdateData {
   if (Object.prototype.toString.call(data) === '[object Object]') {
-    const result: any = {};
-    const location = findCoordinates(data, customKey, true);
-    if (location) {
-      result['l'] = location;
-      result['g'] = encodeGeohash(result['l']);
+    const coordinates = findCoordinates(data, customKey, true);
+    if (coordinates) {
+      data.g = {
+        coordinates,
+        geohash: encodeGeohash(coordinates),
+      };
     }
-    Object.getOwnPropertyNames(data).forEach((prop: string) => {
-      result['d.' + prop] = data[prop];
-    });
-    return result as GeoFirestoreTypes.UpdateData;
+    return data;
   } else {
     throw new Error('document must be an object');
   }
@@ -535,11 +533,11 @@ export function validateGeoDocument(
 
   if (!documentData) {
     error = 'no document found';
-  } else if ('.g' in documentData) {
-    error = !validateGeohash(documentData['.g'].geohash, true)
+  } else if ('g' in documentData) {
+    error = !validateGeohash(documentData.g.geohash, true)
       ? 'invalid geohash on object'
       : null;
-    error = !validateLocation(documentData['.g'].coordinates, true)
+    error = !validateLocation(documentData.g.coordinates, true)
       ? 'invalid location on object'
       : error;
   } else {

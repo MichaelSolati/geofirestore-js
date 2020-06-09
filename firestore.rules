@@ -15,7 +15,7 @@ service cloud.firestore {
                             && request.resource.data.d.count is number;
     }
     match /tests/{key} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }

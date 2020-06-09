@@ -95,13 +95,12 @@ export class GeoDocumentSnapshot {
       | GeoFirestoreTypes.web.FieldPath,
     options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
-    const path = 'd.' + fieldPath;
     return this._isWeb && options
       ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(
-          path,
+          fieldPath,
           options
         )
-      : this._snapshot.get(path);
+      : this._snapshot.get(fieldPath);
   }
 
   /**
