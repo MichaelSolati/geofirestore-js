@@ -169,16 +169,19 @@ export class GeoDocumentReference {
    * Writes to the document referred to by this `GeoDocumentReference`. If the document does not yet exist, it will be created. If you pass
    * `SetOptions`, the provided data can be merged into an existing document.
    *
-   * @param data A map of the fields and values for the document.
+   * @param documentData A map of the fields and values for the document.
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return A Promise resolved once the data has been successfully written to the backend (Note it won't resolve while you're offline).
    */
   set(
-    data: GeoFirestoreTypes.DocumentData,
+    documentData: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
-      .set(encodeSetDocument(data, options), sanitizeSetOptions(options))
+      .set(
+        encodeSetDocument(documentData, options),
+        sanitizeSetOptions(options)
+      )
       .then(() => null);
   }
 

@@ -4,14 +4,15 @@ import {firestore as webfirestore} from 'firebase/app';
 import '@types/node';
 
 export namespace GeoFirestoreTypes {
-  export interface Document {
-    g: string;
-    l: web.GeoPoint | cloud.GeoPoint;
-    d: DocumentData;
+  export interface GeoDocumentData extends DocumentData {
+    '.g'?: {
+      coordinates: web.GeoPoint | cloud.GeoPoint;
+      geohash: string;
+    };
   }
-  export type DocumentData =
-    | {[field: string]: any; coordinates?: cloud.GeoPoint | web.GeoPoint}
-    | undefined;
+  export interface DocumentData {
+    [field: string]: any;
+  }
   export interface DocumentChange {
     doc: QueryDocumentSnapshot;
     newIndex: number;
@@ -26,7 +27,7 @@ export namespace GeoFirestoreTypes {
   export interface QueryDocumentSnapshot {
     exists: boolean;
     id: string;
-    data: () => DocumentData | any;
+    data: () => GeoDocumentData | any;
     distance: number;
   }
   export interface SetOptions {
@@ -37,7 +38,6 @@ export namespace GeoFirestoreTypes {
   export type SnapshotOptions = webfirestore.SnapshotOptions;
   export interface UpdateData {
     [fieldPath: string]: any;
-    coordinates?: cloud.GeoPoint | web.GeoPoint;
   }
   export type WhereFilterOp =
     | '<'

@@ -1,6 +1,5 @@
 import {GeoFirestoreTypes} from './GeoFirestoreTypes';
 import {GeoDocumentReference} from './GeoDocumentReference';
-import {decodeGeoDocumentData} from './utils';
 
 /**
  * A `GeoDocumentSnapshot` contains data read from a document in your Firestore database. The data can be extracted with `.data()` or
@@ -68,14 +67,14 @@ export class GeoDocumentSnapshot {
    */
   data(
     options?: GeoFirestoreTypes.SnapshotOptions
-  ): GeoFirestoreTypes.DocumentData | undefined {
-    const d =
+  ): GeoFirestoreTypes.GeoDocumentData | undefined {
+    const documentData =
       this._isWeb && options
         ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(
             options
           )
         : this._snapshot.data();
-    return d ? decodeGeoDocumentData(d as GeoFirestoreTypes.Document) : null;
+    return documentData as GeoFirestoreTypes.GeoDocumentData;
   }
 
   /**

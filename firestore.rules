@@ -15,9 +15,7 @@ service cloud.firestore {
                             && request.resource.data.d.count is number;
     }
     match /tests/{key} {
-      allow create: if request.resource.data.size() <= 3;
-    	allow update: if request.resource.data.size() <= 3;
-      allow delete: if true;
+      allow read, write: if false;
     }
   }
 }

@@ -124,28 +124,18 @@ export function calculateDistance(
  * Decodes the GeoDocument data. Returns non-decoded data if decoding fails.
  *
  * @param data The data encoded as a GeoDocument object.
- * @return The decoded Firestore document or non-decoded data if decoding fails.
- */
-export function decodeGeoDocumentData(
-  data: GeoFirestoreTypes.Document
-): GeoFirestoreTypes.DocumentData {
-  return validateGeoDocument(data, true) ? data.d : data;
-}
-
-/**
- * Decodes the GeoDocument data. Returns non-decoded data if decoding fails.
- *
- * @param data The data encoded as a GeoDocument object.
  * @param center The center to calculate the distance of the Document from the query origin.
  * @return The decoded Firestore document or non-decoded data if decoding fails in an object including distance from origin.
  */
 export function decodeGeoQueryDocumentSnapshotData(
-  data: GeoFirestoreTypes.Document,
+  data: GeoFirestoreTypes.GeoDocumentData,
   center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
-): {data: () => GeoFirestoreTypes.DocumentData; distance: number} {
+): {data: () => GeoFirestoreTypes.GeoDocumentData; distance: number} {
   if (validateGeoDocument(data, true)) {
-    const distance = center ? calculateDistance(data.l, center) : null;
-    return {data: () => data.d, distance};
+    const distance = center
+      ? calculateDistance(data['.g'].coordinates, center)
+      : null;
+    return {data: () => data, distance};
   }
   return {data: () => data, distance: null};
 }
@@ -230,18 +220,24 @@ export function encodeGeohash(
 /**
  * Encodes a location and geohash as a GeoDocument.
  *
- * @param location The location as a Firestore GeoPoint.
+ * @param coordinates The location as a Firestore GeoPoint.
  * @param geohash The geohash of the location.
  * @return The document encoded as GeoDocument object.
  */
 export function encodeGeoDocument(
-  location: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  coordinates:
+    | GeoFirestoreTypes.cloud.GeoPoint
+    | GeoFirestoreTypes.web.GeoPoint,
   geohash: string,
   document: GeoFirestoreTypes.DocumentData
-): GeoFirestoreTypes.Document {
-  validateLocation(location);
+): GeoFirestoreTypes.GeoDocumentData {
+  validateLocation(coordinates);
   validateGeohash(geohash);
-  return {g: geohash, l: location, d: document};
+  document['.g'] = {
+    coordinates,
+    geohash,
+  };
+  return document;
 }
 
 /**
@@ -261,28 +257,26 @@ export function sanitizeSetOptions(
 /**
  * Encodes a Document used by GeoWriteBatch.set as a GeoDocument.
  *
- * @param data The document being set.
+ * @param documentData The document being set.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @return The document encoded as GeoDocument object.
  */
 export function encodeSetDocument(
-  data: GeoFirestoreTypes.DocumentData,
+  documentData: GeoFirestoreTypes.DocumentData,
   options?: GeoFirestoreTypes.SetOptions
-): GeoFirestoreTypes.Document {
-  if (Object.prototype.toString.call(data) === '[object Object]') {
+): GeoFirestoreTypes.GeoDocumentData {
+  if (Object.prototype.toString.call(documentData) === '[object Object]') {
     const customKey = options ? options.customKey : null;
-    const unparsed: GeoFirestoreTypes.DocumentData =
-      'd' in data ? data.d : data;
-    const location = findCoordinates(
-      unparsed,
+    const coordinates = findCoordinates(
+      documentData,
       customKey,
       options && (options.merge || !!options.mergeFields)
     );
-    if (location) {
-      const geohash: string = encodeGeohash(location);
-      return encodeGeoDocument(location, geohash, unparsed);
+    if (coordinates) {
+      const geohash: string = encodeGeohash(coordinates);
+      return encodeGeoDocument(coordinates, geohash, documentData);
     }
-    return {d: unparsed} as GeoFirestoreTypes.Document;
+    return documentData;
   } else {
     throw new Error('document must be an object');
   }
@@ -377,7 +371,7 @@ export function generateGeoQueryDocumentSnapshot(
   center?: GeoFirestoreTypes.web.GeoPoint | GeoFirestoreTypes.cloud.GeoPoint
 ): GeoFirestoreTypes.QueryDocumentSnapshot {
   const decoded = decodeGeoQueryDocumentSnapshotData(
-    snapshot.data() as GeoFirestoreTypes.Document,
+    snapshot.data() as GeoFirestoreTypes.GeoDocumentData,
     center
   );
   return {
@@ -529,23 +523,27 @@ export function toGeoPoint(
 /**
  * Validates the inputted GeoDocument object and throws an error, or returns boolean, if it is invalid.
  *
- * @param data The GeoDocument object to be validated.
+ * @param documentData The GeoDocument object to be validated.
  * @param flag Tells function to send up boolean if valid instead of throwing an error.
  * @return Flag if data is valid
  */
 export function validateGeoDocument(
-  data: GeoFirestoreTypes.Document,
+  documentData: GeoFirestoreTypes.GeoDocumentData,
   flag = false
 ): boolean {
   let error: string;
 
-  error = !validateGeohash(data.g, true) ? 'invalid geohash on object' : null;
-  error = !validateLocation(data.l, true)
-    ? 'invalid location on object'
-    : error;
-
-  if (!data || !('d' in data) || typeof data.d !== 'object') {
-    error = 'no valid document found';
+  if (!documentData) {
+    error = 'no document found';
+  } else if ('.g' in documentData) {
+    error = !validateGeohash(documentData['.g'].geohash, true)
+      ? 'invalid geohash on object'
+      : null;
+    error = !validateLocation(documentData['.g'].coordinates, true)
+      ? 'invalid location on object'
+      : error;
+  } else {
+    error = 'no `.g` field found in object';
   }
 
   if (error && !flag) {

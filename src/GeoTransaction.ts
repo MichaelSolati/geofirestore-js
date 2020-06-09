@@ -79,7 +79,7 @@ export class GeoTransaction {
    * the provided data can be merged into the existing document.
    *
    * @param documentRef A reference to the document to be set.
-   * @param data An object of the fields and values for the document.
+   * @param documentData An object of the fields and values for the document.
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return This `GeoTransaction` instance. Used for chaining method calls.
    */
@@ -88,7 +88,7 @@ export class GeoTransaction {
       | GeoDocumentReference
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
-    data: GeoFirestoreTypes.DocumentData,
+    documentData: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): GeoTransaction {
     const ref = (documentRef instanceof GeoDocumentReference
@@ -96,7 +96,7 @@ export class GeoTransaction {
       : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
       ref,
-      encodeSetDocument(data, options),
+      encodeSetDocument(documentData, options),
       sanitizeSetOptions(options)
     );
     return this;

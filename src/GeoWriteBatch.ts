@@ -43,7 +43,7 @@ export class GeoWriteBatch {
    * it will be created. If you pass `SetOptions`, the provided data can be merged into the existing document.
    *
    * @param documentRef A reference to the document to be set.
-   * @param data An object of the fields and values for the document.
+   * @param documentData An object of the fields and values for the document.
    * @param options An object to configure the set behavior. Includes custom key for location in document.
    * @return This `GeoWriteBatch` instance. Used for chaining method calls.
    */
@@ -52,7 +52,7 @@ export class GeoWriteBatch {
       | GeoDocumentReference
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
-    data: GeoFirestoreTypes.DocumentData,
+    documentData: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): GeoWriteBatch {
     const ref = (documentRef instanceof GeoDocumentReference
@@ -60,7 +60,7 @@ export class GeoWriteBatch {
       : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).set(
       ref,
-      encodeSetDocument(data, options),
+      encodeSetDocument(documentData, options),
       sanitizeSetOptions(options)
     );
     return this;

@@ -51,20 +51,20 @@ export class GeoCollectionReference extends GeoQuery {
   /**
    * Add a new document to this collection with the specified data, assigning it a document ID automatically.
    *
-   * @param data An Object containing the data for the new document.
+   * @param documentData An Object containing the data for the new document.
    * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
    * @return A Promise resolved with a `GeoDocumentReference` pointing to the newly created document after it has been written to the
    * backend.
    */
   add(
-    data: GeoFirestoreTypes.DocumentData,
+    documentData: GeoFirestoreTypes.DocumentData,
     customKey?: string
   ): Promise<GeoDocumentReference> {
-    if (Object.prototype.toString.call(data) === '[object Object]') {
-      const location = findCoordinates(data, customKey);
+    if (Object.prototype.toString.call(documentData) === '[object Object]') {
+      const location = findCoordinates(documentData, customKey);
       const geohash: string = encodeGeohash(location);
       return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
-        .add(encodeGeoDocument(location, geohash, data))
+        .add(encodeGeoDocument(location, geohash, documentData))
         .then(doc => new GeoDocumentReference(doc));
     } else {
       throw new Error('document must be an object');
