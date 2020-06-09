@@ -3,7 +3,6 @@ import { GeoFirestoreTypes } from './GeoFirestoreTypes';
 // import {Cluster} from "./interfaces";
 // import * as firebase from 'firebase/app';
 import { interpolate, LatLng } from 'spherical-geometry-js';
-import * as cloudfirestore from '@google-cloud/firestore';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -56,7 +55,6 @@ export const newCentroid = (
     oldSize: number,
 ):GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint => {
     // Computes weighted average using Google Maps' interpolate :
-    // newCentroid = (oldSize * oldCentroid + newGeoPoint) / (oldSize + 1)
     const oldLatLng = new LatLng(oldCentroid.latitude, oldCentroid.longitude);
     const newLatlng = new LatLng(newGeoPoint.latitude, newGeoPoint.longitude);
     const { lat, lng } = interpolate(
@@ -64,7 +62,7 @@ export const newCentroid = (
         newLatlng,
         1 / (oldSize + 1)
     ).toJSON();
-    return new cloudfirestore.GeoPoint(lat, lng);
+    return toGeoPoint(lat, lng);
 };
 
 /**
@@ -74,10 +72,10 @@ export const newCentroid = (
  * @param oldSize
  */
 export const deletingPointFromCentroid = (
-  oldCentroid: cloudfirestore.GeoPoint,
-  geoPointToRemove: cloudfirestore.GeoPoint,
+  oldCentroid: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  geoPointToRemove: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
   oldSize: number,
-):cloudfirestore.GeoPoint => {
+):GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint => {
   if (oldSize <= 1) throw Error("Can't remove a point from a single point centroid !");
   // Computes weighted average using Google Maps' interpolate :
   // newCentroid = (oldSize * oldCentroid - geoPointToRemove) / (oldSize - 1)
@@ -88,7 +86,7 @@ export const deletingPointFromCentroid = (
       latLngToRemove,
       -1 / (oldSize - 1)
   ).toJSON();
-  return new cloudfirestore.GeoPoint(lat, lng);
+  return toGeoPoint(lat, lng);
 };
 
 /**
@@ -174,7 +172,7 @@ export function calculateDistance(
  * @return The decoded Firestore document or non-decoded data if decoding fails.
  */
 export function decodeGeoDocumentData(data: GeoFirestoreTypes.Document): GeoFirestoreTypes.DocumentData {
-  return (validateGeoDocument(data, true)) ? data.d : data;
+  return (validateGeoDocument(data, true)) ? data : data;
 }
 
 /**
@@ -190,7 +188,7 @@ export function decodeGeoQueryDocumentSnapshotData(
 ): { data: () => GeoFirestoreTypes.DocumentData; distance: number; } {
   if (validateGeoDocument(data, true)) {
     const distance = (center) ? calculateDistance(data.l, center) : null;
-    return { data: () => data.d, distance };
+    return { data: () => data, distance };
   }
   return { data: () => data, distance: null };
 }

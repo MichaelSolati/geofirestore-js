@@ -54,6 +54,9 @@ export default [
   {
     input: 'src/index.ts',
     output: {
+      globals: {
+        'ngeohash': 'ngeohash',
+      },
       file: pkg.browser,
       format: 'umd',
       name: 'window',
