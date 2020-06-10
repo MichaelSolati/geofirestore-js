@@ -15,3 +15,7 @@ node_modules/
 .firebase
 
 *.lock
+
+yarn-error.log
+package-lock.json
+yarn.lock
