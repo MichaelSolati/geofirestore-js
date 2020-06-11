@@ -69,8 +69,8 @@ export class GeoCollectionReference extends GeoQuery {
           await (this._collection as GeoFirestoreTypes.cloud.CollectionReference).where('g', '==', curGeohash).get().then((snapshot) => {
             // If the geohash already exist we can just complete all documents
             snapshot.docs.forEach(doc => {
-              size = doc.data().s;
-              data.oldLocation = doc.data().l;
+              size = (doc as FirebaseFirestore.QueryDocumentSnapshot).data().s;
+              data.oldLocation = (doc as FirebaseFirestore.QueryDocumentSnapshot).data().l;
               location = newCentroid(data.oldLocation, data.coordinates, size);
               (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
                 .doc(curGeohash).set(encodeGeoDocument(location, curGeohash, data, true, size + 1))
@@ -90,7 +90,7 @@ export class GeoCollectionReference extends GeoQuery {
       }
       else
         return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
-          .add(encodeGeoDocument(location, geohash, data)).then(doc => new GeoDocumentReference(doc));
+          .add(encodeGeoDocument(location, geohash, data)).then(doc  => new GeoDocumentReference(doc as FirebaseFirestore.DocumentReference));
     } else {
       throw new Error('document must be an object');
     }
