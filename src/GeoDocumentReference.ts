@@ -68,16 +68,12 @@ export class GeoDocumentReference {
   ) => () => void {
     return (
       onNext?: (snapshot: GeoDocumentSnapshot) => void,
-      onError?: (error: Error) => void
+      onError: (error: Error) => void = () => {}
     ) => {
       return (this
         ._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot(
         snapshot => onNext(new GeoDocumentSnapshot(snapshot)),
-        error => {
-          if (onError) {
-            onError(error);
-          }
-        }
+        error => onError(error)
       );
     };
   }
@@ -132,13 +128,10 @@ export class GeoDocumentReference {
   get(
     options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
   ): Promise<GeoDocumentSnapshot> {
-    return this._isWeb
-      ? (this._document as GeoFirestoreTypes.web.DocumentReference)
-          .get(options)
-          .then(snapshot => new GeoDocumentSnapshot(snapshot))
-      : (this._document as GeoFirestoreTypes.cloud.DocumentReference)
-          .get()
-          .then(snapshot => new GeoDocumentSnapshot(snapshot));
+    const get = this._isWeb
+      ? (this._document as GeoFirestoreTypes.web.DocumentReference).get(options)
+      : (this._document as GeoFirestoreTypes.web.DocumentReference).get();
+    return get.then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 
   /**
@@ -153,16 +146,9 @@ export class GeoDocumentReference {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference
   ): boolean {
-    if (other instanceof GeoDocumentReference) {
-      return (this
-        ._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(
-        other['_document'] as GeoFirestoreTypes.cloud.DocumentReference
-      );
-    }
-    return (this
-      ._document as GeoFirestoreTypes.cloud.DocumentReference).isEqual(
-      other as GeoFirestoreTypes.cloud.DocumentReference
-    );
+    const ref: any =
+      other instanceof GeoDocumentReference ? other['_document'] : other;
+    return this._document.isEqual(ref);
   }
 
   /**

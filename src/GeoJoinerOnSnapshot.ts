@@ -32,11 +32,11 @@ export class GeoJoinerOnSnapshot {
     private _queries: GeoFirestoreTypes.web.Query[],
     private _queryCriteria: GeoFirestoreTypes.QueryCriteria,
     private _onNext: (snapshot: GeoQuerySnapshot) => void,
-    private _onError?: (error: Error) => void
+    private _onError: (error: Error) => void = () => {}
   ) {
     validateQueryCriteria(_queryCriteria);
     this._queriesResolved = new Array(_queries.length).fill(0);
-    _queries.forEach((value: GeoFirestoreTypes.web.Query, index: number) => {
+    _queries.forEach((value: GeoFirestoreTypes.web.Query, index) => {
       const subscription = value.onSnapshot(
         snapshot => this._processSnapshot(snapshot, index),
         error => (this._error = error)
@@ -145,7 +145,7 @@ export class GeoJoinerOnSnapshot {
    */
   private _emit(): void {
     if (this._error) {
-      if (this._onError) this._onError(this._error);
+      this._onError(this._error);
       this.unsubscribe()();
     } else if (this._newValues && this._firstRoundResolved) {
       this._newValues = false;

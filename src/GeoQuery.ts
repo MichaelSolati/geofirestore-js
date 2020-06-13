@@ -73,7 +73,7 @@ export class GeoQuery {
   ) => () => void {
     return (
       onNext: (snapshot: GeoQuerySnapshot) => void,
-      onError?: (error: Error) => void
+      onError: (error: Error) => void = () => {}
     ): (() => void) => {
       if (this._center && typeof this._radius === 'number') {
         return new GeoJoinerOnSnapshot(

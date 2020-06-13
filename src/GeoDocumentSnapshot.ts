@@ -115,14 +115,8 @@ export class GeoDocumentSnapshot {
       | GeoFirestoreTypes.cloud.DocumentSnapshot
       | GeoFirestoreTypes.web.DocumentSnapshot
   ): boolean {
-    if (other instanceof GeoDocumentSnapshot) {
-      return (this
-        ._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot).isEqual(
-        other['_snapshot'] as GeoFirestoreTypes.cloud.DocumentSnapshot
-      );
-    }
-    return (this._snapshot as GeoFirestoreTypes.cloud.DocumentSnapshot).isEqual(
-      other as GeoFirestoreTypes.cloud.DocumentSnapshot
-    );
+    const ref: any =
+      other instanceof GeoDocumentSnapshot ? other['_snapshot'] : other;
+    return this._snapshot.isEqual(ref);
   }
 }

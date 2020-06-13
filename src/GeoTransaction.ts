@@ -46,10 +46,11 @@ export class GeoTransaction {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference
   ): GeoTransaction {
-    const ref = (documentRef instanceof GeoDocumentReference
-      ? documentRef['_document']
-      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
-    (this._transaction as GeoFirestoreTypes.cloud.Transaction).delete(ref);
+    const ref: any =
+      documentRef instanceof GeoDocumentReference
+        ? documentRef['_document']
+        : documentRef;
+    this._transaction.delete(ref);
     return this;
   }
 
@@ -65,12 +66,13 @@ export class GeoTransaction {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference
   ): Promise<GeoDocumentSnapshot> {
-    const ref = (documentRef instanceof GeoDocumentReference
-      ? documentRef['_document']
-      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    const ref: any =
+      documentRef instanceof GeoDocumentReference
+        ? documentRef['_document']
+        : documentRef;
     return (this._transaction as GeoFirestoreTypes.cloud.Transaction)
       .get(ref)
-      .then(snpashot => new GeoDocumentSnapshot(snpashot));
+      .then((snpashot: any) => new GeoDocumentSnapshot(snpashot));
   }
 
   /**
@@ -91,9 +93,10 @@ export class GeoTransaction {
     documentData: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): GeoTransaction {
-    const ref = (documentRef instanceof GeoDocumentReference
-      ? documentRef['_document']
-      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    const ref: any =
+      documentRef instanceof GeoDocumentReference
+        ? documentRef['_document']
+        : documentRef;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
       ref,
       encodeSetDocument(documentData, options),
@@ -120,9 +123,10 @@ export class GeoTransaction {
     data: GeoFirestoreTypes.UpdateData,
     customKey?: string
   ): GeoTransaction {
-    const ref = (documentRef instanceof GeoDocumentReference
-      ? documentRef['_document']
-      : documentRef) as GeoFirestoreTypes.cloud.DocumentReference;
+    const ref: any =
+      documentRef instanceof GeoDocumentReference
+        ? documentRef['_document']
+        : documentRef;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).update(
       ref,
       encodeUpdateDocument(data, customKey)

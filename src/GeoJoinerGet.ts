@@ -25,7 +25,7 @@ export class GeoJoinerGet {
       snapshot.docs.forEach(doc => {
         const distance = calculateDistance(
           this._queryCriteria.center,
-          doc.data().l
+          (doc.data() as GeoFirestoreTypes.GeoDocumentData).g.geopoint
         );
         if (this._queryCriteria.radius >= distance) {
           this._docs.set(doc.id, doc);
@@ -42,7 +42,7 @@ export class GeoJoinerGet {
           return {
             distance: calculateDistance(
               this._queryCriteria.center,
-              doc.data().l
+              (doc.data() as GeoFirestoreTypes.GeoDocumentData).g.geopoint
             ),
             id: doc.id,
           };
