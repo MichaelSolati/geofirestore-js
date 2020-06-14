@@ -2,6 +2,10 @@
 
 [![npm](https://img.shields.io/npm/v/geofirestore)](https://www.npmjs.com/package/geofirestore) [![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore) [![Lint and Test](https://github.com/MichaelSolati/geofirestore-js/workflows/Lint%20and%20Test/badge.svg?branch=master)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Lint+and+Test%22) [![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js) [![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js) [![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers) [![GitHub forks](https://img.shields.io/github/forks/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/network/members)
 
+> ## WARNING
+>
+> The master branch of GeoFirestore on GitHub is currently used for the development of GeoFirestore v4.0.0. If you need to view the source code or README of the latest release of GeoFirestore, v3.6.0, [click here](https://github.com/MichaelSolati/geofirestore-js/tree/v3.6.0).
+
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
 GeoFirestore is an open-source library that extends the Firestore library in order to store and query documents based on their geographic location. At its heart, GeoFirestore is just a wrapper for the Firestore library, exposing many of the same functions and features of Firestore. Its main benefit, however, is the possibility of retrieving only those documents within a given geographic area - all in realtime.
