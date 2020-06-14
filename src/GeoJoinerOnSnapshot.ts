@@ -1,6 +1,10 @@
 import {GeoFirestoreTypes} from './GeoFirestoreTypes';
 import {GeoQuerySnapshot} from './GeoQuerySnapshot';
-import {validateQueryCriteria, calculateDistance} from './utils';
+import {
+  validateQueryCriteria,
+  calculateDistance,
+  validateGeoDocument,
+} from './utils';
 
 interface DocMap {
   change: GeoFirestoreTypes.web.DocumentChange;
@@ -174,8 +178,12 @@ export class GeoJoinerOnSnapshot {
     if (docChanges.length) {
       // Snapshot has data, key during first snapshot
       docChanges.forEach(change => {
-        const distance = change.doc.data().l
-          ? calculateDistance(this._queryCriteria.center, change.doc.data().l)
+        const docData = change.doc.data() as GeoFirestoreTypes.GeoDocumentData;
+        const geopoint = validateGeoDocument(docData, true)
+          ? docData.g.geopoint
+          : null;
+        const distance = geopoint
+          ? calculateDistance(this._queryCriteria.center, geopoint)
           : null;
         const id = change.doc.id;
         const fromMap = this._docs.get(id);

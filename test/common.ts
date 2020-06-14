@@ -3,25 +3,23 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 import {GeoCollectionReference, GeoFirestore, GeoFirestoreTypes} from '../src';
-import {calculateDistance} from '../src/utils';
+import {calculateDistance, encodeAddDocument} from '../src/utils';
 
 /*************/
 /*  GLOBALS  */
 /*************/
 const expect = chai.expect;
 // Define dummy data for database
-export const dummyData: any[] = [
-  {key: 'loc1', coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0},
-  {key: 'loc2', coordinates: new firebase.firestore.GeoPoint(50, -7), count: 1},
-  {
-    key: 'loc3',
-    coordinates: new firebase.firestore.GeoPoint(16, -150),
-    count: 2,
-  },
-  {key: 'loc4', coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3},
-  {key: 'loc5', coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4},
-  {key: 'loc6', coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5},
+export const validDocumentData: GeoFirestoreTypes.DocumentData[] = [
+  {coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0},
+  {coordinates: new firebase.firestore.GeoPoint(50, -7), count: 1},
+  {coordinates: new firebase.firestore.GeoPoint(16, -150), count: 2},
+  {coordinates: new firebase.firestore.GeoPoint(5, 5), count: 3},
+  {coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4},
+  {coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5},
 ];
+export const validGeoDocumentData: GeoFirestoreTypes.GeoDocumentData[] = (() =>
+  validDocumentData.map(e => encodeAddDocument(e)))();
 // Define dummy setOptions to sanitize
 export const dummySetOptions: GeoFirestoreTypes.SetOptions = {
   merge: true,
@@ -43,17 +41,14 @@ export const invalidFirestores: any[] = [
   ['hi', 1],
 ];
 export const invalidGeoFirestoreDocuments: any[] = [
-  {d: null, g: '6gydkcbqwf', l: new firebase.firestore.GeoPoint(-23.5, -46.9)},
-  {
-    d: {coordinates: new firebase.firestore.GeoPoint(-73.5, 153)},
-    g: false,
-    l: new firebase.firestore.GeoPoint(-73.5, 153),
-  },
-  {
-    d: {coordinates: new firebase.firestore.GeoPoint(52.3, 7.1)},
-    g: 'u1m198fj9f',
-    l: [52.3, 7.1],
-  },
+  {g: 'a'},
+  {g: false},
+  {g: 1},
+  {g: {}},
+  {},
+  null,
+  undefined,
+  NaN,
 ];
 export const invalidGeohashes: any[] = [
   '',
@@ -133,23 +128,6 @@ export const invalidObjects: any[] = [
   NaN,
 ];
 export const testCollectionName = 'tests';
-export const validGeoFirestoreDocuments: GeoFirestoreTypes.Document[] = [
-  {
-    d: {coordinates: new firebase.firestore.GeoPoint(-23.5, -46.9)},
-    g: '6gydkcbqwf',
-    l: new firebase.firestore.GeoPoint(-23.5, -46.9),
-  },
-  {
-    d: {coordinates: new firebase.firestore.GeoPoint(-73.5, 153)},
-    g: 'r7hg99g0yk',
-    l: new firebase.firestore.GeoPoint(-73.5, 153),
-  },
-  {
-    d: {coordinates: new firebase.firestore.GeoPoint(52.3, 7.1)},
-    g: 'u1m198fj9f',
-    l: new firebase.firestore.GeoPoint(52.3, 7.1),
-  },
-];
 export const validGeohashes: string[] = ['4', 'd62dtu', '000000000000'];
 export const validLocations: firebase.firestore.GeoPoint[] = [
   new firebase.firestore.GeoPoint(0, 0),
@@ -285,27 +263,14 @@ function deleteQueryBatch(
 }
 
 export function stubDatabase(
-  docs: Array<{[key: string]: any}> = dummyData
+  docs: Array<{[key: string]: any}> = validDocumentData
 ): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
   const geocollection = new GeoCollectionReference(collection);
-  docs.forEach(item => {
-    const insert = geocollection.doc(item.key);
+  docs.forEach((item, index) => {
+    const insert = geocollection.doc(`loc${index}`);
     batch.set(insert, item);
   });
   return batch.commit();
-}
-
-export function sortObject(data: {[key: string]: any}): {[key: string]: any} {
-  const result: any = {};
-  const primitives = ['boolean', 'null', 'number', 'string', 'undefined'];
-  Object.getOwnPropertyNames(data)
-    .sort()
-    .forEach(key => {
-      result[key] = primitives.includes(data[key])
-        ? data[key]
-        : sortObject(data[key]);
-    });
-  return result;
 }

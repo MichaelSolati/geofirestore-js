@@ -67,7 +67,7 @@ export class GeoDocumentReference {
     onError?: (error: Error) => void
   ) => () => void {
     return (
-      onNext?: (snapshot: GeoDocumentSnapshot) => void,
+      onNext: (snapshot: GeoDocumentSnapshot) => void,
       onError: (error: Error) => void = () => {}
     ) => {
       return (this

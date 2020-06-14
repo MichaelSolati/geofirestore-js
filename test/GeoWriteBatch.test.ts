@@ -5,7 +5,8 @@ import {
   afterEachHelper,
   beforeEachHelper,
   collection,
-  dummyData,
+  validDocumentData,
+  validGeoDocumentData,
   failTestOnCaughtError,
   firestore,
   geocollection,
@@ -43,7 +44,7 @@ describe('GeoWriteBatch Tests:', () => {
   describe('set():', () => {
     it('set() returns the current GeoWriteBatch given a GeoDocumentReference', () => {
       const geowritebatch = geofirestore.batch();
-      const set = geowritebatch.set(geocollection.doc(), dummyData[0]);
+      const set = geowritebatch.set(geocollection.doc(), validDocumentData[0]);
       expect(set).to.deep.equal(geowritebatch);
     });
 
@@ -57,12 +58,12 @@ describe('GeoWriteBatch Tests:', () => {
 
       return doc.firestore
         .batch()
-        .set(doc, dummyData[0])
+        .set(doc, validDocumentData[0])
         .commit()
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
-          expect(snapshot.data()).to.deep.equal(dummyData[0]);
+          expect(snapshot.data()).to.deep.equal(validGeoDocumentData[0]);
         });
     });
 
@@ -71,7 +72,7 @@ describe('GeoWriteBatch Tests:', () => {
 
       return doc.firestore
         .batch()
-        .set(doc, dummyData[0], {merge: true})
+        .set(doc, validDocumentData[0], {merge: true})
         .commit()
         .then(() => {
           return doc.firestore
@@ -82,16 +83,19 @@ describe('GeoWriteBatch Tests:', () => {
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
-          expect(snapshot.data()).to.deep.equal({...dummyData[0], count: 10});
+          expect(snapshot.data()).to.deep.equal({
+            ...validGeoDocumentData[0],
+            count: 10,
+          });
         });
     });
   });
 
   describe('update():', () => {
     it('update() returns the current GeoWriteBatch given a DocumentReference', () => {
-      return collection.add(dummyData[0]).then(value => {
+      return collection.add(validDocumentData[0]).then(value => {
         const geowritebatch = geofirestore.batch();
-        const update = geowritebatch.update(value, dummyData[1]);
+        const update = geowritebatch.update(value, validDocumentData[1]);
         expect(update).to.deep.equal(geowritebatch);
       });
     });
@@ -104,12 +108,14 @@ describe('GeoWriteBatch Tests:', () => {
     it('update() successfully updates a document in a collection', () => {
       const doc = geocollection.doc();
       return doc
-        .set(dummyData[0])
-        .then(() => doc.firestore.batch().update(doc, dummyData[1]).commit())
+        .set(validDocumentData[0])
+        .then(() =>
+          doc.firestore.batch().update(doc, validDocumentData[1]).commit()
+        )
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);
-          expect(snapshot.data()).to.deep.equal(dummyData[1]);
+          expect(snapshot.data()).to.deep.equal(validGeoDocumentData[1]);
         });
     });
   });
@@ -129,7 +135,7 @@ describe('GeoWriteBatch Tests:', () => {
     it('delete() successfully deletes a document from a collection', () => {
       const doc = geocollection.doc();
       return doc
-        .set(dummyData[0])
+        .set(validDocumentData[0])
         .then(() => doc.get())
         .then(snapshot => {
           expect(snapshot.exists).to.equal(true);

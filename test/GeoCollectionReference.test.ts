@@ -12,8 +12,9 @@ import {
   invalidFirestores,
   invalidObjects,
   testCollectionName,
-  validGeoFirestoreDocuments,
+  validDocumentData,
   wait,
+  invalidGeoFirestoreDocuments,
 } from './common';
 
 const expect = chai.expect;
@@ -88,13 +89,13 @@ describe('GeoCollectionReference Tests:', () => {
 
   describe('add():', () => {
     it('add() does not throw an error when given a valid object', () => {
-      validGeoFirestoreDocuments.forEach(doc => {
-        expect(() => geocollection.add(doc.d)).to.not.throw();
+      validDocumentData.forEach(doc => {
+        expect(() => geocollection.add(doc)).to.not.throw();
       });
     });
 
-    it('add() does throw an error when given an ivalid object', () => {
-      validGeoFirestoreDocuments.forEach(doc => {
+    it('add() does throw an error when given an invalid object', () => {
+      invalidGeoFirestoreDocuments.forEach(doc => {
         expect(() => geocollection.add(doc)).to.throw();
       });
     });

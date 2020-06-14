@@ -8,12 +8,11 @@ import {
   afterEachHelper,
   beforeEachHelper,
   collection,
-  dummyData,
+  validDocumentData,
   geocollection,
   geofirestore,
   invalidFirestores,
   invalidObjects,
-  sortObject,
   stubDatabase,
   wait,
 } from './common';
@@ -104,11 +103,11 @@ describe('GeoDocumentReference Tests:', () => {
 
   describe('onSnapshot:', () => {
     it('onSnapshot returns data', done => {
-      const documentReference = geocollection.doc('loc1');
+      const documentReference = geocollection.doc('loc0');
       documentReference
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => {
-          const sub: () => void = documentReference.onSnapshot(snapshot => {
+          const sub = documentReference.onSnapshot(snapshot => {
             sub();
             expect(snapshot.exists).to.equal(true);
             done();
@@ -117,27 +116,20 @@ describe('GeoDocumentReference Tests:', () => {
     });
 
     it('onSnapshot detects change in data', done => {
-      const documentReference = geocollection.doc('loc1');
+      const documentReference = geocollection.doc('loc0');
       documentReference
         .set({key: 1, coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => {
           let called = false;
-          documentReference.onSnapshot(snapshot => {
+          const sub = documentReference.onSnapshot(snapshot => {
             if (snapshot.exists) {
-              if (snapshot.data()['key'] === 1) {
-                documentReference
-                  .set({
-                    key: 2,
-                    coordinates: new firebase.firestore.GeoPoint(1, 1),
-                  })
-                  .then();
-              } else if (snapshot.data()['key'] === 2) {
-                expect(snapshot.data()).to.deep.equal({
-                  key: 2,
-                  coordinates: new firebase.firestore.GeoPoint(1, 1),
-                });
+              if (snapshot.get('key') === 1) {
+                documentReference.set({key: 2}, {merge: true});
+              } else if (snapshot.get('key') === 2) {
+                expect(snapshot.get('key')).to.equal(2);
                 if (!called) {
                   called = true;
+                  sub();
                   done();
                 }
               }
@@ -220,17 +212,21 @@ describe('GeoDocumentReference Tests:', () => {
 
   describe('set():', () => {
     it('set() does not throw an error when given a valid object', () => {
-      dummyData.forEach(doc => {
-        expect(() => geocollection.doc(doc.key).set(doc)).to.not.throw();
+      validDocumentData.forEach((doc, index) => {
+        expect(() => geocollection.doc(`loc${index}`).set(doc)).to.not.throw();
       });
     });
 
     it('set() does throw an error when given an invalid object', () => {
-      dummyData.forEach(doc => {
-        expect(() => geocollection.doc(doc.key).set(null)).to.throw();
-        expect(() => geocollection.doc(doc.key).set({key: doc.key})).to.throw();
-        expect(() => geocollection.doc(doc.key).set(1 as any)).to.throw();
-        expect(() => geocollection.doc(doc.key).set(false as any)).to.throw();
+      validDocumentData.forEach((_, index) => {
+        expect(() => geocollection.doc(`loc${index}`).set(null)).to.throw();
+        expect(() =>
+          geocollection.doc(`loc${index}`).set({key: 'key'})
+        ).to.throw();
+        expect(() => geocollection.doc(`loc${index}`).set(1 as any)).to.throw();
+        expect(() =>
+          geocollection.doc(`loc${index}`).set(false as any)
+        ).to.throw();
       });
     });
 
@@ -330,12 +326,14 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => documentReference.update({key: 1}))
         .then(() => documentReference.get())
         .then(doc => {
-          expect(sortObject(doc.data())).to.deep.equal(
-            sortObject({
-              coordinates: new firebase.firestore.GeoPoint(0, 0),
-              key: 1,
-            })
-          );
+          expect(doc.data()).to.deep.include({
+            g: {
+              geohash: '7zzzzzzzzz',
+              geopoint: new firebase.firestore.GeoPoint(0, 0),
+            },
+            coordinates: new firebase.firestore.GeoPoint(0, 0),
+            key: 1,
+          });
         })
         .then(done);
     });
@@ -386,6 +384,10 @@ describe('GeoDocumentReference Tests:', () => {
         .then(doc => {
           expect(doc.exists).to.equal(true);
           expect(doc.data()).to.deep.equal({
+            g: {
+              geohash: '7zzzzzzzzz',
+              geopoint: new firebase.firestore.GeoPoint(0, 0),
+            },
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
@@ -393,7 +395,7 @@ describe('GeoDocumentReference Tests:', () => {
     });
 
     it('get() returns a document, when not on web', done => {
-      const documentReference = geocollection.doc('loc1');
+      const documentReference = geocollection.doc('loc0');
       documentReference['_isWeb'] = false;
       documentReference
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
@@ -401,6 +403,10 @@ describe('GeoDocumentReference Tests:', () => {
         .then(doc => {
           expect(doc.exists).to.equal(true);
           expect(doc.data()).to.deep.equal({
+            g: {
+              geohash: '7zzzzzzzzz',
+              geopoint: new firebase.firestore.GeoPoint(0, 0),
+            },
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
@@ -415,6 +421,10 @@ describe('GeoDocumentReference Tests:', () => {
         .then(doc => {
           expect(doc.exists).to.equal(true);
           expect(doc.data()).to.deep.equal({
+            g: {
+              geohash: '7zzzzzzzzz',
+              geopoint: new firebase.firestore.GeoPoint(0, 0),
+            },
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
@@ -427,7 +437,7 @@ describe('GeoDocumentReference Tests:', () => {
         .get()
         .then(doc => {
           expect(doc.exists).to.equal(false);
-          expect(doc.data()).to.deep.equal(null);
+          expect(doc.data()).to.deep.equal(undefined);
         })
         .then(done);
     });

@@ -178,7 +178,7 @@ export class GeoQuery {
     value: any
   ): GeoQuery {
     return new GeoQuery(
-      this._query.where(fieldPath ? 'd.' + fieldPath : fieldPath, opStr, value),
+      this._query.where(fieldPath, opStr, value),
       this._queryCriteria
     );
   }

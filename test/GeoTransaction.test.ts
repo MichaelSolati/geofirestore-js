@@ -5,7 +5,7 @@ import {
   afterEachHelper,
   beforeEachHelper,
   collection,
-  dummyData,
+  validGeoDocumentData,
   geocollection,
   geofirestore,
   invalidFirestores,
@@ -47,8 +47,7 @@ describe('GeoTransaction Tests:', () => {
 
   describe('delete():', () => {
     it('delete() removes a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -68,8 +67,7 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('delete() removes a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = collection.doc(dummyDoc.key);
+      const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -91,8 +89,8 @@ describe('GeoTransaction Tests:', () => {
 
   describe('get():', () => {
     it('get() reads a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore.runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
@@ -106,8 +104,8 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('get() reads a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = collection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore.runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
@@ -123,9 +121,9 @@ describe('GeoTransaction Tests:', () => {
 
   describe('set():', () => {
     it('set() writes to a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const dummyDoc2 = dummyData[1];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc2 = validGeoDocumentData[1];
+      const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -147,9 +145,9 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('set() writes to a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const dummyDoc2 = dummyData[1];
-      const docRef = collection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc2 = validGeoDocumentData[1];
+      const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -164,15 +162,15 @@ describe('GeoTransaction Tests:', () => {
           .then(() => docRef.get())
           .then(doc => {
             expect(doc.exists).to.be.equal(true);
-            expect(doc.data().d).to.deep.equal(dummyDoc2);
+            expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
       });
     });
 
     it('set() creates a new document if no document existed before', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const docRef = geocollection.doc('loc0');
       return geofirestore
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
@@ -193,9 +191,9 @@ describe('GeoTransaction Tests:', () => {
 
   describe('update():', () => {
     it('update() writes to a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const dummyDoc2 = dummyData[1];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc2 = validGeoDocumentData[1];
+      const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -217,9 +215,9 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('update() writes to a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = dummyData[0];
-      const dummyDoc2 = dummyData[1];
-      const docRef = collection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc2 = validGeoDocumentData[1];
+      const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
           .runTransaction(transaction => {
@@ -234,15 +232,15 @@ describe('GeoTransaction Tests:', () => {
           .then(() => docRef.get())
           .then(doc => {
             expect(doc.exists).to.be.equal(true);
-            expect(doc.data().d).to.deep.equal(dummyDoc2);
+            expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
       });
     });
 
     it('update() fails if no document existed before', () => {
-      const dummyDoc = dummyData[0];
-      const docRef = geocollection.doc(dummyDoc.key);
+      const dummyDoc = validGeoDocumentData[0];
+      const docRef = geocollection.doc('loc0');
       let isDone = false;
       return geofirestore
         .runTransaction(transaction => {

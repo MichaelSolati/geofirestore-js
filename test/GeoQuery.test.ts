@@ -7,7 +7,7 @@ import {
   afterEachHelper,
   beforeEachHelper,
   collection,
-  dummyData,
+  validGeoDocumentData,
   firestore,
   invalidFirestores,
   stubDatabase,
@@ -15,6 +15,7 @@ import {
   geocollection,
   generateDocs,
 } from './common';
+import {calculateDistance, encodeGeohash} from '../src/utils';
 
 const expect = chai.expect;
 
@@ -56,10 +57,10 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query.onSnapshot(snapshot => {
-          if (snapshot.size === dummyData.length) {
+          if (snapshot.size === validGeoDocumentData.length) {
             subscription();
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(dummyData);
+            expect(result).to.have.deep.members(validGeoDocumentData);
             done();
           }
         });
@@ -74,48 +75,28 @@ describe('GeoQuery Tests:', () => {
           .onSnapshot(snapshot => {
             subscription();
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-              {
-                key: 'loc5',
-                coordinates: new firebase.firestore.GeoPoint(67, 55),
-                count: 4,
-              },
-              {
-                key: 'loc6',
-                coordinates: new firebase.firestore.GeoPoint(8, 8),
-                count: 5,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(e => e.count > 2)
+            );
             done();
           });
       });
     });
 
     it('onSnapshot returns data, with geo related filters', done => {
+      const center = new firebase.firestore.GeoPoint(1, 2);
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query
-          .near({center: new firebase.firestore.GeoPoint(1, 2), radius: 1000})
+          .near({center, radius: 1000})
           .onSnapshot(snapshot => {
             subscription();
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(
+                e => calculateDistance(center, e.g.geopoint) <= 1000
+              )
+            );
             done();
           });
       });
@@ -180,7 +161,15 @@ describe('GeoQuery Tests:', () => {
             } else {
               subscription();
               const result = snapshot.docs.map(d => d.data());
-              expect(result).to.have.deep.members([{coordinates: center}]);
+              expect(result).to.have.deep.members([
+                {
+                  g: {
+                    geohash: encodeGeohash(center),
+                    geopoint: center,
+                  },
+                  coordinates: center,
+                },
+              ]);
               done();
             }
           });
@@ -188,7 +177,7 @@ describe('GeoQuery Tests:', () => {
     });
 
     it('onSnapshot updates when a document, that belongs in the query, is removed from collection', done => {
-      const doc = dummyData[0];
+      const doc = validGeoDocumentData[0];
       let runOnce = false;
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
@@ -201,7 +190,7 @@ describe('GeoQuery Tests:', () => {
               expect(snapshot.docChanges().length).to.equal(1);
               expect(snapshot.docChanges()[0].type).to.equal('added');
               setTimeout(() => {
-                geocollection.doc(doc.key).delete();
+                geocollection.doc('loc0').delete();
               }, 100);
             } else {
               subscription();
@@ -303,7 +292,7 @@ describe('GeoQuery Tests:', () => {
         .then(() => query.get())
         .then(data => {
           const result = data.docs.map(d => d.data());
-          expect(result).to.have.deep.members(dummyData);
+          expect(result).to.have.deep.members(validGeoDocumentData);
         })
         .then(done);
     });
@@ -316,48 +305,28 @@ describe('GeoQuery Tests:', () => {
           .get()
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-              {
-                key: 'loc5',
-                coordinates: new firebase.firestore.GeoPoint(67, 55),
-                count: 4,
-              },
-              {
-                key: 'loc6',
-                coordinates: new firebase.firestore.GeoPoint(8, 8),
-                count: 5,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(e => e.count > 2)
+            );
           })
           .then(done);
       });
     });
 
     it('get() returns data, with geo related filters', done => {
+      const center = new firebase.firestore.GeoPoint(1, 2);
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
-          .near({center: new firebase.firestore.GeoPoint(1, 2), radius: 1000})
+          .near({center, radius: 1000})
           .get()
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(
+                e => calculateDistance(center, e.g.geopoint) <= 1000
+              )
+            );
           })
           .then(done);
       });
@@ -399,8 +368,8 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const docChanges = snapshot.docChanges();
             const docs = docChanges.map(doc => doc.doc.data());
-            expect(docChanges.length).to.be.equal(dummyData.length);
-            expect(docs).to.have.deep.members(dummyData);
+            expect(docChanges.length).to.be.equal(validGeoDocumentData.length);
+            expect(docs).to.have.deep.members(validGeoDocumentData);
             docChanges.forEach((doc, index) => {
               expect(doc.newIndex).to.be.equal(index);
               expect(doc.oldIndex).to.be.equal(-1);
@@ -448,36 +417,27 @@ describe('GeoQuery Tests:', () => {
           .get()
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(dummyData);
+            expect(result).to.have.deep.members(validGeoDocumentData);
           })
           .then(done);
       });
     });
 
     it('get() returns data, with geo related filters, when not on web', done => {
+      const center = new firebase.firestore.GeoPoint(1, 2);
       let query = new GeoQuery(collection);
       stubDatabase().then(() => {
-        query = query.near({
-          center: new firebase.firestore.GeoPoint(1, 2),
-          radius: 1000,
-        });
+        query = query.near({center, radius: 1000});
         query['_isWeb'] = false;
         query
           .get()
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(
+                e => calculateDistance(center, e.g.geopoint) <= 1000
+              )
+            );
           })
           .then(done);
       });
@@ -490,32 +450,26 @@ describe('GeoQuery Tests:', () => {
           .get({source: 'server'})
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(dummyData);
+            expect(result).to.have.deep.members(validGeoDocumentData);
           })
           .then(done);
       });
     });
 
     it('get() returns data, with geo related filters from server (web only)', done => {
+      const center = new firebase.firestore.GeoPoint(1, 2);
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         query
-          .near({center: new firebase.firestore.GeoPoint(1, 2), radius: 1000})
+          .near({center, radius: 1000})
           .get({source: 'server'})
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members([
-              {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
-              {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-            ]);
+            expect(result).to.have.deep.members(
+              validGeoDocumentData.filter(
+                e => calculateDistance(center, e.g.geopoint) <= 1000
+              )
+            );
           })
           .then(done);
       });

@@ -233,7 +233,7 @@ export function encodeGeoDocument(
     geopoint,
     geohash,
   };
-  return document;
+  return document as GeoFirestoreTypes.GeoDocumentData;
 }
 
 /**
@@ -279,8 +279,8 @@ export function encodeAddDocument(
 export function encodeSetDocument(
   documentData: GeoFirestoreTypes.DocumentData,
   options?: GeoFirestoreTypes.SetOptions
-): GeoFirestoreTypes.GeoDocumentData {
-  if (Object.prototype.toString.call(documentData) === '[object Object]') {
+): GeoFirestoreTypes.GeoDocumentData | GeoFirestoreTypes.DocumentData {
+  if (Object.prototype.toString.call(documentData) !== '[object Object]') {
     throw new Error('document must be an object');
   }
   const customKey = options ? options.customKey : null;
@@ -299,25 +299,25 @@ export function encodeSetDocument(
 /**
  * Encodes a Document used by GeoWriteBatch.update as a GeoDocument.
  *
- * @param data The document being updated.
+ * @param documentData The document being updated.
  * @param customKey The key of the document to use as the location. Otherwise we default to `coordinates`.
  * @return The document encoded as GeoDocument object.
  */
 export function encodeUpdateDocument(
-  data: GeoFirestoreTypes.UpdateData,
+  documentData: GeoFirestoreTypes.UpdateData,
   customKey?: string
 ): GeoFirestoreTypes.UpdateData {
-  if (Object.prototype.toString.call(data) === '[object Object]') {
+  if (Object.prototype.toString.call(documentData) !== '[object Object]') {
     throw new Error('document must be an object');
   }
-  const geopoint = findGeoPoint(data, customKey, true);
+  const geopoint = findGeoPoint(documentData, customKey, true);
   if (geopoint) {
-    (data as GeoFirestoreTypes.GeoDocumentData).g = {
+    (documentData as GeoFirestoreTypes.GeoDocumentData).g = {
       geopoint,
       geohash: encodeGeohash(geopoint),
     };
   }
-  return data;
+  return documentData;
 }
 
 /**

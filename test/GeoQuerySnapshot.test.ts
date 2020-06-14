@@ -6,10 +6,11 @@ import {
   afterEachHelper,
   beforeEachHelper,
   collection,
-  dummyData,
+  validGeoDocumentData,
   invalidFirestores,
   stubDatabase,
 } from './common';
+import {calculateDistance} from '../src/utils';
 
 const expect = chai.expect;
 
@@ -74,68 +75,14 @@ describe('GeoQuerySnapshot Tests:', () => {
             d.data = d.data();
             return d;
           });
-          expect(results).to.have.deep.members([
-            {
+          expect(results).to.have.deep.members(
+            validGeoDocumentData.map((data, index) => ({
               exists: true,
-              id: 'loc1',
-              data: {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
+              id: `loc${index}`,
+              data,
               distance: null,
-            },
-            {
-              exists: true,
-              id: 'loc2',
-              data: {
-                key: 'loc2',
-                coordinates: new firebase.firestore.GeoPoint(50, -7),
-                count: 1,
-              },
-              distance: null,
-            },
-            {
-              exists: true,
-              id: 'loc3',
-              data: {
-                key: 'loc3',
-                coordinates: new firebase.firestore.GeoPoint(16, -150),
-                count: 2,
-              },
-              distance: null,
-            },
-            {
-              exists: true,
-              id: 'loc4',
-              data: {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-              distance: null,
-            },
-            {
-              exists: true,
-              id: 'loc5',
-              data: {
-                key: 'loc5',
-                coordinates: new firebase.firestore.GeoPoint(67, 55),
-                count: 4,
-              },
-              distance: null,
-            },
-            {
-              exists: true,
-              id: 'loc6',
-              data: {
-                key: 'loc6',
-                coordinates: new firebase.firestore.GeoPoint(8, 8),
-                count: 5,
-              },
-              distance: null,
-            },
-          ]);
+            }))
+          );
         })
         .then(done);
     });
@@ -144,76 +91,20 @@ describe('GeoQuerySnapshot Tests:', () => {
       stubDatabase()
         .then(() => collection.get())
         .then(snapshot => {
-          const docs = new GeoQuerySnapshot(
-            snapshot,
-            new firebase.firestore.GeoPoint(2, 5)
-          ).docs;
+          const center = new firebase.firestore.GeoPoint(2, 5);
+          const docs = new GeoQuerySnapshot(snapshot, center).docs;
           const results = docs.map(d => {
             d.data = d.data();
             return d;
           });
-          expect(results).to.have.deep.members([
-            {
+          expect(results).to.have.deep.members(
+            validGeoDocumentData.map((data, index) => ({
               exists: true,
-              id: 'loc1',
-              data: {
-                key: 'loc1',
-                coordinates: new firebase.firestore.GeoPoint(2, 3),
-                count: 0,
-              },
-              distance: 222.25436565425878,
-            },
-            {
-              exists: true,
-              id: 'loc2',
-              data: {
-                key: 'loc2',
-                coordinates: new firebase.firestore.GeoPoint(50, -7),
-                count: 1,
-              },
-              distance: 5456.704194046366,
-            },
-            {
-              exists: true,
-              id: 'loc3',
-              data: {
-                key: 'loc3',
-                coordinates: new firebase.firestore.GeoPoint(16, -150),
-                count: 2,
-              },
-              distance: 16616.361524616907,
-            },
-            {
-              exists: true,
-              id: 'loc4',
-              data: {
-                key: 'loc4',
-                coordinates: new firebase.firestore.GeoPoint(5, 5),
-                count: 3,
-              },
-              distance: 333.58477993367615,
-            },
-            {
-              exists: true,
-              id: 'loc5',
-              data: {
-                key: 'loc5',
-                coordinates: new firebase.firestore.GeoPoint(67, 55),
-                count: 4,
-              },
-              distance: 8178.7138331874385,
-            },
-            {
-              exists: true,
-              id: 'loc6',
-              data: {
-                key: 'loc6',
-                coordinates: new firebase.firestore.GeoPoint(8, 8),
-                count: 5,
-              },
-              distance: 745.2820170595751,
-            },
-          ]);
+              id: `loc${index}`,
+              data,
+              distance: calculateDistance(data.g.geopoint, center),
+            }))
+          );
         })
         .then(done);
     });
@@ -225,7 +116,7 @@ describe('GeoQuerySnapshot Tests:', () => {
         .then(() => collection.get())
         .then(snapshot => {
           const size = new GeoQuerySnapshot(snapshot).size;
-          expect(size).to.equal(dummyData.length);
+          expect(size).to.equal(validGeoDocumentData.length);
         })
         .then(done);
     });
@@ -275,7 +166,7 @@ describe('GeoQuerySnapshot Tests:', () => {
             expect(d.oldIndex).to.equal(-1);
             return d.doc.data();
           });
-          expect(results).to.have.deep.members(dummyData);
+          expect(results).to.have.deep.members(validGeoDocumentData);
         })
         .then(done);
     });

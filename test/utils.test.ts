@@ -6,7 +6,6 @@ import {
   boundingBoxBits,
   boundingBoxCoordinates,
   calculateDistance,
-  decodeGeoDocumentData,
   decodeGeoQueryDocumentSnapshotData,
   degreesToRadians,
   encodeGeohash,
@@ -36,12 +35,12 @@ import {
   invalidGeohashes,
   invalidLocations,
   invalidQueryCriterias,
-  validGeoFirestoreDocuments,
   validGeohashes,
   validLocations,
   validQueryCriterias,
-  dummyData,
+  validDocumentData,
   dummySetOptions,
+  validGeoDocumentData,
 } from './common';
 
 const expect = chai.expect;
@@ -196,41 +195,27 @@ describe('Utils Tests:', () => {
     });
   });
 
-  describe('Decodes GeoDocument data:', () => {
-    it('decodeGeoDocumentData() returns decoded document given valid data', () => {
-      validGeoFirestoreDocuments.forEach(doc => {
-        expect(decodeGeoDocumentData(doc)).to.deep.equal(doc.d);
-      });
-    });
-
-    it('decodeGeoDocumentData() returns original document given invalid data', () => {
-      dummyData.forEach(doc => {
-        expect(decodeGeoDocumentData(doc)).to.deep.equal(doc);
-      });
-    });
-  });
-
   describe('Decodes GeoQueryDocumentSnapshot data:', () => {
     it('decodeGeoQueryDocumentSnapshotData() returns decoded document with no distance given valid data and no center', () => {
-      validGeoFirestoreDocuments.forEach(doc => {
+      validGeoDocumentData.forEach(doc => {
         const decoded = decodeGeoQueryDocumentSnapshotData(doc);
-        expect(decoded.data()).to.deep.equal(doc.d);
+        expect(decoded.data()).to.deep.equal(doc);
         expect(decoded.distance).to.equal(null);
       });
     });
 
     it('decodeGeoQueryDocumentSnapshotData() returns decoded document with distance given valid data and center', () => {
-      validGeoFirestoreDocuments.forEach(doc => {
+      validGeoDocumentData.forEach(doc => {
         const center = new firebase.firestore.GeoPoint(0, 0);
         const decoded = decodeGeoQueryDocumentSnapshotData(doc, center);
-        const distance = calculateDistance(doc.l, center);
-        expect(decoded.data()).to.deep.equal(doc.d);
+        const distance = calculateDistance(doc.g.geopoint, center);
+        expect(decoded.data()).to.deep.equal(doc);
         expect(decoded.distance).to.be.equal(distance);
       });
     });
 
     it('decodeGeoQueryDocumentSnapshotData() returns original document and no distance given invalid data and no center', () => {
-      dummyData.forEach(doc => {
+      validGeoDocumentData.forEach(doc => {
         const decoded = decodeGeoQueryDocumentSnapshotData(doc);
         expect(decoded.data()).to.deep.equal(doc);
         expect(decoded.distance).to.equal(null);
@@ -417,10 +402,17 @@ describe('Utils Tests:', () => {
 
   describe('Encode GeoDocument:', () => {
     it('encodeGeoDocument() encodes locations to geohashes given no precision', () => {
-      dummyData.forEach(data => {
-        const g = encodeGeohash(data.coordinates);
-        const doc = {g, l: data.coordinates, d: data};
-        expect(encodeGeoDocument(data.coordinates, g, data)).to.deep.equal(doc);
+      validDocumentData.forEach(data => {
+        const geohash = encodeGeohash(data.coordinates);
+        expect(
+          encodeGeoDocument(data.coordinates, geohash, data)
+        ).to.deep.equal({
+          g: {
+            geohash,
+            geopoint: data.coordinates,
+          },
+          ...data,
+        });
       });
     });
   });
@@ -503,7 +495,7 @@ describe('Utils Tests:', () => {
       });
 
       it('validateGeoFirestoreObject() does not throw errors given valid GeoFirestoreObj', () => {
-        validGeoFirestoreDocuments.forEach(validGeoFirestoreObject => {
+        validGeoDocumentData.forEach(validGeoFirestoreObject => {
           expect(() =>
             validateGeoDocument(validGeoFirestoreObject)
           ).not.to.throw();
@@ -511,7 +503,7 @@ describe('Utils Tests:', () => {
       });
 
       it('validateGeoFirestoreObject() returns true given valid GeoFirestoreObj with flag enabled', () => {
-        validGeoFirestoreDocuments.forEach(validGeoFirestoreObject => {
+        validGeoDocumentData.forEach(validGeoFirestoreObject => {
           expect(() =>
             validateGeoDocument(validGeoFirestoreObject, true)
           ).to.be.equal(true);

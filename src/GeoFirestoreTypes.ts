@@ -5,9 +5,9 @@ import '@types/node';
 
 export namespace GeoFirestoreTypes {
   export interface GeoDocumentData extends DocumentData {
-    g?: {
-      geopoint: web.GeoPoint | cloud.GeoPoint;
+    g: {
       geohash: string;
+      geopoint: web.GeoPoint | cloud.GeoPoint;
     };
   }
   export interface DocumentData {
