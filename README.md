@@ -2,10 +2,6 @@
 
 [![npm](https://img.shields.io/npm/v/geofirestore)](https://www.npmjs.com/package/geofirestore) [![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore) [![Lint and Test](https://github.com/MichaelSolati/geofirestore-js/workflows/Lint%20and%20Test/badge.svg?branch=master)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Lint+and+Test%22) [![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js) [![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js) [![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers) [![GitHub forks](https://img.shields.io/github/forks/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/network/members)
 
-> ## WARNING
->
-> The master branch of GeoFirestore on GitHub is currently used for the development of GeoFirestore v4.0.0. If you need to view the source code or README of the latest release of GeoFirestore, v3.6.0, [click here](https://github.com/MichaelSolati/geofirestore-js/tree/v3.6.0).
-
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
 GeoFirestore is an open-source library that extends the Firestore library in order to store and query documents based on their geographic location. At its heart, GeoFirestore is just a wrapper for the Firestore library, exposing many of the same functions and features of Firestore. Its main benefit, however, is the possibility of retrieving only those documents within a given geographic area - all in realtime.
@@ -23,6 +19,7 @@ GeoFirestore is designed as a lightweight add-on to Firebase. To keep things sim
   - [Compound Queries](#compound-queries)
   - [Data Structure](#data-structure)
   - [`limit()`](#limit)
+- [Upgrading](#upgrading)
 - [Contributing](#contributing)
 
 ## Downloading GeoFirestore
@@ -54,12 +51,8 @@ Full documentation is available at [https://geofirestore.com](https://geofiresto
 ```TypeScript
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import { GeoFirestore } from 'geofirestore';
 
-// If you're using ES6+/imports/ESM syntax for imports you can do this:
-import { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } from 'geofirestore';
-
-// If you're using CommonJS/require syntax for imports you can do this:
-const { GeoCollectionReference, GeoFirestore, GeoQuery, GeoQuerySnapshot } = require('geofirestore');
 
 // Initialize the Firebase SDK
 firebase.initializeApp({
@@ -70,10 +63,10 @@ firebase.initializeApp({
 const firestore = firebase.firestore();
 
 // Create a GeoFirestore reference
-const geofirestore: GeoFirestore = new GeoFirestore(firestore);
+const geofirestore = new GeoFirestore(firestore);
 
 // Create a GeoCollection reference
-const geocollection: GeoCollectionReference = geofirestore.collection('restaurants');
+const geocollection = geofirestore.collection('restaurants');
 
 // Add a GeoDocument to a GeoCollection
 geocollection.add({
@@ -84,10 +77,10 @@ geocollection.add({
 })
 
 // Create a GeoQuery based on a location
-const query: GeoQuery = geocollection.near({ center: new firebase.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
+const query = geocollection.near({ center: new firebase.firestore.GeoPoint(40.7589, -73.9851), radius: 1000 });
 
 // Get query (as Promise)
-query.get().then((value: GeoQuerySnapshot) => {
+query.get().then((value) => {
   // All GeoDocument returned by GeoQuery, like the GeoDocument added above
   console.log(value.docs);
 });
@@ -106,7 +99,7 @@ Internally GeoFirestore creates multiple geohashes around a requested area. It t
 Documents generated and stored in your Firestore collection by GeoFirestore are typed/structured as:
 
 ```TypeScript
-interface GeoDocument {
+interface GeoDocumentData {
   g: {
     geohash: string;
     geopoint: GeoPoint;
@@ -123,6 +116,10 @@ Data must be structured this was in order to work, and is why you should use the
 ### `limit()`
 
 The `limit` filtering method is exposed through GeoFirestore, however there are some unique considerations when using it. Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries. When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents then you intended. Use with this performance limitation in mind.
+
+## Upgrading
+
+GeoFirestore v4.0.0+ is incompatiable with previous versions. To migrate an older GeoFirestore collection please [try using this script](https://gist.github.com/MichaelSolati/874543594145fa29691b883835a73460). Be sure to read over it before executing it, it is a use at your own risk bit of code.
 
 ## Contributing
 

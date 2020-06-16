@@ -13,7 +13,8 @@
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
     "prepare": "npm run build",
     "pretest": "node pretest.js",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "postinstall": "node postinstall.js"
   },
   "main": "dist/index.cjs.js",
   "browser": "dist/geofirestore.js",
@@ -47,6 +48,7 @@
     "LICENSE.md",
     "package-lock.json",
     "package.json",
+    "postinstall.js",
     "README.md"
   ],
   "optionalDependencies": {
