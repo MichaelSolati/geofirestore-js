@@ -1,3 +1,13 @@
+#### 4.0.1 (2020-06-16)
+
+##### Build System / Dependencies
+
+*  update firestore rules version ([52f39722](https://github.com/MichaelSolati/geofirestore-js/commit/52f39722071dd8ee45beeca057fd3d70334442dc))
+
+##### Chores
+
+*  update rules for viewers collection ([609202cb](https://github.com/MichaelSolati/geofirestore-js/commit/609202cb3cbdf34c0994a221e8d6aeca5b273bf9))
+
 ## 4.0.0 (2020-06-16)
 
 ##### Chores
