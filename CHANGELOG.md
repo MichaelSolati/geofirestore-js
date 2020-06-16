@@ -1,3 +1,25 @@
+## 4.0.0 (2020-06-16)
+
+##### Chores
+
+*  add upgrade directions and warning ([4cafcbb7](https://github.com/MichaelSolati/geofirestore-js/commit/4cafcbb7134a29e9b5ccc548b9ac4b611f8232c7))
+
+##### Documentation Changes
+
+* **README:**
+  *  add warning for v4.0.0 ([83af3c3d](https://github.com/MichaelSolati/geofirestore-js/commit/83af3c3d5e9afc27cc59882af57c42e7104771eb))
+  *  update `Data Structure` section ([a3546a29](https://github.com/MichaelSolati/geofirestore-js/commit/a3546a29952daed6e362591082274d1e6d5b382c))
+
+##### Refactors
+
+*  simplify logic ([3e0cc7b2](https://github.com/MichaelSolati/geofirestore-js/commit/3e0cc7b26808f9771625efe08a65c4e5897f3a5c))
+*  use `g` instead of `.g` for geofirestore data ([9444cae0](https://github.com/MichaelSolati/geofirestore-js/commit/9444cae07cbb04959083e13904ecdb62407ead1a))
+*  flatten document structure so user data is top level ([e2ad5e5c](https://github.com/MichaelSolati/geofirestore-js/commit/e2ad5e5ce5def51d4c2c76993ca49881c1299019))
+
+##### Tests
+
+*  update tests for new data structure ([5a2e6693](https://github.com/MichaelSolati/geofirestore-js/commit/5a2e6693b78368476587d8b01c0191c54b89578d))
+
 ### 3.6.0 (2020-06-08)
 
 ##### Bug Fixes
