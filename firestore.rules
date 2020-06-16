@@ -7,13 +7,12 @@ service cloud.firestore {
     }
     match /viewers/{key} {
       allow create, update: if request.resource.data.size() == 3
-														&& request.resource.data.keys().hasAll(['g', 'd', 'l'])
-                            && request.resource.data.g is string
-                            && request.resource.data.l is latlng
-                            && request.resource.data.d.size() == 2
-                            && request.resource.data.d.keys().hasAll(['coordinates', 'count'])
-                            && request.resource.data.d.coordinates is latlng
-                            && request.resource.data.d.count is number;
+														&& request.resource.data.keys().hasAll(['g', 'coordinates', 'count'])
+                            && request.resource.data.g.size() == 2
+                            && request.resource.data.g.geohash is string
+                            && request.resource.data.g.geopoint is latlng
+                            && request.resource.data.coordinates is latlng
+                            && request.resource.data.count is number;
     }
     match /tests/{key} {
       allow read, write: if true;
