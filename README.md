@@ -1,6 +1,12 @@
 # geofirestore
 
-[![npm](https://img.shields.io/npm/v/geofirestore)](https://www.npmjs.com/package/geofirestore) [![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore) [![Lint and Test](https://github.com/MichaelSolati/geofirestore-js/workflows/Lint%20and%20Test/badge.svg?branch=master)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Lint+and+Test%22) [![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js) [![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js) [![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers) [![GitHub forks](https://img.shields.io/github/forks/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/network/members)
+[![npm](https://img.shields.io/npm/v/geofirestore)](https://www.npmjs.com/package/geofirestore)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore)
+[![Lint and Test](https://github.com/MichaelSolati/geofirestore-js/workflows/Lint%20and%20Test/badge.svg?branch=master)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Lint+and+Test%22)
+[![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js)
+[![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js)
+[![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/network/members)
 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com).
 
@@ -51,7 +57,7 @@ Full documentation is available at [https://geofirestore.com](https://geofiresto
 ```TypeScript
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
-import { GeoFirestore } from 'geofirestore';
+import * as geofirestore from 'geofirestore';
 
 
 // Initialize the Firebase SDK
@@ -63,10 +69,10 @@ firebase.initializeApp({
 const firestore = firebase.firestore();
 
 // Create a GeoFirestore reference
-const geofirestore = new GeoFirestore(firestore);
+const GeoFirestore = geofirestore.initializeApp(firestore);
 
 // Create a GeoCollection reference
-const geocollection = geofirestore.collection('restaurants');
+const geocollection = GeoFirestore.collection('restaurants');
 
 // Add a GeoDocument to a GeoCollection
 geocollection.add({
