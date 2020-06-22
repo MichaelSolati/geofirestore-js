@@ -1,9 +1,10 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
 import {
-  encodeSetDocument,
-  encodeUpdateDocument,
-  sanitizeSetOptions,
-} from './utils';
+  GeoFirestoreTypes,
+  encodeDocumentSet,
+  encodeDocumentUpdate,
+} from 'geofirestore-core';
+
+import {sanitizeSetOptions} from './utils';
 import {GeoCollectionReference} from './GeoCollectionReference';
 import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
 import {GeoFirestore} from './GeoFirestore';
@@ -165,7 +166,7 @@ export class GeoDocumentReference {
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
       .set(
-        encodeSetDocument(documentData, options),
+        encodeDocumentSet(documentData, options),
         sanitizeSetOptions(options)
       )
       .then(() => null);
@@ -185,7 +186,7 @@ export class GeoDocumentReference {
     customKey?: string
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
-      .update(encodeUpdateDocument(data, customKey))
+      .update(encodeDocumentUpdate(data, customKey))
       .then(() => null);
   }
 }

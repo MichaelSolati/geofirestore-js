@@ -1,4 +1,5 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoFirestoreTypes} from 'geofirestore-core';
+
 import {GeoCollectionReference} from './GeoCollectionReference';
 import {GeoWriteBatch} from './GeoWriteBatch';
 

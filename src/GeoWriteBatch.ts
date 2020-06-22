@@ -1,10 +1,11 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
 import {
-  encodeSetDocument,
-  encodeUpdateDocument,
-  sanitizeSetOptions,
-} from './utils';
+  GeoFirestoreTypes,
+  encodeDocumentSet,
+  encodeDocumentUpdate,
+} from 'geofirestore-core';
+
 import {GeoDocumentReference} from './GeoDocumentReference';
+import {sanitizeSetOptions} from './utils';
 
 /**
  * A write batch, used to perform multiple writes as a single atomic unit.
@@ -61,7 +62,7 @@ export class GeoWriteBatch {
         : documentRef;
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).set(
       ref,
-      encodeSetDocument(documentData, options),
+      encodeDocumentSet(documentData, options),
       sanitizeSetOptions(options)
     );
     return this;
@@ -91,7 +92,7 @@ export class GeoWriteBatch {
         : documentRef;
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).update(
       ref,
-      encodeUpdateDocument(data, customKey)
+      encodeDocumentUpdate(data, customKey)
     );
     return this;
   }

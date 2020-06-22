@@ -41,6 +41,18 @@ describe('GeoDocumentSnapshot Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore DocumentSnapshot instance', done => {
+      stubDatabase()
+        .then(() => collection.doc('loc0').get())
+        .then(snapshot => {
+          const geodocumentsnapshot = new GeoDocumentSnapshot(snapshot);
+          expect(geodocumentsnapshot.native).to.equal(snapshot);
+        })
+        .then(done);
+    });
+  });
+
   describe('exists:', () => {
     it('exists returns true if document exists', done => {
       stubDatabase()

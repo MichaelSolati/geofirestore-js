@@ -1,11 +1,12 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {
+  GeoFirestoreTypes,
+  encodeDocumentSet,
+  encodeDocumentUpdate,
+} from 'geofirestore-core';
+
 import {GeoDocumentReference} from './GeoDocumentReference';
 import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
-import {
-  encodeSetDocument,
-  encodeUpdateDocument,
-  sanitizeSetOptions,
-} from './utils';
+import {sanitizeSetOptions} from './utils';
 
 /**
  * A reference to a transaction. The `GeoTransaction` object passed to a transaction's updateFunction provides the methods to read and
@@ -99,7 +100,7 @@ export class GeoTransaction {
         : documentRef;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
       ref,
-      encodeSetDocument(documentData, options),
+      encodeDocumentSet(documentData, options),
       sanitizeSetOptions(options)
     );
     return this;
@@ -129,7 +130,7 @@ export class GeoTransaction {
         : documentRef;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).update(
       ref,
-      encodeUpdateDocument(data, customKey)
+      encodeDocumentUpdate(data, customKey)
     );
     return this;
   }

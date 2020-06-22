@@ -1,9 +1,13 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {
+  GeoFirestoreTypes,
+  geoQueryGet,
+  geoQueryOnSnapshot,
+  GeoQuerySnapshot,
+  validateLimit,
+  validateQueryCriteria,
+} from 'geofirestore-core';
+
 import {GeoFirestore} from './GeoFirestore';
-import {GeoJoinerGet} from './GeoJoinerGet';
-import {GeoJoinerOnSnapshot} from './GeoJoinerOnSnapshot';
-import {GeoQuerySnapshot} from './GeoQuerySnapshot';
-import {validateQueryCriteria, geohashQueries, validateLimit} from './utils';
 
 /**
  * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
@@ -71,27 +75,7 @@ export class GeoQuery {
     onNext: (snapshot: GeoQuerySnapshot) => void,
     onError?: (error: Error) => void
   ) => () => void {
-    return (
-      onNext: (snapshot: GeoQuerySnapshot) => void,
-      onError: (error: Error) => void = () => {}
-    ): (() => void) => {
-      if (this._center && typeof this._radius === 'number') {
-        return new GeoJoinerOnSnapshot(
-          this._generateQuery(),
-          this._queryCriteria,
-          onNext,
-          onError
-        ).unsubscribe();
-      } else {
-        const query = this._limit
-          ? this._query.limit(this._limit)
-          : this._query;
-        return (query as GeoFirestoreTypes.web.Query).onSnapshot(
-          snapshot => onNext(new GeoQuerySnapshot(snapshot)),
-          onError
-        );
-      }
-    };
+    return geoQueryOnSnapshot(this._query, this._queryCriteria);
   }
 
   /**
@@ -107,20 +91,7 @@ export class GeoQuery {
   get(
     options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
   ): Promise<GeoQuerySnapshot> {
-    if (this._center && typeof this._radius === 'number') {
-      const queries = this._generateQuery().map(query =>
-        this._isWeb ? query.get(options) : query.get()
-      );
-      return Promise.all(queries).then(value =>
-        new GeoJoinerGet(value, this._queryCriteria).getGeoQuerySnapshot()
-      );
-    } else {
-      const query = this._limit ? this._query.limit(this._limit) : this._query;
-      const promise = this._isWeb
-        ? (query as GeoFirestoreTypes.web.Query).get(options)
-        : (query as GeoFirestoreTypes.web.Query).get();
-      return promise.then(snapshot => new GeoQuerySnapshot(snapshot));
-    }
+    return geoQueryGet(this._query, this._queryCriteria, options);
   }
 
   /**
@@ -184,33 +155,6 @@ export class GeoQuery {
   }
 
   /**
-   * Creates an array of `Query` objects that query the appropriate geohashes based on the radius and center GeoPoint of the query criteria.
-   *
-   * @return Array of Queries to search against.
-   */
-  private _generateQuery(): GeoFirestoreTypes.web.Query[] {
-    // Get the list of geohashes to query
-    let geohashesToQuery: string[] = geohashQueries(
-      this._center,
-      this._radius * 1000
-    ).map(this._queryToString);
-    // Filter out duplicate geohashes
-    geohashesToQuery = geohashesToQuery.filter(
-      (geohash: string, i: number) => geohashesToQuery.indexOf(geohash) === i
-    );
-
-    return geohashesToQuery.map((toQueryStr: string) => {
-      // decode the geohash query string
-      const query: string[] = this._stringToQuery(toQueryStr);
-      // Create the Firebase query
-      return this._query
-        .orderBy('g.geohash')
-        .startAt(query[0])
-        .endAt(query[1]) as GeoFirestoreTypes.web.Query;
-    });
-  }
-
-  /**
    * Returns the center and radius of geo based queries as a QueryCriteria object.
    */
   private get _queryCriteria(): GeoFirestoreTypes.QueryCriteria {
@@ -219,34 +163,5 @@ export class GeoQuery {
       limit: this._limit,
       radius: this._radius,
     };
-  }
-
-  /**
-   * Decodes a query string to a query
-   *
-   * @param str The encoded query.
-   * @return The decoded query as a [start, end] pair.
-   */
-  private _stringToQuery(str: string): string[] {
-    const decoded: string[] = str.split(':');
-    if (decoded.length !== 2) {
-      throw new Error(
-        'Invalid internal state! Not a valid geohash query: ' + str
-      );
-    }
-    return decoded;
-  }
-
-  /**
-   * Encodes a query as a string for easier indexing and equality.
-   *
-   * @param query The query to encode.
-   * @return The encoded query as string.
-   */
-  private _queryToString(query: string[]): string {
-    if (query.length !== 2) {
-      throw new Error('Not a valid geohash query: ' + query);
-    }
-    return query[0] + ':' + query[1];
   }
 }

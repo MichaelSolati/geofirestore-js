@@ -1,7 +1,7 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoFirestoreTypes, encodeDocumentAdd} from 'geofirestore-core';
+
 import {GeoDocumentReference} from './GeoDocumentReference';
 import {GeoQuery} from './GeoQuery';
-import {encodeAddDocument} from './utils';
 
 /**
  * A `GeoCollectionReference` object can be used for adding documents, getting document references, and querying for documents (using the
@@ -61,7 +61,7 @@ export class GeoCollectionReference extends GeoQuery {
     customKey?: string
   ): Promise<GeoDocumentReference> {
     return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
-      .add(encodeAddDocument(documentData, customKey))
+      .add(encodeDocumentAdd(documentData, customKey))
       .then(doc => new GeoDocumentReference(doc));
   }
 

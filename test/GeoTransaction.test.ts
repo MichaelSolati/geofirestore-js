@@ -45,6 +45,16 @@ describe('GeoTransaction Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore Transaction instance', () => {
+      geofirestore.runTransaction(transaction => {
+        const geotransaction = new GeoTransaction(transaction);
+        expect(geotransaction.native).to.equal(transaction);
+        return Promise.resolve(true);
+      });
+    });
+  });
+
   describe('delete():', () => {
     it('delete() removes a document from a Firestore collection when given a GeoDocumentReference', () => {
       const docRef = geocollection.doc('loc0');

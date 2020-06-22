@@ -326,7 +326,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => documentReference.update({key: 1}))
         .then(() => documentReference.get())
         .then(doc => {
-          expect(doc.data()).to.deep.include({
+          expect(doc.data()).to.deep.equal({
             g: {
               geohash: '7zzzzzzzzz',
               geopoint: new firebase.firestore.GeoPoint(0, 0),
@@ -335,7 +335,8 @@ describe('GeoDocumentReference Tests:', () => {
             key: 1,
           });
         })
-        .then(done);
+        .then(done)
+        .catch(done);
     });
   });
 
@@ -383,7 +384,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => documentReference.get())
         .then(doc => {
           expect(doc.exists).to.equal(true);
-          expect(doc.data()).to.deep.equal({
+          expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
               geopoint: new firebase.firestore.GeoPoint(0, 0),
@@ -391,7 +392,8 @@ describe('GeoDocumentReference Tests:', () => {
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
-        .then(done);
+        .then(done)
+        .catch(done);
     });
 
     it('get() returns a document, when not on web', done => {
@@ -402,7 +404,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => documentReference.get())
         .then(doc => {
           expect(doc.exists).to.equal(true);
-          expect(doc.data()).to.deep.equal({
+          expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
               geopoint: new firebase.firestore.GeoPoint(0, 0),
@@ -410,7 +412,8 @@ describe('GeoDocumentReference Tests:', () => {
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
-        .then(done);
+        .then(done)
+        .catch(done);
     });
 
     it('get() returns a document from server (web only)', done => {
@@ -420,7 +423,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => documentReference.get({source: 'server'}))
         .then(doc => {
           expect(doc.exists).to.equal(true);
-          expect(doc.data()).to.deep.equal({
+          expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
               geopoint: new firebase.firestore.GeoPoint(0, 0),
@@ -428,7 +431,8 @@ describe('GeoDocumentReference Tests:', () => {
             coordinates: new firebase.firestore.GeoPoint(0, 0),
           });
         })
-        .then(done);
+        .then(done)
+        .catch(done);
     });
 
     it("get() doesn't returns a document when no document exists", done => {
@@ -437,7 +441,7 @@ describe('GeoDocumentReference Tests:', () => {
         .get()
         .then(doc => {
           expect(doc.exists).to.equal(false);
-          expect(doc.data()).to.deep.equal(undefined);
+          expect(doc.data()).to.equal(undefined);
         })
         .then(done);
     });

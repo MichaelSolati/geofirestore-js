@@ -41,6 +41,14 @@ describe('GeoWriteBatch Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore WriteBatch instance', () => {
+      const batch = firestore.batch();
+      const geobatch = new GeoWriteBatch(batch);
+      expect(geobatch.native).to.equal(batch);
+    });
+  });
+
   describe('set():', () => {
     it('set() returns the current GeoWriteBatch given a GeoDocumentReference', () => {
       const geowritebatch = geofirestore.batch();

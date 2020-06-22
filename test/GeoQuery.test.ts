@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase/app';
+import {hash} from 'geokit';
 
 import {GeoFirestore} from '../src/GeoFirestore';
 import {GeoQuery} from '../src/GeoQuery';
@@ -14,8 +15,8 @@ import {
   invalidLocations,
   geocollection,
   generateDocs,
+  calculateDistance,
 } from './common';
-import {calculateDistance, encodeGeohash} from '../src/utils';
 
 const expect = chai.expect;
 
@@ -41,6 +42,14 @@ describe('GeoQuery Tests:', () => {
 
     it('Constructor does not throw errors given valid Firestore Query', () => {
       expect(() => new GeoQuery(collection)).not.to.throw();
+    });
+  });
+
+  describe('native:', () => {
+    it('native will return the native Firestore Query instance', () => {
+      const query = collection.where('key', '==', 1);
+      const geoQuery = new GeoQuery(query);
+      expect(geoQuery.native).to.equal(query);
     });
   });
 
@@ -164,7 +173,10 @@ describe('GeoQuery Tests:', () => {
               expect(result).to.have.deep.members([
                 {
                   g: {
-                    geohash: encodeGeohash(center),
+                    geohash: hash({
+                      lat: center.latitude,
+                      lng: center.longitude,
+                    }),
                     geopoint: center,
                   },
                   coordinates: center,
@@ -613,32 +625,6 @@ describe('GeoQuery Tests:', () => {
       expect(() =>
         query.near({radius: 500}).where('array', 'array-contains', 'one')
       ).to.throw();
-    });
-  });
-
-  describe('_stringToQuery():', () => {
-    it('_stringToQuery() returns an array of two string elements', () => {
-      const query = new GeoQuery(collection);
-      expect(query['_stringToQuery']('0:z')).to.have.deep.members(['0', 'z']);
-    });
-
-    it('_stringToQuery() throws error with invalid argument', () => {
-      const query = new GeoQuery(collection);
-      expect(() => query['_stringToQuery']('0z')).to.throw();
-    });
-  });
-
-  describe('_queryToString():', () => {
-    it('_queryToString() returns an array of two string elements', () => {
-      const query = new GeoQuery(collection);
-      expect(query['_queryToString'](['0', 'z'])).to.equal('0:z');
-    });
-
-    it('_queryToString() throws error with invalid argument', () => {
-      const query = new GeoQuery(collection);
-      // eslint-disable-next-line
-      // @ts-ignore
-      expect(() => query['_queryToString']('0', 'z', 'a')).to.throw();
     });
   });
 });

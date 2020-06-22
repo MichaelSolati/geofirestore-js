@@ -1,4 +1,3 @@
-import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import {terser} from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
@@ -11,17 +10,13 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
-const plugins = [
-  typescript({
-    tsconfigOverride: {
-      compilerOptions: {
-        module: 'ESNext',
-      },
+const ts = typescript({
+  tsconfigOverride: {
+    compilerOptions: {
+      module: 'ESNext',
     },
-  }),
-  resolve(),
-  commonjs(),
-];
+  },
+});
 
 export default [
   {
@@ -36,8 +31,8 @@ export default [
         format: 'es',
       },
     ],
-    external: ['@types/node'],
-    plugins,
+    external: ['@types/node', 'geofirestore-core'],
+    plugins: [ts],
     onwarn,
   },
   {
@@ -49,7 +44,7 @@ export default [
       extend: true,
     },
     external: ['@types/node'],
-    plugins: [...plugins, terser()],
+    plugins: [ts, resolve(), terser()],
     onwarn,
   },
 ];

@@ -37,6 +37,13 @@ describe('GeoFirestore Tests:', () => {
     });
   });
 
+  describe('native:', () => {
+    it('native will return the native Firestore instance', () => {
+      const geofirestoreInstance = new GeoFirestore(firestore);
+      expect(geofirestoreInstance.native).to.equal(firestore);
+    });
+  });
+
   describe('batch():', () => {
     it('batch() returns a new GeoWriteBatch based on a Firestore WriteBatch', () => {
       expect(new GeoFirestore(firestore).batch()['_writeBatch']).to.deep.equal(

@@ -1,9 +1,10 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import {encodeDocumentAdd} from 'geofirestore-core';
+import {distance} from 'geokit';
 
 import {GeoCollectionReference, GeoFirestore, GeoFirestoreTypes} from '../src';
-import {calculateDistance, encodeAddDocument} from '../src/utils';
 
 /*************/
 /*  GLOBALS  */
@@ -19,7 +20,7 @@ export const validDocumentData: GeoFirestoreTypes.DocumentData[] = [
   {coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5},
 ];
 export const validGeoDocumentData: GeoFirestoreTypes.GeoDocumentData[] = (() =>
-  validDocumentData.map(e => encodeAddDocument(e)))();
+  validDocumentData.map(e => encodeDocumentAdd(e)))();
 // Define dummy setOptions to sanitize
 export const dummySetOptions: GeoFirestoreTypes.SetOptions = {
   merge: true,
@@ -273,4 +274,21 @@ export function stubDatabase(
     batch.set(insert, item);
   });
   return batch.commit();
+}
+
+/**
+ * Function which validates GeoPoints then calculates the distance, in kilometers, between them.
+ *
+ * @param location1 The GeoPoint of the first location.
+ * @param location2 The GeoPoint of the second location.
+ * @return The distance, in kilometers, between the inputted locations.
+ */
+export function calculateDistance(
+  location1: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
+  location2: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint
+): number {
+  return distance(
+    {lat: location1.latitude, lng: location1.longitude},
+    {lat: location2.latitude, lng: location2.longitude}
+  );
 }

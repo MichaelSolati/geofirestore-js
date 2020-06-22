@@ -1,4 +1,5 @@
-import {GeoFirestoreTypes} from './GeoFirestoreTypes';
+import {GeoFirestoreTypes} from 'geofirestore-core';
+
 import {GeoDocumentReference} from './GeoDocumentReference';
 
 /**
