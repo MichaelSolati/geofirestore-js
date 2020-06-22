@@ -1,3 +1,21 @@
+### 4.1.0 (2020-06-22)
+
+##### Documentation Changes
+
+*  update README to use `initializeApp` ([833975ba](https://github.com/MichaelSolati/geofirestore-js/commit/833975babb03f2e818d7eabbc539125eef91a44d))
+
+##### New Features
+
+* **initializeApp:**  add function to create new GeoFirestore instance ([bb319907](https://github.com/MichaelSolati/geofirestore-js/commit/bb31990720da18164f3431369c1f7b96cf315e7c))
+
+##### Bug Fixes
+
+* **lint:**  add `;` to `utils.test.ts` for linting ([8fb13947](https://github.com/MichaelSolati/geofirestore-js/commit/8fb13947fb945706454388f9bde37e24644c3961))
+
+##### Refactors
+
+*  use `geofirestore-core` ([4fa86038](https://github.com/MichaelSolati/geofirestore-js/commit/4fa86038c7603eba3dcfce473d8d942c906ddb62))
+
 #### 4.0.1 (2020-06-16)
 
 ##### Build System / Dependencies
