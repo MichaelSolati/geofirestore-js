@@ -9,7 +9,7 @@ const expect = chai.expect;
 describe('Utils Tests:', () => {
   describe('Initialize App:', () => {
     it('initializeApp() returns new instance of GeoFirestore', () => {
-      expect(initializeApp(firestore)).to.be.instanceOf(GeoFirestore)
+      expect(initializeApp(firestore)).to.be.instanceOf(GeoFirestore);
     });
   });
 
