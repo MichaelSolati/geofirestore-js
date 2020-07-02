@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as firebase from 'firebase/app';
+import {encodeDocumentAdd} from 'geofirestore-core';
 import {hash} from 'geokit';
 
 import {GeoFirestore} from '../src/GeoFirestore';
@@ -232,24 +233,18 @@ describe('GeoQuery Tests:', () => {
 
     it("onSnapshot docChanges() returns an geofiltered array of the 'added' docs as well as their index and `type`", done => {
       const query = new GeoQuery(collection);
-      const generatedData = generateDocs();
       const radius = 100;
-      const dummyLimitedData = generatedData.reduce((limited, doc) => {
-        if (doc.distance <= radius) {
-          limited.push(doc);
-        }
-        return limited;
-      }, []) as any[];
+      const generatedData = generateDocs();
+      const generatedDataFiltered = generatedData.filter(
+        doc => doc.distance <= radius
+      );
       stubDatabase(generatedData).then(() => {
         const subscription = query
           .near({center: new firebase.firestore.GeoPoint(0, 0), radius})
           .onSnapshot(snapshot => {
             subscription();
-            const docChanges = snapshot.docChanges();
-            const docs = docChanges.map(doc => doc.doc.data());
-            expect(docChanges.length).to.be.equal(dummyLimitedData.length);
-            expect(docs).to.have.deep.members(dummyLimitedData);
-            docChanges.forEach((doc, index) => {
+            expect(snapshot.size).to.be.equal(generatedDataFiltered.length);
+            snapshot.docChanges().forEach((doc, index) => {
               expect(doc.newIndex).to.be.equal(index);
               expect(doc.oldIndex).to.be.equal(-1);
               expect(doc.type).to.be.equal('added');
@@ -276,19 +271,17 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       const n = Math.floor(Math.random() * 99) + 1;
       const generatedData = generateDocs();
-      const dummyLimitedData = [...generatedData]
+      const dummyLimitedData = generatedData
+        .map(doc => encodeDocumentAdd(doc))
         .sort((a, b) => a.distance - b.distance)
-        .slice(0, n)
-        .sort((a, b) => a.key - b.key);
+        .slice(0, n);
       stubDatabase(generatedData).then(() => {
         const subscription = query
           .limit(n)
           .near({center: new firebase.firestore.GeoPoint(0, 0), radius: 1000})
           .onSnapshot(snapshot => {
             subscription();
-            const result = snapshot.docs
-              .map(d => d.data())
-              .sort((a, b) => a.key - b.key);
+            const result = snapshot.docs.map(d => d.data());
             expect(snapshot.size).to.be.equal(n);
             expect(result).to.have.deep.members(dummyLimitedData);
             done();
@@ -394,24 +387,18 @@ describe('GeoQuery Tests:', () => {
 
     it("get() docChanges() returns an geofiltered array of the 'added' docs as well as their index and `type`", done => {
       const query = new GeoQuery(collection);
-      const generatedData = generateDocs();
       const radius = 100;
-      const dummyLimitedData = generatedData.reduce((limited, doc) => {
-        if (doc.distance <= radius) {
-          limited.push(doc);
-        }
-        return limited;
-      }, []) as any[];
+      const generatedData = generateDocs();
+      const generatedDataFiltered = generatedData.filter(
+        doc => doc.distance <= radius
+      );
       stubDatabase(generatedData).then(() => {
         query
           .near({center: new firebase.firestore.GeoPoint(0, 0), radius})
           .get()
           .then(snapshot => {
-            const docChanges = snapshot.docChanges();
-            const docs = docChanges.map(doc => doc.doc.data());
-            expect(docChanges.length).to.be.equal(dummyLimitedData.length);
-            expect(docs).to.have.deep.members(dummyLimitedData);
-            docChanges.forEach((doc, index) => {
+            expect(snapshot.size).to.be.equal(generatedDataFiltered.length);
+            snapshot.docChanges().forEach((doc, index) => {
               expect(doc.newIndex).to.be.equal(index);
               expect(doc.oldIndex).to.be.equal(-1);
               expect(doc.type).to.be.equal('added');
@@ -506,9 +493,10 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       const n = Math.floor(Math.random() * 99) + 1;
       const generatedData = generateDocs();
-      const dummyLimitedData = [...generatedData]
+      const dummyLimitedData = generatedData
         .sort((a, b) => a.distance - b.distance)
-        .slice(0, n);
+        .slice(0, n)
+        .map(doc => encodeDocumentAdd(doc));
       stubDatabase(generatedData).then(() => {
         query
           .limit(n)

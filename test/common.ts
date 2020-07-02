@@ -128,7 +128,7 @@ export const invalidObjects: any[] = [
   undefined,
   NaN,
 ];
-export const testCollectionName = 'tests';
+export const testCollectionName = 'geofirestore-tests';
 export const validGeohashes: string[] = ['4', 'd62dtu', '000000000000'];
 export const validLocations: firebase.firestore.GeoPoint[] = [
   new firebase.firestore.GeoPoint(0, 0),
@@ -194,7 +194,7 @@ export function generateDocs(
   minLat = -0.5,
   maxLng = 0.5,
   minLng = -0.5
-): Array<{[key: string]: any}> {
+): Array<{coordinates: firebase.firestore.GeoPoint; distance: number}> {
   return new Array(total).fill(0).map(() => {
     const lat = Math.random() * (maxLat - minLat + 1) + minLat;
     const lng = Math.random() * (maxLng - minLng + 1) + minLng;
@@ -202,7 +202,6 @@ export function generateDocs(
     return {
       coordinates,
       distance: calculateDistance(coordinates, center),
-      key: Math.random().toString(36).substring(7),
     };
   });
 }

@@ -14,7 +14,10 @@ service cloud.firestore {
                             && request.resource.data.coordinates is latlng
                             && request.resource.data.count is number;
     }
-    match /tests/{key} {
+    match /geofirestore-tests/{key} {
+      allow read, write: if true;
+    }
+    match /geofirestore-core-tests/{key} {
       allow read, write: if true;
     }
   }
