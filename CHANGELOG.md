@@ -1,3 +1,14 @@
+#### 4.1.1 (2020-07-02)
+
+##### Chores
+
+*  update `geofirestore-core` to v4.1.0 ([c35ee4da](https://github.com/MichaelSolati/geofirestore-js/commit/c35ee4da362b72305ec57949c8aad64e16ff44e6))
+*  update tests ([2d834fb5](https://github.com/MichaelSolati/geofirestore-js/commit/2d834fb58e0b694b23b5132e627e19b11ece45cc))
+
+##### Documentation Changes
+
+* **README:**  add details about security rules ([90503ef3](https://github.com/MichaelSolati/geofirestore-js/commit/90503ef3ccbd52e6856e2e61a5a94554a794e579))
+
 ### 4.1.0 (2020-06-22)
 
 ##### Documentation Changes
