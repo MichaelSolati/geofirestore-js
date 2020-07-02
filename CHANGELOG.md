@@ -1,3 +1,9 @@
+#### 4.1.2 (2020-07-02)
+
+##### Chores
+
+*  remove `@types/node` from `devDependencies` ([f8b2cd36](https://github.com/MichaelSolati/geofirestore-js/commit/f8b2cd36fac6105e778952ca25d3ca560774b818))
+
 #### 4.1.1 (2020-07-02)
 
 ##### Chores
