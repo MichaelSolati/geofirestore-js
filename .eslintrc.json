@@ -17,6 +17,9 @@
       "env": {
         "browser": true,
         "mocha": true
+      },
+      "rules": {
+        "node/no-extraneous-import": "off"
       }
     }
   ]

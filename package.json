@@ -52,12 +52,7 @@
     "README.md"
   ],
   "dependencies": {
-    "geofirestore-core": "^4.0.0"
-  },
-  "optionalDependencies": {
-    "@google-cloud/firestore": ">= 2.0.0",
-    "@types/node": ">= 8.0.0",
-    "firebase": ">= 6.0.0"
+    "geofirestore-core": "^4.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.0.1",
