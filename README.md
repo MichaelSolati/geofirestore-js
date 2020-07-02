@@ -24,6 +24,7 @@ GeoFirestore is designed as a lightweight add-on to Firebase. To keep things sim
 - [Limitations & Considerations](#limitations--considerations)
   - [Compound Queries](#compound-queries)
   - [Data Structure](#data-structure)
+    - [Security Rules](#security-rules)
   - [`limit()`](#limit)
 - [Upgrading](#upgrading)
 - [Contributing](#contributing)
@@ -118,6 +119,20 @@ interface GeoDocumentData {
 - `g.geopoint` is the GeoPoint used to generate the `g.geohash` field.
 
 Data must be structured this was in order to work, and is why you should use the GeoFirestore library to insert data in order to be able to query it.
+
+#### Security Rules
+
+Because GeoFirestore adds the `g` field and expects a `coordinates` field, be sure to update your [Firebase Security Rules](https://firebase.google.com/docs/rules) to reflect the new fields, like so:
+
+```CEL
+match /collection/{key} {
+  allow read, write: // Your previous rules here...
+                      && request.resource.data.g.size() == 2
+                      && request.resource.data.g.geohash is string
+                      && request.resource.data.g.geopoint is latlng
+                      && request.resource.data.coordinates is latlng
+}
+```
 
 ### `limit()`
 
