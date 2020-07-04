@@ -1,5 +1,13 @@
 name: Lint and Test
-on: [pull_request, push]
+on: 
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - v*   
+  pull_request:
+    branches:
+      - '**'
 env:
   COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
 jobs:
@@ -20,7 +28,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install
+      - name: NPM Install
         run: npm install --ignore-scripts
       - name: Lint
         run: npm run lint
