@@ -122,15 +122,15 @@ Data must be structured this was in order to work, and is why you should use the
 
 #### Security Rules
 
-Because GeoFirestore adds the `g` field and expects a `coordinates` field, be sure to update your [Firebase Security Rules](https://firebase.google.com/docs/rules) to reflect the new fields, like so:
+Because GeoFirestore adds the `g` field and expects a `coordinates` field, be sure to update your [Firebase Security Rules](https://firebase.google.com/docs/rules) to reflect the new fields. While not necessary for all applications, the rules below are an example of how you'd check for GeoFirestore specific fields.
 
 ```CEL
 match /collection/{key} {
-  allow read, write: // Your previous rules here...
-                      && request.resource.data.g.size() == 2
-                      && request.resource.data.g.geohash is string
-                      && request.resource.data.g.geopoint is latlng
-                      && request.resource.data.coordinates is latlng
+  allow write: // Your previous rules here...
+               && request.resource.data.g.size() == 2
+               && request.resource.data.g.geohash is string
+               && request.resource.data.g.geopoint is latlng
+               && request.resource.data.coordinates is latlng
 }
 ```
 
