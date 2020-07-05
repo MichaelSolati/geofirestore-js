@@ -1,3 +1,13 @@
+#### 4.1.3 (2020-07-05)
+
+##### Build System / Dependencies
+
+*  update ci so only one workflow runs on a tag ([949e4719](https://github.com/MichaelSolati/geofirestore-js/commit/949e4719bc6cbddbea43544f809a88f139951da4))
+
+##### Documentation Changes
+
+* **README:**  clarify security rules ([2fd87cb6](https://github.com/MichaelSolati/geofirestore-js/commit/2fd87cb6b058d7f85ee88a5702d87cb71cce0dd7))
+
 #### 4.1.2 (2020-07-02)
 
 ##### Chores
