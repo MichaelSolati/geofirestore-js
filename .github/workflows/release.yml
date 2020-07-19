@@ -1,4 +1,4 @@
-name: Lint, Test, and Deploy
+name: Release CI
 on:
   push:
     tags:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
