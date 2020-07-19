@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/geofirestore)](https://www.npmjs.com/package/geofirestore)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore)
-[![Release CI](https://github.com/MichaelSolati/geofirestore-js/workflows/Release%20CI/badge.svg?branch=master)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Release+CI%22)
+[![Release CI](https://github.com/MichaelSolati/geofirestore-js/workflows/Release%20CI/badge.svg)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Release+CI%22)
 [![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js)
 [![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js)
 [![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers)
