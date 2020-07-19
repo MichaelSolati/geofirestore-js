@@ -1,10 +1,12 @@
 import * as chai from 'chai';
+import * as firebase from 'firebase/app';
 
 import {GeoTransaction} from '../src';
 import {
   afterEachHelper,
   beforeEachHelper,
   collection,
+  validDocumentData,
   validGeoDocumentData,
   geocollection,
   geofirestore,
@@ -39,6 +41,15 @@ describe('GeoTransaction Tests:', () => {
       expect(() =>
         geofirestore.runTransaction(transaction => {
           new GeoTransaction(transaction);
+          return Promise.resolve(true);
+        })
+      ).not.to.throw();
+    });
+
+    it('Constructor does not throw errors given valid Firestore Transaction reference and custom key', () => {
+      expect(() =>
+        geofirestore.runTransaction(transaction => {
+          new GeoTransaction(transaction, 'geopoint');
           return Promise.resolve(true);
         })
       ).not.to.throw();
@@ -99,7 +110,7 @@ describe('GeoTransaction Tests:', () => {
 
   describe('get():', () => {
     it('get() reads a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc = validGeoDocumentData()[0];
       const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore.runTransaction(transaction => {
@@ -114,7 +125,7 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('get() reads a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc = validGeoDocumentData()[0];
       const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore.runTransaction(transaction => {
@@ -131,8 +142,8 @@ describe('GeoTransaction Tests:', () => {
 
   describe('set():', () => {
     it('set() writes to a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
-      const dummyDoc2 = validGeoDocumentData[1];
+      const dummyDoc = validGeoDocumentData()[0];
+      const dummyDoc2 = validGeoDocumentData()[1];
       const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
@@ -155,8 +166,8 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('set() writes to a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
-      const dummyDoc2 = validGeoDocumentData[1];
+      const dummyDoc = validGeoDocumentData()[0];
+      const dummyDoc2 = validGeoDocumentData()[1];
       const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
@@ -179,7 +190,7 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('set() creates a new document if no document existed before', () => {
-      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc = validGeoDocumentData()[0];
       const docRef = geocollection.doc('loc0');
       return geofirestore
         .runTransaction(transaction => {
@@ -197,12 +208,87 @@ describe('GeoTransaction Tests:', () => {
           return Promise.resolve(true);
         });
     });
+
+    it('set() writes document with a custom key', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validDocumentData()[0];
+      dummyDoc.geopoint = dummyDoc.coordinates;
+      delete dummyDoc.coordinates;
+
+      return geofirestore
+        .runTransaction(transaction => {
+          const geotransaction = new GeoTransaction(transaction);
+          return geotransaction.get(docRef).then(doc => {
+            expect(doc.exists).to.be.equal(false);
+            geotransaction.set(docRef, dummyDoc, {customKey: 'geopoint'});
+          });
+        })
+        .then(() => wait())
+        .then(() => docRef.get())
+        .then(doc => {
+          const docData = doc.data();
+          delete docData.g;
+          expect(doc.exists).to.be.equal(true);
+          expect(docData).to.deep.equal(dummyDoc);
+          return Promise.resolve(true);
+        });
+    });
+
+    it('set() writes document with a custom key defined by the transaction', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validDocumentData()[0];
+      dummyDoc.geopoint = dummyDoc.coordinates;
+      delete dummyDoc.coordinates;
+
+      return geofirestore
+        .runTransaction(transaction => {
+          const geotransaction = new GeoTransaction(transaction, 'geopoint');
+          return geotransaction.get(docRef).then(doc => {
+            expect(doc.exists).to.be.equal(false);
+            geotransaction.set(docRef, dummyDoc);
+          });
+        })
+        .then(() => wait())
+        .then(() => docRef.get())
+        .then(doc => {
+          const docData = doc.data();
+          delete docData.g;
+          expect(doc.exists).to.be.equal(true);
+          expect(docData).to.deep.equal(dummyDoc);
+          return Promise.resolve(true);
+        });
+    });
+
+    it('set() writes document with a custom key and not the custom key defined by the transaction', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validDocumentData()[0];
+      dummyDoc.location = dummyDoc.coordinates;
+      delete dummyDoc.coordinates;
+
+      return geofirestore
+        .runTransaction(transaction => {
+          const geotransaction = new GeoTransaction(transaction, 'geopoint');
+          return geotransaction.get(docRef).then(doc => {
+            expect(doc.exists).to.be.equal(false);
+            geotransaction.set(docRef, dummyDoc, {customKey: 'location'});
+          });
+        })
+        .then(() => wait())
+        .then(() => docRef.get())
+        .then(doc => {
+          const docData = doc.data();
+          delete docData.g;
+          expect(doc.exists).to.be.equal(true);
+          expect(docData).to.deep.equal(dummyDoc);
+          return Promise.resolve(true);
+        });
+    });
   });
 
   describe('update():', () => {
     it('update() writes to a document from a Firestore collection when given a GeoDocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
-      const dummyDoc2 = validGeoDocumentData[1];
+      const dummyDoc = validGeoDocumentData()[0];
+      const dummyDoc2 = validGeoDocumentData()[1];
       const docRef = geocollection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
@@ -225,8 +311,8 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('update() writes to a document from a Firestore collection when given a DocumentReference', () => {
-      const dummyDoc = validGeoDocumentData[0];
-      const dummyDoc2 = validGeoDocumentData[1];
+      const dummyDoc = validGeoDocumentData()[0];
+      const dummyDoc2 = validGeoDocumentData()[1];
       const docRef = collection.doc('loc0');
       return stubDatabase().then(() => {
         return geofirestore
@@ -249,7 +335,7 @@ describe('GeoTransaction Tests:', () => {
     });
 
     it('update() fails if no document existed before', () => {
-      const dummyDoc = validGeoDocumentData[0];
+      const dummyDoc = validGeoDocumentData()[0];
       const docRef = geocollection.doc('loc0');
       let isDone = false;
       return geofirestore
@@ -269,6 +355,102 @@ describe('GeoTransaction Tests:', () => {
 
           return Promise.resolve(isDone);
         });
+    });
+
+    it('update() updates document with a custom key', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validGeoDocumentData()[0];
+      const geopoint = new firebase.firestore.GeoPoint(0, 0);
+      const updateData = {geopoint};
+
+      return stubDatabase().then(() => {
+        return geofirestore
+          .runTransaction(transaction => {
+            const geotransaction = new GeoTransaction(transaction);
+            return geotransaction.get(docRef).then(doc => {
+              expect(doc.exists).to.be.equal(true);
+              expect(doc.data()).to.deep.equal(dummyDoc);
+              geotransaction.update(docRef, updateData, 'geopoint');
+            });
+          })
+          .then(() => wait())
+          .then(() => docRef.get())
+          .then(doc => {
+            const docData = doc.data();
+            const g = docData.g;
+            delete docData.g;
+            delete dummyDoc.g;
+
+            expect(doc.exists).to.be.equal(true);
+            expect(docData).to.deep.equal({...dummyDoc, geopoint});
+            expect(g.geopoint).to.deep.equal(geopoint);
+            return Promise.resolve(true);
+          });
+      });
+    });
+
+    it('update() updates document with a custom key defined by the transaction', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validGeoDocumentData()[0];
+      const geopoint = new firebase.firestore.GeoPoint(0, 0);
+      const updateData = {geopoint};
+
+      return stubDatabase().then(() => {
+        return geofirestore
+          .runTransaction(transaction => {
+            const geotransaction = new GeoTransaction(transaction, 'geopoint');
+            return geotransaction.get(docRef).then(doc => {
+              expect(doc.exists).to.be.equal(true);
+              expect(doc.data()).to.deep.equal(dummyDoc);
+              geotransaction.update(docRef, updateData);
+            });
+          })
+          .then(() => wait())
+          .then(() => docRef.get())
+          .then(doc => {
+            const docData = doc.data();
+            const g = docData.g;
+            delete docData.g;
+            delete dummyDoc.g;
+
+            expect(doc.exists).to.be.equal(true);
+            expect(docData).to.deep.equal({...dummyDoc, geopoint});
+            expect(g.geopoint).to.deep.equal(geopoint);
+            return Promise.resolve(true);
+          });
+      });
+    });
+
+    it('update() updates document with a custom key and not the custom key defined by the transaction', () => {
+      const docRef = geocollection.doc('loc0');
+      const dummyDoc = validGeoDocumentData()[0];
+      const geopoint = new firebase.firestore.GeoPoint(0, 0);
+      const updateData = {geopoint};
+
+      return stubDatabase().then(() => {
+        return geofirestore
+          .runTransaction(transaction => {
+            const geotransaction = new GeoTransaction(transaction, 'location');
+            return geotransaction.get(docRef).then(doc => {
+              expect(doc.exists).to.be.equal(true);
+              expect(doc.data()).to.deep.equal(dummyDoc);
+              geotransaction.update(docRef, updateData, 'geopoint');
+            });
+          })
+          .then(() => wait())
+          .then(() => docRef.get())
+          .then(doc => {
+            const docData = doc.data();
+            const g = docData.g;
+            delete docData.g;
+            delete dummyDoc.g;
+
+            expect(doc.exists).to.be.equal(true);
+            expect(docData).to.deep.equal({...dummyDoc, geopoint});
+            expect(g.geopoint).to.deep.equal(geopoint);
+            return Promise.resolve(true);
+          });
+      });
     });
   });
 });

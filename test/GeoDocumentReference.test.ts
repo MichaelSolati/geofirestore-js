@@ -212,13 +212,13 @@ describe('GeoDocumentReference Tests:', () => {
 
   describe('set():', () => {
     it('set() does not throw an error when given a valid object', () => {
-      validDocumentData.forEach((doc, index) => {
+      validDocumentData().forEach((doc, index) => {
         expect(() => geocollection.doc(`loc${index}`).set(doc)).to.not.throw();
       });
     });
 
     it('set() does throw an error when given an invalid object', () => {
-      validDocumentData.forEach((_, index) => {
+      validDocumentData().forEach((_, index) => {
         expect(() => geocollection.doc(`loc${index}`).set(null)).to.throw();
         expect(() =>
           geocollection.doc(`loc${index}`).set({key: 'key'})

@@ -122,7 +122,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          expect(snapshot.data()).to.deep.equal(validGeoDocumentData[0]);
+          expect(snapshot.data()).to.deep.equal(validGeoDocumentData()[0]);
         })
         .then(done);
     });
@@ -132,7 +132,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
           expect(snapshot.data({serverTimestamps: 'estimate'})).to.deep.equal(
-            validGeoDocumentData[0]
+            validGeoDocumentData()[0]
           );
         })
         .then(done);
@@ -155,10 +155,10 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          Object.getOwnPropertyNames(validGeoDocumentData[0]).forEach(
+          Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(snapshot.get(property)).to.deep.equal(
-                validGeoDocumentData[0][property]
+                validGeoDocumentData()[0][property]
               );
             }
           );
@@ -170,11 +170,11 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          Object.getOwnPropertyNames(validGeoDocumentData[0]).forEach(
+          Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(
                 snapshot.get(property, {serverTimestamps: 'estimate'})
-              ).to.deep.equal(validGeoDocumentData[0][property]);
+              ).to.deep.equal(validGeoDocumentData()[0][property]);
             }
           );
         })
@@ -185,7 +185,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          Object.getOwnPropertyNames(validGeoDocumentData[0]).forEach(
+          Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(() =>
                 snapshot.get(property, {serverTimestamps: 'estimate'})

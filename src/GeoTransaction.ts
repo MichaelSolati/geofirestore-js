@@ -15,11 +15,13 @@ import {sanitizeSetOptions} from './utils';
 export class GeoTransaction {
   /**
    * @param _transaction The `Transaction` instance.
+   * @param _customKey Key to use for GeoPoints in a transaction.
    */
   constructor(
     private _transaction:
       | GeoFirestoreTypes.cloud.Transaction
-      | GeoFirestoreTypes.web.Transaction
+      | GeoFirestoreTypes.web.Transaction,
+    private _customKey?: string
   ) {
     if (Object.prototype.toString.call(_transaction) !== '[object Object]') {
       throw new Error(
@@ -92,12 +94,13 @@ export class GeoTransaction {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     documentData: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.SetOptions
+    options: GeoFirestoreTypes.SetOptions = {}
   ): GeoTransaction {
     const ref: any =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
+    options.customKey = options.customKey || this._customKey;
     (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
       ref,
       encodeDocumentSet(documentData, options),
@@ -122,7 +125,7 @@ export class GeoTransaction {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
-    customKey?: string
+    customKey: string = this._customKey
   ): GeoTransaction {
     const ref: any =
       documentRef instanceof GeoDocumentReference

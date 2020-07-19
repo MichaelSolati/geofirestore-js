@@ -11,7 +11,7 @@ import {GeoCollectionReference, GeoFirestore, GeoFirestoreTypes} from '../src';
 /*************/
 const expect = chai.expect;
 // Define dummy data for database
-export const validDocumentData: GeoFirestoreTypes.DocumentData[] = [
+export const validDocumentData: () => GeoFirestoreTypes.DocumentData[] = () => [
   {coordinates: new firebase.firestore.GeoPoint(2, 3), count: 0},
   {coordinates: new firebase.firestore.GeoPoint(50, -7), count: 1},
   {coordinates: new firebase.firestore.GeoPoint(16, -150), count: 2},
@@ -19,8 +19,8 @@ export const validDocumentData: GeoFirestoreTypes.DocumentData[] = [
   {coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4},
   {coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5},
 ];
-export const validGeoDocumentData: GeoFirestoreTypes.GeoDocumentData[] = (() =>
-  validDocumentData.map(e => encodeDocumentAdd(e)))();
+export const validGeoDocumentData: () => GeoFirestoreTypes.GeoDocumentData[] = () =>
+  validDocumentData().map(e => encodeDocumentAdd(e));
 // Define dummy setOptions to sanitize
 export const dummySetOptions: GeoFirestoreTypes.SetOptions = {
   merge: true,
@@ -263,7 +263,7 @@ function deleteQueryBatch(
 }
 
 export function stubDatabase(
-  docs: Array<{[key: string]: any}> = validDocumentData
+  docs: Array<{[key: string]: any}> = validDocumentData()
 ): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();

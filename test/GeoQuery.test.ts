@@ -67,10 +67,10 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
         const subscription = query.onSnapshot(snapshot => {
-          if (snapshot.size === validGeoDocumentData.length) {
+          if (snapshot.size === validGeoDocumentData().length) {
             subscription();
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(validGeoDocumentData);
+            expect(result).to.have.deep.members(validGeoDocumentData());
             done();
           }
         });
@@ -86,7 +86,7 @@ describe('GeoQuery Tests:', () => {
             subscription();
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(e => e.count > 2)
+              validGeoDocumentData().filter(e => e.count > 2)
             );
             done();
           });
@@ -103,7 +103,7 @@ describe('GeoQuery Tests:', () => {
             subscription();
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(
+              validGeoDocumentData().filter(
                 e => calculateDistance(center, e.g.geopoint) <= 1000
               )
             );
@@ -190,7 +190,7 @@ describe('GeoQuery Tests:', () => {
     });
 
     it('onSnapshot updates when a document, that belongs in the query, is removed from collection', done => {
-      const doc = validGeoDocumentData[0];
+      const doc = validGeoDocumentData()[0];
       let runOnce = false;
       const query = new GeoQuery(collection);
       stubDatabase().then(() => {
@@ -297,7 +297,7 @@ describe('GeoQuery Tests:', () => {
         .then(() => query.get())
         .then(data => {
           const result = data.docs.map(d => d.data());
-          expect(result).to.have.deep.members(validGeoDocumentData);
+          expect(result).to.have.deep.members(validGeoDocumentData());
         })
         .then(done);
     });
@@ -311,7 +311,7 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(e => e.count > 2)
+              validGeoDocumentData().filter(e => e.count > 2)
             );
           })
           .then(done);
@@ -328,7 +328,7 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(
+              validGeoDocumentData().filter(
                 e => calculateDistance(center, e.g.geopoint) <= 1000
               )
             );
@@ -373,8 +373,10 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const docChanges = snapshot.docChanges();
             const docs = docChanges.map(doc => doc.doc.data());
-            expect(docChanges.length).to.be.equal(validGeoDocumentData.length);
-            expect(docs).to.have.deep.members(validGeoDocumentData);
+            expect(docChanges.length).to.be.equal(
+              validGeoDocumentData().length
+            );
+            expect(docs).to.have.deep.members(validGeoDocumentData());
             docChanges.forEach((doc, index) => {
               expect(doc.newIndex).to.be.equal(index);
               expect(doc.oldIndex).to.be.equal(-1);
@@ -416,7 +418,7 @@ describe('GeoQuery Tests:', () => {
           .get()
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(validGeoDocumentData);
+            expect(result).to.have.deep.members(validGeoDocumentData());
           })
           .then(done);
       });
@@ -433,7 +435,7 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(
+              validGeoDocumentData().filter(
                 e => calculateDistance(center, e.g.geopoint) <= 1000
               )
             );
@@ -449,7 +451,7 @@ describe('GeoQuery Tests:', () => {
           .get({source: 'server'})
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
-            expect(result).to.have.deep.members(validGeoDocumentData);
+            expect(result).to.have.deep.members(validGeoDocumentData());
           })
           .then(done);
       });
@@ -465,7 +467,7 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData.filter(
+              validGeoDocumentData().filter(
                 e => calculateDistance(center, e.g.geopoint) <= 1000
               )
             );

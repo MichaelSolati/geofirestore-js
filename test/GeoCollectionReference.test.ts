@@ -99,7 +99,7 @@ describe('GeoCollectionReference Tests:', () => {
 
   describe('add():', () => {
     it('add() does not throw an error when given a valid object', () => {
-      validDocumentData.forEach(doc => {
+      validDocumentData().forEach(doc => {
         expect(() => geocollection.add(doc)).to.not.throw();
       });
     });
