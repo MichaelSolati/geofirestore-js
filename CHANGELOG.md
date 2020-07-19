@@ -1,3 +1,16 @@
+### 4.2.0 (2020-07-19)
+
+##### Build System / Dependencies
+
+*  run GitHub action for pushes, pull requests, and releases ([0c1a8045](https://github.com/MichaelSolati/geofirestore-js/commit/0c1a804516fa3f99cc3b2cc85c33ebde174952eb))
+* **deps:**  bump lodash from 4.17.15 to 4.17.19 ([#186](https://github.com/MichaelSolati/geofirestore-js/pull/186)) ([cdcc4801](https://github.com/MichaelSolati/geofirestore-js/commit/cdcc480169ce662a9bb5c67b673223aed6ceb72a))
+
+##### New Features
+
+* **GeoWriteBatch:**  allow custom key to be defined at write batch level ([d1d61436](https://github.com/MichaelSolati/geofirestore-js/commit/d1d614367469ac1b1be1b9aedbe091830cba8ec4))
+* **GeoTransaction:**  allow custom key to be defined at transaction level ([924accad](https://github.com/MichaelSolati/geofirestore-js/commit/924accadcdedddc20d3708f433e0e7971fe9e7a6))
+* **GeoCollectionReference:**  allow custom key to be defined at collection level ([284c90c6](https://github.com/MichaelSolati/geofirestore-js/commit/284c90c677560dbf48e870b6b6e433fe19890e34))
+
 #### 4.1.3 (2020-07-05)
 
 ##### Build System / Dependencies
