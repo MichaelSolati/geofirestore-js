@@ -45,6 +45,16 @@ describe('GeoCollectionReference Tests:', () => {
           new GeoCollectionReference(firestore.collection(testCollectionName))
       ).not.to.throw();
     });
+
+    it('Constructor does not throw errors given valid Firestore CollectionReference and custom key', () => {
+      expect(
+        () =>
+          new GeoCollectionReference(
+            firestore.collection(testCollectionName),
+            'geopoint'
+          )
+      ).not.to.throw();
+    });
   });
 
   describe('native:', () => {
@@ -119,6 +129,44 @@ describe('GeoCollectionReference Tests:', () => {
       invalidObjects.forEach(invalidObject => {
         expect(() => geocollection.add(invalidObject)).to.throw();
       });
+    });
+
+    it('add() adds a new object with a custom key defined by the collection', () => {
+      const geocollectionWithKey = new GeoCollectionReference(
+        geocollection.native,
+        'geopoint'
+      );
+      return geocollectionWithKey
+        .add({geopoint: new firebase.firestore.GeoPoint(0, 0)})
+        .then(d1 => {
+          return wait(100).then(() => {
+            return geocollectionWithKey
+              .doc(d1.id)
+              .get()
+              .then(d2 => {
+                expect(d2.exists).to.equal(true);
+              });
+          });
+        });
+    });
+
+    it('add() adds a new object using the custom key used during add with a custom key defined by the collection', () => {
+      const geocollectionWithKey = new GeoCollectionReference(
+        geocollection.native,
+        'geopoint'
+      );
+      return geocollectionWithKey
+        .add({location: new firebase.firestore.GeoPoint(0, 0)}, 'location')
+        .then(d1 => {
+          return wait(100).then(() => {
+            return geocollectionWithKey
+              .doc(d1.id)
+              .get()
+              .then(d2 => {
+                expect(d2.exists).to.equal(true);
+              });
+          });
+        });
     });
 
     it('add() adds a new object with a custom key', () => {

@@ -10,11 +10,13 @@ import {GeoQuery} from './GeoQuery';
 export class GeoCollectionReference extends GeoQuery {
   /**
    * @param _collection The `CollectionReference` instance.
+   * @param _customKey Key to use for GeoPoints in a collection.
    */
   constructor(
     private _collection:
       | GeoFirestoreTypes.cloud.CollectionReference
-      | GeoFirestoreTypes.web.CollectionReference
+      | GeoFirestoreTypes.web.CollectionReference,
+    private _customKey?: string
   ) {
     super(_collection);
   }
@@ -58,7 +60,7 @@ export class GeoCollectionReference extends GeoQuery {
    */
   add(
     documentData: GeoFirestoreTypes.DocumentData,
-    customKey?: string
+    customKey: string = this._customKey
   ): Promise<GeoDocumentReference> {
     return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
       .add(encodeDocumentAdd(documentData, customKey))
