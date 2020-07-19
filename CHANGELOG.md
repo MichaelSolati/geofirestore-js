@@ -1,3 +1,9 @@
+#### 4.2.1 (2020-07-19)
+
+##### Bug Fixes
+
+* **README:**  fix CI badge in README ([3767b8a7](https://github.com/MichaelSolati/geofirestore-js/commit/3767b8a7c68216e9ea8e292c92ba481e4186f852))
+
 ### 4.2.0 (2020-07-19)
 
 ##### Build System / Dependencies
