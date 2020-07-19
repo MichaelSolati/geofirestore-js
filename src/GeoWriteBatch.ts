@@ -19,11 +19,13 @@ import {sanitizeSetOptions} from './utils';
 export class GeoWriteBatch {
   /**
    * @param _writeBatch The `WriteBatch` instance.
+   * @param _customKey Key to use for GeoPoints in a write batch.
    */
   constructor(
     private _writeBatch:
       | GeoFirestoreTypes.cloud.WriteBatch
-      | GeoFirestoreTypes.web.WriteBatch
+      | GeoFirestoreTypes.web.WriteBatch,
+    private _customKey?: string
   ) {
     if (Object.prototype.toString.call(_writeBatch) !== '[object Object]') {
       throw new Error(
@@ -54,12 +56,13 @@ export class GeoWriteBatch {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     documentData: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.SetOptions
+    options: GeoFirestoreTypes.SetOptions = {}
   ): GeoWriteBatch {
     const ref: any =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
+    options.customKey = options.customKey || this._customKey;
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).set(
       ref,
       encodeDocumentSet(documentData, options),
@@ -84,7 +87,7 @@ export class GeoWriteBatch {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
-    customKey?: string
+    customKey: string = this._customKey
   ): GeoWriteBatch {
     const ref: any =
       documentRef instanceof GeoDocumentReference

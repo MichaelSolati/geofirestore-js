@@ -30,21 +30,27 @@ export class GeoFirestore {
   /**
    * Creates a write batch, used for performing multiple writes as a single atomic operation.
    *
+   * @param customKey Key to use for GeoPoints in a write batch.
    * @return A new `GeoWriteBatch` instance.
    */
-  batch(): GeoWriteBatch {
-    return new GeoWriteBatch(this._firestore.batch());
+  batch(customKey?: string): GeoWriteBatch {
+    return new GeoWriteBatch(this._firestore.batch(), customKey);
   }
 
   /**
    * Gets a `GeoCollectionReference` instance that refers to the collection at the specified path.
    *
    * @param collectionPath A slash-separated path to a collection.
+   * @param customKey Key to use for GeoPoints in a collection.
    * @return A new `GeoCollectionReference` instance.
    */
-  collection(collectionPath: string): GeoCollectionReference {
+  collection(
+    collectionPath: string,
+    customKey?: string
+  ): GeoCollectionReference {
     return new GeoCollectionReference(
-      this._firestore.collection(collectionPath)
+      this._firestore.collection(collectionPath),
+      customKey
     );
   }
 
