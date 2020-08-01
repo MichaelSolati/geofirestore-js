@@ -10,14 +10,6 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
-const ts = typescript({
-  tsconfigOverride: {
-    compilerOptions: {
-      module: 'ESNext',
-    },
-  },
-});
-
 export default [
   {
     input: 'src/index.ts',
@@ -32,7 +24,16 @@ export default [
       },
     ],
     external: ['@types/node', 'geofirestore-core'],
-    plugins: [ts],
+    plugins: [
+      typescript({
+        tsconfigOverride: {
+          compilerOptions: {
+            module: 'ESNext',
+            removeComments: true,
+          },
+        },
+      }),
+    ],
     onwarn,
   },
   {
@@ -44,7 +45,17 @@ export default [
       extend: true,
     },
     external: ['@types/node'],
-    plugins: [ts, resolve(), terser()],
+    plugins: [
+      typescript({
+        tsconfigOverride: {
+          compilerOptions: {
+            module: 'ESNext',
+          },
+        },
+      }),
+      resolve(),
+      terser(),
+    ],
     onwarn,
   },
 ];

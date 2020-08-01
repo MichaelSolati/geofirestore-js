@@ -7,7 +7,7 @@
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
     "declaration": true,
-    "removeComments": true,
+    "removeComments": false,
     "target": "es2017",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"]
