@@ -1,3 +1,16 @@
+### 4.3.0 (2020-08-01)
+
+##### Build System / Dependencies
+
+*  include comments in `dist/**/*.d.ts` files ([ef4e6366](https://github.com/MichaelSolati/geofirestore-js/commit/ef4e6366476ebdaeaea3cd967122c03ad5469cbc))
+
+##### New Features
+
+* **GeoFirestore:**
+  *  add method for `settings` ([cace72c9](https://github.com/MichaelSolati/geofirestore-js/commit/cace72c983131e1ddf0ddeb90194c78a6f9caac8))
+  *  add method for `doc` ([3992c978](https://github.com/MichaelSolati/geofirestore-js/commit/3992c978e377623cf524d0dada8eb90a8ca1ced0))
+  *  add method for `collectionGroup`, fixes [#187](https://github.com/MichaelSolati/geofirestore-js/pull/187) ([7d34d877](https://github.com/MichaelSolati/geofirestore-js/commit/7d34d87701f7068eca064df916ae752d69b609b6))
+
 #### 4.2.1 (2020-07-19)
 
 ##### Bug Fixes
