@@ -87,4 +87,10 @@ describe('GeoFirestore Tests:', () => {
       geofirestore.runTransaction(() => Math as any).catch(() => done());
     });
   });
+
+  describe('settings:', () => {
+    it("settings() does't throw errors given valid Firestore Settings", () => {
+      expect(() => new GeoFirestore(firestore).settings({})).not.to.throw();
+    });
+  });
 });

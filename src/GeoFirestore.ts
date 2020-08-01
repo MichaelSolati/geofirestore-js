@@ -124,4 +124,19 @@ export class GeoFirestore {
       updateFunction
     );
   }
+
+  /**
+   * Specifies custom settings to be used to configure the `Firestore`
+   * instance. Can only be invoked once and before any other Firestore
+   * method.
+   *
+   * If settings are provided via both `settings()` and the `Firestore`
+   * constructor, both settings objects are merged and any settings provided
+   * via `settings()` take precedence.
+   */
+  settings(
+    settings: GeoFirestoreTypes.cloud.Settings | GeoFirestoreTypes.web.Settings
+  ): void {
+    this._firestore.settings(settings);
+  }
 }
