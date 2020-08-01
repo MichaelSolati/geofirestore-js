@@ -68,6 +68,14 @@ describe('GeoFirestore Tests:', () => {
     });
   });
 
+  describe('doc():', () => {
+    it('doc() returns a new GeoDocumentReference based on a Firestore DocumentReference', () => {
+      expect(
+        new GeoFirestore(firestore).doc(testCollectionName + '/id1').native
+      ).to.deep.equal(firestore.doc(testCollectionName + '/id1'));
+    });
+  });
+
   describe('runTransaction():', () => {
     it("runTransaction() doesn't throw an error when a valid `updateFunction` is passed in", () => {
       expect(() =>

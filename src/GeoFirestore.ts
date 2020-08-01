@@ -1,6 +1,7 @@
 import {GeoFirestoreTypes} from 'geofirestore-core';
 
 import {GeoCollectionReference} from './GeoCollectionReference';
+import {GeoDocumentReference} from './GeoDocumentReference';
 import {GeoQuery} from './GeoQuery';
 import {GeoWriteBatch} from './GeoWriteBatch';
 
@@ -67,6 +68,17 @@ export class GeoFirestore {
    */
   collectionGroup(collectionId: string): GeoQuery {
     return new GeoQuery(this._firestore.collectionGroup(collectionId));
+  }
+
+  /**
+   * Gets a `GeoDocumentReference` instance that refers to the document at the
+   * specified path.
+   *
+   * @param documentPath A slash-separated path to a document.
+   * @return The `GeoDocumentReference` instance.
+   */
+  doc(documentPath: string): GeoDocumentReference {
+    return new GeoDocumentReference(this._firestore.doc(documentPath));
   }
 
   /**
