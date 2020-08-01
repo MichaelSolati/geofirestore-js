@@ -46,7 +46,7 @@ describe('GeoFirestore Tests:', () => {
 
   describe('batch():', () => {
     it('batch() returns a new GeoWriteBatch based on a Firestore WriteBatch', () => {
-      expect(new GeoFirestore(firestore).batch()['_writeBatch']).to.deep.equal(
+      expect(new GeoFirestore(firestore).batch().native).to.deep.equal(
         firestore.batch()
       );
     });
@@ -55,10 +55,16 @@ describe('GeoFirestore Tests:', () => {
   describe('collection():', () => {
     it('collection() returns a new GeoCollectionReference based on a Firestore CollectionReference', () => {
       expect(
-        new GeoFirestore(firestore).collection(testCollectionName)[
-          '_collection'
-        ]
+        new GeoFirestore(firestore).collection(testCollectionName).native
       ).to.deep.equal(firestore.collection(testCollectionName));
+    });
+  });
+
+  describe('collectionGroup():', () => {
+    it('collectionGroup() returns a new GeoQuery based on a Firestore Query', () => {
+      expect(
+        new GeoFirestore(firestore).collectionGroup(testCollectionName).native
+      ).to.deep.equal(firestore.collectionGroup(testCollectionName));
     });
   });
 

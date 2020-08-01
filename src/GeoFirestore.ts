@@ -1,6 +1,7 @@
 import {GeoFirestoreTypes} from 'geofirestore-core';
 
 import {GeoCollectionReference} from './GeoCollectionReference';
+import {GeoQuery} from './GeoQuery';
 import {GeoWriteBatch} from './GeoWriteBatch';
 
 /**
@@ -52,6 +53,20 @@ export class GeoFirestore {
       this._firestore.collection(collectionPath),
       customKey
     );
+  }
+
+  /**
+   * Creates and returns a new GeoQuery that includes all documents in the
+   * database that are contained in a collection or subcollection with the
+   * given collectionId.
+   *
+   * @param collectionId Identifies the collections to query over. Every
+   * collection or subcollection with this ID as the last segment of its path
+   * will be included. Cannot contain a slash.
+   * @return The created GeoQuery.
+   */
+  collectionGroup(collectionId: string): GeoQuery {
+    return new GeoQuery(this._firestore.collectionGroup(collectionId));
   }
 
   /**
