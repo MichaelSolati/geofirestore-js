@@ -1,8 +1,5 @@
 name: Pull Request CI
-on:
-  pull_request:
-    branches:
-      - '**'
+on: pull_request
 env:
   COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
 jobs:
