@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/firestore';
 import {encodeDocumentAdd} from 'geofirestore-core';
 import {distance} from 'geokit';
