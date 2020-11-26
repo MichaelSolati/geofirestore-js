@@ -1,3 +1,23 @@
+### 4.4.0 (2020-11-26)
+
+##### Build System / Dependencies
+
+*  update GitHub actions to only run in certain cases ([383990c6](https://github.com/MichaelSolati/geofirestore-js/commit/383990c63a93d3207a0ecb0d26f7bb1d7d110a5f))
+* **deps:**  bump bl from 4.0.2 to 4.0.3 ([#191](https://github.com/MichaelSolati/geofirestore-js/pull/191)) ([84fcb96a](https://github.com/MichaelSolati/geofirestore-js/commit/84fcb96a475bc35fb8f06f6f78f388c3c874b337))
+
+##### Chores
+
+* **typescript:**  update typescript ([95858bd1](https://github.com/MichaelSolati/geofirestore-js/commit/95858bd133869dfc828d9fc8b7de587fd2e96a37))
+*  update dependencies ([d8bcb322](https://github.com/MichaelSolati/geofirestore-js/commit/d8bcb3224497f0386fcca771dee814f644ea4d68))
+
+##### Code Style Changes
+
+* **test:**  fix formating of test code ([962969fa](https://github.com/MichaelSolati/geofirestore-js/commit/962969fa00edba31912400a3d1aa7d60a1dd8244))
+
+##### Tests
+
+*  update tests and remove `settings` from `GeoFirestore` ([4b1bd275](https://github.com/MichaelSolati/geofirestore-js/commit/4b1bd27575bdcebbf55de22b4b2502b44a8a5e2d))
+
 ### 4.3.0 (2020-08-01)
 
 ##### Build System / Dependencies
