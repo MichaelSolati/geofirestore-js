@@ -69,8 +69,8 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => collection.get())
         .then(snapshot => {
           snapshot.forEach(doc => {
-            expect(new GeoDocumentReference(collection.doc(doc.id)).id)
-              .to.be.string;
+            expect(new GeoDocumentReference(collection.doc(doc.id)).id).to.be
+              .string;
           });
         })
         .then(done);
