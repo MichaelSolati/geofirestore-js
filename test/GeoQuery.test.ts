@@ -120,7 +120,7 @@ describe('GeoQuery Tests:', () => {
           .near({center, radius: 1})
           .onSnapshot(snapshot => {
             subscription();
-            expect(snapshot.empty).to.equal(true);
+            expect(snapshot.empty).to.be.true;
             done();
           });
       });
@@ -199,7 +199,7 @@ describe('GeoQuery Tests:', () => {
           .onSnapshot(snapshot => {
             if (!runOnce) {
               runOnce = true;
-              expect(snapshot.empty).to.equal(false);
+              expect(snapshot.empty).to.be.false;
               expect(snapshot.docChanges().length).to.equal(1);
               expect(snapshot.docChanges()[0].type).to.equal('added');
               setTimeout(() => {
@@ -207,7 +207,7 @@ describe('GeoQuery Tests:', () => {
               }, 100);
             } else {
               subscription();
-              expect(snapshot.empty).to.equal(true);
+              expect(snapshot.empty).to.be.true;
               expect(snapshot.docChanges().length).to.equal(1);
               expect(snapshot.docChanges()[0].type).to.equal('removed');
               done();
@@ -565,7 +565,7 @@ describe('GeoQuery Tests:', () => {
       const query = new GeoQuery(collection);
       // eslint-disable-next-line
       // @ts-ignore
-      expect(() => query.where('count', 'as', 12)).to.throw();
+      expect(() => query.where('count', 'as', 12).then(() => null)).to.throw();
     });
   });
 

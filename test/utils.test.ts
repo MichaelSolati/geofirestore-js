@@ -20,9 +20,7 @@ describe('Utils Tests:', () => {
         merge,
         mergeFields,
       });
-      expect(sanitizeSetOptions(dummySetOptions).customKey).to.be.equal(
-        undefined
-      );
+      expect(sanitizeSetOptions(dummySetOptions).customKey).to.be.undefined;
     });
   });
 });

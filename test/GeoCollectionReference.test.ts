@@ -71,13 +71,13 @@ describe('GeoCollectionReference Tests:', () => {
     });
 
     it('id will be a sting', () => {
-      expect(typeof geocollection.id).to.equal('string');
+      expect(geocollection.id).to.be.string;
     });
   });
 
   describe('parent:', () => {
     it('parent will return null if not a subcollection in a document', () => {
-      expect(geocollection.parent).to.equal(null);
+      expect(geocollection.parent).to.be.null;
     });
 
     it('parent will return a GeoDocumentReference if a subcollection in a document', () => {
@@ -86,7 +86,7 @@ describe('GeoCollectionReference Tests:', () => {
         .then(doc => {
           const subCollection = doc.collection('subcollection');
           expect(subCollection.parent).to.be.instanceOf(GeoDocumentReference);
-          expect(subCollection.parent.isEqual(doc)).to.deep.equal(true);
+          expect(subCollection.parent.isEqual(doc)).to.be.true;
         });
     });
   });
@@ -119,7 +119,7 @@ describe('GeoCollectionReference Tests:', () => {
               .doc(d1.id)
               .get()
               .then(d2 => {
-                expect(d2.exists).to.equal(true);
+                expect(d2.exists).to.be.true;
               });
           });
         });
@@ -144,7 +144,7 @@ describe('GeoCollectionReference Tests:', () => {
               .doc(d1.id)
               .get()
               .then(d2 => {
-                expect(d2.exists).to.equal(true);
+                expect(d2.exists).to.be.true;
               });
           });
         });
@@ -163,7 +163,7 @@ describe('GeoCollectionReference Tests:', () => {
               .doc(d1.id)
               .get()
               .then(d2 => {
-                expect(d2.exists).to.equal(true);
+                expect(d2.exists).to.be.true;
               });
           });
         });
@@ -178,7 +178,7 @@ describe('GeoCollectionReference Tests:', () => {
               .doc(d1.id)
               .get()
               .then(d2 => {
-                expect(d2.exists).to.equal(true);
+                expect(d2.exists).to.be.true;
               });
           });
         });
@@ -196,7 +196,7 @@ describe('GeoCollectionReference Tests:', () => {
               .doc(d1.id)
               .get()
               .then(d2 => {
-                expect(d2.exists).to.equal(true);
+                expect(d2.exists).to.be.true;
               });
           });
         });
@@ -217,7 +217,7 @@ describe('GeoCollectionReference Tests:', () => {
           expect(geocollection.doc(doc.id)).to.be.instanceOf(
             GeoDocumentReference
           );
-          expect(geocollection.doc(doc.id).isEqual(doc)).to.deep.equal(true);
+          expect(geocollection.doc(doc.id).isEqual(doc)).to.be.true;
         });
     });
   });

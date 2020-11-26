@@ -80,7 +80,7 @@ describe('GeoWriteBatch Tests:', () => {
         .commit()
         .then(() => doc.get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal(validGeoDocumentData()[0]);
         });
     });
@@ -100,7 +100,7 @@ describe('GeoWriteBatch Tests:', () => {
         })
         .then(() => doc.get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal({
             ...validGeoDocumentData()[0],
             count: 10,
@@ -124,7 +124,7 @@ describe('GeoWriteBatch Tests:', () => {
           expectedData.geopoint = expectedData.coordinates;
           delete expectedData.coordinates;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal(expectedData);
         });
     });
@@ -145,7 +145,7 @@ describe('GeoWriteBatch Tests:', () => {
           expectedData.geopoint = expectedData.coordinates;
           delete expectedData.coordinates;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal(expectedData);
         });
     });
@@ -166,7 +166,7 @@ describe('GeoWriteBatch Tests:', () => {
           expectedData.geopoint = expectedData.coordinates;
           delete expectedData.coordinates;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal(expectedData);
         });
     });
@@ -195,7 +195,7 @@ describe('GeoWriteBatch Tests:', () => {
         )
         .then(() => doc.get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshot.data()).to.deep.equal(validGeoDocumentData()[1]);
         });
     });
@@ -221,7 +221,7 @@ describe('GeoWriteBatch Tests:', () => {
           delete snapshotData.g;
           delete dummyDoc.g;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
           expect(g.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
@@ -246,7 +246,7 @@ describe('GeoWriteBatch Tests:', () => {
           delete snapshotData.g;
           delete dummyDoc.g;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
           expect(g.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
@@ -274,7 +274,7 @@ describe('GeoWriteBatch Tests:', () => {
           delete snapshotData.g;
           delete dummyDoc.g;
 
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
           expect(g.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
@@ -300,12 +300,12 @@ describe('GeoWriteBatch Tests:', () => {
         .set(validDocumentData()[0])
         .then(() => doc.get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
         })
         .then(() => doc.firestore.batch().delete(doc).commit())
         .then(() => doc.get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(false);
+          expect(snapshot.exists).to.be.false;
         });
     });
   });

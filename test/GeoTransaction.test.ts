@@ -74,14 +74,14 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               geotransaction.delete(docRef);
             });
           })
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             return Promise.resolve(true);
           });
       });
@@ -94,14 +94,14 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               geotransaction.delete(docRef);
             });
           })
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             return Promise.resolve(true);
           });
       });
@@ -116,7 +116,7 @@ describe('GeoTransaction Tests:', () => {
         return geofirestore.runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc);
             geotransaction.update(docRef, dummyDoc);
           });
@@ -131,7 +131,7 @@ describe('GeoTransaction Tests:', () => {
         return geofirestore.runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc);
             geotransaction.update(docRef, dummyDoc);
           });
@@ -150,7 +150,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.set(docRef, dummyDoc2);
             });
@@ -158,7 +158,7 @@ describe('GeoTransaction Tests:', () => {
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
@@ -174,7 +174,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.set(docRef, dummyDoc2);
             });
@@ -182,7 +182,7 @@ describe('GeoTransaction Tests:', () => {
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
@@ -196,14 +196,14 @@ describe('GeoTransaction Tests:', () => {
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             geotransaction.set(docRef, dummyDoc);
           });
         })
         .then(() => wait())
         .then(() => docRef.get())
         .then(doc => {
-          expect(doc.exists).to.be.equal(true);
+          expect(doc.exists).to.be.true;
           expect(doc.data()).to.deep.equal(dummyDoc);
           return Promise.resolve(true);
         });
@@ -219,7 +219,7 @@ describe('GeoTransaction Tests:', () => {
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             geotransaction.set(docRef, dummyDoc, {customKey: 'geopoint'});
           });
         })
@@ -228,7 +228,7 @@ describe('GeoTransaction Tests:', () => {
         .then(doc => {
           const docData = doc.data();
           delete docData.g;
-          expect(doc.exists).to.be.equal(true);
+          expect(doc.exists).to.be.true;
           expect(docData).to.deep.equal(dummyDoc);
           return Promise.resolve(true);
         });
@@ -244,7 +244,7 @@ describe('GeoTransaction Tests:', () => {
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction, 'geopoint');
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             geotransaction.set(docRef, dummyDoc);
           });
         })
@@ -253,7 +253,7 @@ describe('GeoTransaction Tests:', () => {
         .then(doc => {
           const docData = doc.data();
           delete docData.g;
-          expect(doc.exists).to.be.equal(true);
+          expect(doc.exists).to.be.true;
           expect(docData).to.deep.equal(dummyDoc);
           return Promise.resolve(true);
         });
@@ -269,7 +269,7 @@ describe('GeoTransaction Tests:', () => {
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction, 'geopoint');
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             geotransaction.set(docRef, dummyDoc, {customKey: 'location'});
           });
         })
@@ -278,7 +278,7 @@ describe('GeoTransaction Tests:', () => {
         .then(doc => {
           const docData = doc.data();
           delete docData.g;
-          expect(doc.exists).to.be.equal(true);
+          expect(doc.exists).to.be.true;
           expect(docData).to.deep.equal(dummyDoc);
           return Promise.resolve(true);
         });
@@ -295,7 +295,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.update(docRef, dummyDoc2);
             });
@@ -303,7 +303,7 @@ describe('GeoTransaction Tests:', () => {
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
@@ -319,7 +319,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.update(docRef, dummyDoc2);
             });
@@ -327,7 +327,7 @@ describe('GeoTransaction Tests:', () => {
           .then(() => wait())
           .then(() => docRef.get())
           .then(doc => {
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(doc.data()).to.deep.equal(dummyDoc2);
             return Promise.resolve(true);
           });
@@ -342,7 +342,7 @@ describe('GeoTransaction Tests:', () => {
         .runTransaction(transaction => {
           const geotransaction = new GeoTransaction(transaction);
           return geotransaction.get(docRef).then(doc => {
-            expect(doc.exists).to.be.equal(false);
+            expect(doc.exists).to.be.false;
             geotransaction.update(docRef, dummyDoc);
           });
         })
@@ -368,7 +368,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction);
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.update(docRef, updateData, 'geopoint');
             });
@@ -381,7 +381,7 @@ describe('GeoTransaction Tests:', () => {
             delete docData.g;
             delete dummyDoc.g;
 
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
             expect(g.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);
@@ -400,7 +400,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction, 'geopoint');
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.update(docRef, updateData);
             });
@@ -413,7 +413,7 @@ describe('GeoTransaction Tests:', () => {
             delete docData.g;
             delete dummyDoc.g;
 
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
             expect(g.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);
@@ -432,7 +432,7 @@ describe('GeoTransaction Tests:', () => {
           .runTransaction(transaction => {
             const geotransaction = new GeoTransaction(transaction, 'location');
             return geotransaction.get(docRef).then(doc => {
-              expect(doc.exists).to.be.equal(true);
+              expect(doc.exists).to.be.true;
               expect(doc.data()).to.deep.equal(dummyDoc);
               geotransaction.update(docRef, updateData, 'geopoint');
             });
@@ -445,7 +445,7 @@ describe('GeoTransaction Tests:', () => {
             delete docData.g;
             delete dummyDoc.g;
 
-            expect(doc.exists).to.be.equal(true);
+            expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
             expect(g.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);

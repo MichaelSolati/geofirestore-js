@@ -58,7 +58,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(true);
+          expect(snapshot.exists).to.be.true;
         })
         .then(done);
     });
@@ -68,7 +68,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .doc('loc0')
         .get()
         .then(snapshot => {
-          expect(snapshot.exists).to.equal(false);
+          expect(snapshot.exists).to.be.false;
         })
         .then(done);
     });
@@ -79,7 +79,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          expect(typeof snapshot.id === 'string').to.equal(true);
+          expect(snapshot.id).to.be.string;
         })
         .then(done);
     });
@@ -111,7 +111,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(snapshot => (geoQuerySnapshot = snapshot))
         .then(() => collection.doc('loc0').get())
         .then(snapshot => {
-          expect(geoQuerySnapshot.ref.isEqual(snapshot.ref)).to.equal(true);
+          expect(geoQuerySnapshot.ref.isEqual(snapshot.ref)).to.be.true;
         })
         .then(done);
     });
@@ -202,7 +202,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          expect(snapshot.isEqual(snapshot['_snapshot'])).to.equal(true);
+          expect(snapshot.isEqual(snapshot['_snapshot'])).to.be.true;
         })
         .then(done);
     });
@@ -211,7 +211,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
       stubDatabase()
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
-          expect(snapshot.isEqual(snapshot)).to.equal(true);
+          expect(snapshot.isEqual(snapshot)).to.be.true;
         })
         .then(done);
     });
@@ -223,7 +223,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(snapshot => (snapshotDoc0 = snapshot))
         .then(() => collection.doc('loc1').get())
         .then(snapshot => {
-          expect(snapshotDoc0.isEqual(snapshot)).to.equal(false);
+          expect(snapshotDoc0.isEqual(snapshot)).to.be.false;
         })
         .then(done);
     });
@@ -235,7 +235,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(snapshot => (snapshotDoc0 = snapshot))
         .then(() => geocollection.doc('loc1').get())
         .then(snapshot => {
-          expect(snapshotDoc0.isEqual(snapshot)).to.equal(false);
+          expect(snapshotDoc0.isEqual(snapshot)).to.be.false;
         })
         .then(done);
     });

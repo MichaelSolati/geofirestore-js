@@ -1,4 +1,5 @@
 import * as chai from 'chai';
+import firebase from 'firebase/app';
 
 import {GeoFirestore} from '../src';
 import {
@@ -46,9 +47,10 @@ describe('GeoFirestore Tests:', () => {
 
   describe('batch():', () => {
     it('batch() returns a new GeoWriteBatch based on a Firestore WriteBatch', () => {
-      expect(new GeoFirestore(firestore).batch().native).to.deep.equal(
-        firestore.batch()
-      );
+      expect(
+        new GeoFirestore(firestore).batch().native instanceof
+          firebase.firestore.WriteBatch
+      ).to.be.true;
     });
   });
 
@@ -85,12 +87,6 @@ describe('GeoFirestore Tests:', () => {
 
     it('runTransaction() does throw an error when an invalid `updateFunction` is passed in', done => {
       geofirestore.runTransaction(() => Math as any).catch(() => done());
-    });
-  });
-
-  describe('settings:', () => {
-    it("settings() does't throw errors given valid Firestore Settings", () => {
-      expect(() => new GeoFirestore(firestore).settings({})).not.to.throw();
     });
   });
 });

@@ -69,9 +69,8 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => collection.get())
         .then(snapshot => {
           snapshot.forEach(doc => {
-            expect(
-              typeof new GeoDocumentReference(collection.doc(doc.id)).id
-            ).to.equal('string');
+            expect(new GeoDocumentReference(collection.doc(doc.id)).id)
+              .to.be.string;
           });
         })
         .then(done);
@@ -109,7 +108,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => {
           const sub = documentReference.onSnapshot(snapshot => {
             sub();
-            expect(snapshot.exists).to.equal(true);
+            expect(snapshot.exists).to.be.true;
             done();
           });
         });
@@ -184,12 +183,10 @@ describe('GeoDocumentReference Tests:', () => {
         .doc('loc1')
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => {
-          expect(
-            geocollection.doc('loc1').isEqual(geocollection.doc('loc1'))
-          ).to.be.equal(true);
-          expect(
-            geocollection.doc('loc1').isEqual(collection.doc('loc1'))
-          ).to.be.equal(true);
+          expect(geocollection.doc('loc1').isEqual(geocollection.doc('loc1')))
+            .to.be.true;
+          expect(geocollection.doc('loc1').isEqual(collection.doc('loc1'))).to
+            .be.true;
         })
         .then(done);
     });
@@ -199,12 +196,10 @@ describe('GeoDocumentReference Tests:', () => {
         .doc('loc1')
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => {
-          expect(
-            geocollection.doc('loc1').isEqual(geocollection.doc('loc2'))
-          ).to.be.equal(false);
-          expect(
-            geocollection.doc('loc1').isEqual(collection.doc('loc2'))
-          ).to.be.equal(false);
+          expect(geocollection.doc('loc1').isEqual(geocollection.doc('loc2')))
+            .to.be.false;
+          expect(geocollection.doc('loc1').isEqual(collection.doc('loc2'))).to
+            .be.false;
         })
         .then(done);
     });
@@ -236,7 +231,7 @@ describe('GeoDocumentReference Tests:', () => {
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => geocollection.doc('loc1').get())
         .then(doc => {
-          expect(doc.exists).to.equal(true);
+          expect(doc.exists).to.be.true;
         })
         .then(done);
     });
@@ -263,7 +258,7 @@ describe('GeoDocumentReference Tests:', () => {
             .doc(d1.id)
             .get()
             .then(d2 => {
-              expect(d2.exists).to.equal(true);
+              expect(d2.exists).to.be.true;
             });
         });
     });
@@ -282,7 +277,7 @@ describe('GeoDocumentReference Tests:', () => {
             .doc(d1.id)
             .get()
             .then(d2 => {
-              expect(d2.exists).to.equal(true);
+              expect(d2.exists).to.be.true;
             });
         });
     });
@@ -383,7 +378,7 @@ describe('GeoDocumentReference Tests:', () => {
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => documentReference.get())
         .then(doc => {
-          expect(doc.exists).to.equal(true);
+          expect(doc.exists).to.be.true;
           expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
@@ -403,7 +398,7 @@ describe('GeoDocumentReference Tests:', () => {
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => documentReference.get())
         .then(doc => {
-          expect(doc.exists).to.equal(true);
+          expect(doc.exists).to.be.true;
           expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
@@ -422,7 +417,7 @@ describe('GeoDocumentReference Tests:', () => {
         .set({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(() => documentReference.get({source: 'server'}))
         .then(doc => {
-          expect(doc.exists).to.equal(true);
+          expect(doc.exists).to.be.true;
           expect(doc.data()).to.eql({
             g: {
               geohash: '7zzzzzzzzz',
@@ -440,8 +435,8 @@ describe('GeoDocumentReference Tests:', () => {
       documentReference
         .get()
         .then(doc => {
-          expect(doc.exists).to.equal(false);
-          expect(doc.data()).to.equal(undefined);
+          expect(doc.exists).to.be.false;
+          expect(doc.data()).to.be.undefined;
         })
         .then(done);
     });
