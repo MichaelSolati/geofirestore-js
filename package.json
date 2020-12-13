@@ -1,7 +1,7 @@
 {
   "name": "geofirestore",
   "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "scripts": {
     "build": "rimraf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -53,7 +53,7 @@
   ],
   "dependencies": {
     "geofirestore-core": "^4.4.0"
-  }, 
+  },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@types/chai": "^4.2.14",
