@@ -1,3 +1,15 @@
+#### 4.4.1 (2020-12-13)
+
+##### Build System / Dependencies
+
+* **deps:**  bump ini from 1.3.5 to 1.3.7 ([#204](https://github.com/MichaelSolati/geofirestore-js/pull/204)) ([a9cc0ab0](https://github.com/MichaelSolati/geofirestore-js/commit/a9cc0ab00b0b5aab3af95656dd2cb4f427334e2c))
+
+##### Chores
+
+*  update `geofirestore-core`. fixes [#202](https://github.com/MichaelSolati/geofirestore-js/pull/202) ([a6fd4134](https://github.com/MichaelSolati/geofirestore-js/commit/a6fd4134a1b65402fb1e56e707e8118bfb3c2c38))
+* **github:**  configure stalebot ([9aee4ad2](https://github.com/MichaelSolati/geofirestore-js/commit/9aee4ad290fe40572a3899842aaad656fea635e4))
+* **firebase:**  update firestore indexes ([42ee6e0f](https://github.com/MichaelSolati/geofirestore-js/commit/42ee6e0fb2bd0cd986e41e83e03218d7df8173f0))
+
 ### 4.4.0 (2020-11-26)
 
 ##### Build System / Dependencies
