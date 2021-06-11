@@ -119,9 +119,7 @@ export class GeoFirestore {
         | GeoFirestoreTypes.web.Transaction
     ) => Promise<any>
   ): Promise<any> {
-    return (this
-      ._firestore as GeoFirestoreTypes.cloud.Firestore).runTransaction(
-      updateFunction
-    );
+    const firestore = this._firestore as GeoFirestoreTypes.cloud.Firestore;
+    return firestore.runTransaction(updateFunction);
   }
 }

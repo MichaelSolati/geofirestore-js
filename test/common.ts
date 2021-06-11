@@ -19,7 +19,7 @@ export const validDocumentData: () => GeoFirestoreTypes.DocumentData[] = () => [
   {coordinates: new firebase.firestore.GeoPoint(67, 55), count: 4},
   {coordinates: new firebase.firestore.GeoPoint(8, 8), count: 5},
 ];
-export const validGeoDocumentData: () => GeoFirestoreTypes.GeoDocumentData[] = () =>
+export const validGeoDocumentData = () =>
   validDocumentData().map(e => encodeDocumentAdd(e));
 // Define dummy setOptions to sanitize
 export const dummySetOptions: GeoFirestoreTypes.SetOptions = {

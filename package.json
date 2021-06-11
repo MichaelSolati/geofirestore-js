@@ -6,7 +6,7 @@
     "build": "rimraf ./dist && rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "typedoc --out docs/ src/",
-    "lint": "gts check",
+    "lint": "gts lint",
     "test": "nyc --reporter=html --reporter=text mocha --package package.json --exit",
     "release:major": "changelog -M && git add . && git commit -m 'chore(release): major version release' && npm version major",
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",

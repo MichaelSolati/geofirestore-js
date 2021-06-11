@@ -71,8 +71,9 @@ export class GeoDocumentReference {
       onNext: (snapshot: GeoDocumentSnapshot) => void,
       onError: (error: Error) => void = () => {}
     ) => {
-      return (this
-        ._document as GeoFirestoreTypes.web.DocumentReference).onSnapshot(
+      const document = this
+        ._document as GeoFirestoreTypes.web.DocumentReference;
+      return document.onSnapshot(
         snapshot => onNext(new GeoDocumentSnapshot(snapshot)),
         error => onError(error)
       );
