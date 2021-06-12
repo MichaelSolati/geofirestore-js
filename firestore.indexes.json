@@ -1,19 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "tests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "count",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "g.geohash",
-          "order": "ASCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }

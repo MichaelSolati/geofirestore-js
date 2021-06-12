@@ -3,6 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import {encodeDocumentAdd} from 'geofirestore-core';
 import {distance} from 'geokit';
+import axios from 'axios';
 
 import {GeoCollectionReference, GeoFirestore, GeoFirestoreTypes} from '../src';
 
@@ -129,6 +130,7 @@ export const invalidObjects: any[] = [
   NaN,
 ];
 export const testCollectionName = 'geofirestore-tests';
+const projectId = 'geofirestore';
 export const validGeohashes: string[] = ['4', 'd62dtu', '000000000000'];
 export const validLocations: firebase.firestore.GeoPoint[] = [
   new firebase.firestore.GeoPoint(0, 0),
@@ -160,7 +162,7 @@ export let geocollection: GeoCollectionReference;
 firebase.initializeApp({
   apiKey: 'AIzaSyDFnedGL4qr_jenIpWYpbvot8s7Vuay_88',
   databaseURL: 'https://geofirestore.firebaseio.com',
-  projectId: 'geofirestore',
+  projectId,
 });
 
 /**********************/
@@ -168,8 +170,11 @@ firebase.initializeApp({
 /**********************/
 /* Helper functions which runs before each Jasmine test has started */
 export function beforeEachHelper(done: any): void {
-  // Create a new Firebase database ref at a random node
+  if (firestore) {
+    firestore.terminate();
+  }
   firestore = firebase.firestore();
+  firestore.useEmulator('localhost', 8080);
   collection = firestore.collection(testCollectionName);
   geofirestore = new GeoFirestore(firestore);
   geocollection = new GeoCollectionReference(collection);
@@ -178,12 +183,11 @@ export function beforeEachHelper(done: any): void {
 
 /* Helper functions which runs after each Jasmine test has completed */
 export function afterEachHelper(done: any): void {
-  deleteCollection()
-    .then(() => {
-      // Wait for 50 milliseconds after each test to give enough time for old query events to expire
-      return wait(50);
-    })
-    .then(done);
+  axios
+    .delete(
+      `http://${process.env.FIREBASE_FIRESTORE_EMULATOR_ADDRESS}/emulator/v1/projects/${projectId}/databases/(default)/documents`
+    )
+    .then(() => done());
 }
 
 /* Helper function designed to create docs within a certain range of coordinates */
@@ -223,43 +227,6 @@ export function wait(milliseconds = 100): Promise<void> {
       resolve();
     }, milliseconds);
   });
-}
-
-/* Used to purge Firestore collection. Used by afterEachHelperFirestore. */
-function deleteCollection(): Promise<any> {
-  return new Promise((resolve, reject) =>
-    deleteQueryBatch(collection.limit(500), resolve, reject)
-  );
-}
-
-/* Actually purges Firestore collection recursively through batch function. */
-function deleteQueryBatch(
-  query: firebase.firestore.Query,
-  resolve: Function,
-  reject: Function
-): void {
-  query
-    .get()
-    .then(snapshot => {
-      // When there are no documents left, we are done
-      if (snapshot.size === 0) {
-        return 0;
-      }
-
-      // Delete documents in a batch
-      const batch = firestore.batch();
-      snapshot.docs.forEach(doc => batch.delete(doc.ref));
-
-      return batch.commit().then(() => snapshot.size);
-    })
-    .then(numDeleted => {
-      if (numDeleted === 0) {
-        resolve();
-        return;
-      }
-      process.nextTick(() => deleteQueryBatch(query, resolve, reject));
-    })
-    .catch(err => reject(err));
 }
 
 export function stubDatabase(
