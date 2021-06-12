@@ -1,3 +1,22 @@
+#### 4.4.2 (2021-06-12)
+
+##### Build System / Dependencies
+
+*  update release script ([5506f78a](https://github.com/MichaelSolati/geofirestore-js/commit/5506f78a666033abfed2af8fb18159f6712298c4))
+
+##### Chores
+
+*  update dependencies ([a6cc0899](https://github.com/MichaelSolati/geofirestore-js/commit/a6cc089968934d1a67262360bbd0e08ad2a432a3))
+
+##### Code Style Changes
+
+*  fix up code to pass linting test ([33276661](https://github.com/MichaelSolati/geofirestore-js/commit/33276661d8927afe04db540725845957bb8aba3f))
+
+##### Tests
+
+* **GeoTransaction:**  disable tests that can't run on the emulator ([effacba3](https://github.com/MichaelSolati/geofirestore-js/commit/effacba3567d524313a16d385fd69ebbc7163049))
+* **firebase:**  use emulator to run tests ([64ec3ac3](https://github.com/MichaelSolati/geofirestore-js/commit/64ec3ac3ccae812a81630ab83c83d2e9150000d0))
+
 #### 4.4.1 (2020-12-13)
 
 ##### Build System / Dependencies
