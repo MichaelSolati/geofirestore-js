@@ -3,11 +3,6 @@ on:
   push:
     tags:
       - v*
-env:
-  COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 jobs:
   lint_test_and_deploy:
     name: Lint, Test, and Deploy
@@ -15,38 +10,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-          registry-url: https://registry.npmjs.org/
-      - name: Register NPM Token
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > /home/runner/work/_temp/.npmrc
-          echo "_auth=$NPM_TOKEN" >>  /home/runner/work/_temp/.npmrc
-          echo "email=$NPM_EMAIL" >>  /home/runner/work/_temp/.npmrc
-          echo "always-auth=true" >>  /home/runner/work/_temp/.npmrc
-      - name: NPM Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 14
+
       - name: NPM Install
-        run: npm install --ignore-scripts
-      - name: Install Firebase Tools
-        run: npm i -g firebase-tools
+        run: npm install
+
       - name: Lint
         run: npm run lint
+
       - name: Test
         run: npm run test
+
       - name: Coverage
         run: npm run coverage
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
       - name: Build
         run: npm run build
-      - name: NPM Publish
-        run: npm publish
+
       - name: Firebase Deploy
-        run: firebase deploy --non-interactive --token $FIREBASE_TOKEN
-      
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GEOFIRESTORE }}
+          projectId: geofirestore
+          channelId: live
+          target: geofirestore
+
+      - name: NPM Publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
