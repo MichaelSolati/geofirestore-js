@@ -1,3 +1,9 @@
+## 5.0.0 (2022-02-09)
+
+##### New Features
+
+* **compat:**  update dependencies and use firebase v9 compat ([#225](https://github.com/MichaelSolati/geofirestore-js/pull/225)) ([aeb54a3e](https://github.com/MichaelSolati/geofirestore-js/commit/aeb54a3eb2edffbddf152c9a6bafbe23e7c1f91f))
+
 #### 4.4.2 (2021-06-12)
 
 ##### Build System / Dependencies
