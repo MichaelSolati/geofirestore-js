@@ -14,7 +14,6 @@
     "release:minor": "changelog -m && git add . && git commit -m 'chore(release): minor version release' && npm version minor",
     "release:patch": "changelog -p && git add . && git commit -m 'chore(release): patch version release' && npm version patch",
     "prepare": "npm run build",
-    "pretest": "node pretest.js",
     "deploy": "firebase deploy",
     "postinstall": "node postinstall.js"
   },
@@ -54,32 +53,33 @@
     "README.md"
   ],
   "dependencies": {
-    "geofirestore-core": "^4.4.4"
+    "geofirestore-core": "^5.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.0.0",
-    "@types/chai": "^4.2.18",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^14.11.2",
-    "axios": "^0.21.1",
-    "chai": "^4.3.4",
-    "coveralls": "^3.1.0",
-    "firebase-tools": "^9.12.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.16",
+    "axios": "^0.25.0",
+    "chai": "^4.3.6",
+    "coveralls": "^3.1.1",
+    "firebase-tools": "^10.1.5",
     "generate-changelog": "^1.8.0",
     "geokit": "^1.1.0",
     "gts": "^3.1.0",
-    "jsdom": "^16.6.0",
+    "jsdom": "^19.0.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^9.0.0",
+    "mocha": "^9.2.0",
     "nyc": "^15.1.0",
-    "protobufjs": "github:michaelsolati/protobuf.js",
+    "protobufjs": "^6.11.2",
     "rimraf": "^3.0.2",
-    "rollup": "^2.51.1",
+    "rollup": "^2.67.1",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "ts-node": "^10.0.0",
-    "typedoc": "^0.20.36",
-    "typescript": "^4.2.4"
+    "rollup-plugin-typescript2": "^0.31.2",
+    "ts-node": "^10.5.0",
+    "tslib": "^2.3.1",
+    "typedoc": "^0.22.11",
+    "typescript": "~4.3.5"
   },
   "mocha": {
     "extension": [
