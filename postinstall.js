@@ -1,8 +1,9 @@
 const package = require('./package.json');
 
 const messages = [
-  `WARNING: ${package.name} v${package.version} is incompatiable with versions of this library prior to v4.0.0.`,
-  `Visit https://github.com/MichaelSolati/geofirestore-js#upgrading for more information about how to upgrade your collections.`,
+  `WARNING: ${package.name} v${package.version} is designed for use with one of the following:`,
+  ` * @google-cloud/firestore ${package.optionalDependencies['@google-cloud/firestore']}`,
+  ` * firebase ${package.optionalDependencies['firebase']}`,
 ];
 
 messages.forEach(message => {

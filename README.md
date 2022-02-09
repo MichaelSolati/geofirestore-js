@@ -4,7 +4,6 @@
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/geofirestore)](https://bundlephobia.com/result?p=geofirestore)
 [![Release CI](https://github.com/MichaelSolati/geofirestore-js/workflows/Release%20CI/badge.svg)](https://github.com/MichaelSolati/geofirestore-js/actions?query=workflow%3A%22Release+CI%22)
 [![Coveralls github](https://img.shields.io/coveralls/github/MichaelSolati/geofirestore-js)](https://coveralls.io/github/MichaelSolati/geofirestore-js)
-[![David](https://img.shields.io/david/michaelsolati/geofirestore-js)](https://david-dm.org/michaelsolati/geofirestore-js)
 [![GitHub stars](https://img.shields.io/github/stars/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/MichaelSolati/geofirestore-js)](https://github.com/MichaelSolati/geofirestore-js/network/members)
 
@@ -19,6 +18,7 @@ GeoFirestore is designed as a lightweight add-on to Firebase. To keep things sim
 ## Table of Contents
 
 - [Downloading GeoFirestore](#downloading-geofirestore)
+  - [Firebase Dependencies](#firebase-dependencies)
 - [Example Usage](#example-usage)
 - [Documentation](#documentation)
 - [Limitations & Considerations](#limitations--considerations)
@@ -43,6 +43,12 @@ Or you can use GeoFirestore via CDN:
 <script src="https://unpkg.com/geofirestore/dist/geofirestore.js"></script>
 ```
 
+### Firebase Dependencies
+
+If using this library in a Node.js environment, please install `@google-cloud/firestore` with a version >= 5.0.0 and a version < 6.0.0.
+
+If using this library in a browser environment, please install `firebase` with a version >= 9.0.0 and a version < 10.0.0. Currently this library only works with the Firebase Compat library. Support for the Firebase Modular library is coming down the road.
+
 ## Example Usage
 
 Assume you are building an app to rate bars and you store all information for a bar, e.g. name, business hours and price range, and you want to add the possibility for users to search for bars in their vicinity. This is where GeoFirestore comes in. You can store each bar using GeoFirestore, using the location to build an easily queryable document. GeoFirestore then allows you to easily query which bars are nearby in a simalar fashion as `geofire` but will also return the bar information (not just the key or location).
@@ -56,8 +62,8 @@ You can find a full list of our demos and view the code for each of them in the 
 Full documentation is available at [https://geofirestore.com](https://geofirestore.com). It mostly provides the same functionality as the Firestore library, in almost the same way as the Firestore library. Many questions can be addressed by looking at the [Firestore docs](https://firebase.google.com/docs/firestore/). However there are a few differences, and below is a little example of how to make a location based query.
 
 ```TypeScript
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import * as geofirestore from 'geofirestore';
 
 
@@ -137,10 +143,6 @@ match /collection/{key} {
 ### `limit()`
 
 The `limit` filtering method is exposed through GeoFirestore, however there are some unique considerations when using it. Limits on geoqueries are applied based on the distance from the center. Geoqueries require an aggregation of queries. When performing a geoquery the library applies the limit on the client. This may mean you are loading to the client more documents then you intended. Use with this performance limitation in mind.
-
-## Upgrading
-
-GeoFirestore v4.0.0+ is incompatiable with previous versions. To migrate an older GeoFirestore collection please [try using this script](https://gist.github.com/MichaelSolati/874543594145fa29691b883835a73460). Be sure to read over it before executing it, it is a use at your own risk bit of code.
 
 ## Contributing
 
