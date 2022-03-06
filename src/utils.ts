@@ -1,16 +1,4 @@
 import {GeoFirestoreTypes} from 'geofirestore-core';
-import {GeoFirestore} from './GeoFirestore';
-
-/**
- * Initializes GeoFirestore instance.
- * @param firestore Firestore represents a Firestore Database and is the entry point for all Firestore operations.
- * @return GeoFirestore instance.
- */
-export function initializeApp(
-  firestore: GeoFirestoreTypes.web.Firestore | GeoFirestoreTypes.cloud.Firestore
-): GeoFirestore {
-  return new GeoFirestore(firestore);
-}
 
 /**
  * Remove customKey attribute so firestore doesn't' reject.

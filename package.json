@@ -17,10 +17,19 @@
     "deploy": "firebase deploy",
     "postinstall": "node postinstall.js"
   },
-  "main": "dist/index.cjs.js",
   "browser": "dist/geofirestore.js",
-  "module": "dist/index.esm.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    "./admin": {
+      "default": "./dist/admin/index.esm.js",
+      "require": "./dist/admin/index.cjs.js",
+      "typings": "./dist/admin/index.d.ts"
+    },
+    "./compat": {
+      "default": "./dist/compat/index.esm.js",
+      "require": "./dist/compat/index.cjs.js",
+      "typings": "./dist/compat/index.d.ts"
+    }
+  },
   "author": "Michael Solati <mkslt04@gmail.com>",
   "homepage": "https://geofirestore.com/",
   "repository": {

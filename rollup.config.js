@@ -1,6 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import {terser} from 'rollup-plugin-terser';
-import typescript from 'rollup-plugin-typescript2';
+import typescriptPlugin from 'rollup-plugin-typescript2';
 
 import pkg from './package.json';
 
@@ -10,34 +10,53 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
+const typescript = (removeComments = false) =>
+  typescriptPlugin({
+    tsconfigOverride: {
+      compilerOptions: {
+        module: 'ESNext',
+        removeComments,
+      },
+    },
+  });
+
 export default [
+  // /admin
   {
-    input: 'src/index.ts',
+    input: 'src/admin/index.ts',
     output: [
       {
-        file: pkg.main,
+        file: pkg.exports['./admin'].require,
         format: 'cjs',
       },
       {
-        file: pkg.module,
+        file: pkg.exports['./admin'].default,
         format: 'es',
       },
     ],
     external: ['@types/node', 'geofirestore-core'],
-    plugins: [
-      typescript({
-        tsconfigOverride: {
-          compilerOptions: {
-            module: 'ESNext',
-            removeComments: true,
-          },
-        },
-      }),
+    plugins: [typescript()],
+    onwarn,
+  },
+  // /compat
+  {
+    input: 'src/compat/index.ts',
+    output: [
+      {
+        file: pkg.exports['./compat'].require,
+        format: 'cjs',
+      },
+      {
+        file: pkg.exports['./compat'].default,
+        format: 'es',
+      },
     ],
+    external: ['@types/node', 'geofirestore-core'],
+    plugins: [typescript()],
     onwarn,
   },
   {
-    input: 'src/index.ts',
+    input: 'src/compat/index.ts',
     output: {
       file: pkg.browser,
       format: 'umd',
@@ -45,17 +64,7 @@ export default [
       extend: true,
     },
     external: ['@types/node'],
-    plugins: [
-      typescript({
-        tsconfigOverride: {
-          compilerOptions: {
-            module: 'ESNext',
-          },
-        },
-      }),
-      resolve(),
-      terser(),
-    ],
+    plugins: [typescript(true), resolve(), terser()],
     onwarn,
   },
 ];

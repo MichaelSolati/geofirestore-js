@@ -5,7 +5,7 @@ import {
 } from 'geofirestore-core';
 
 import {GeoDocumentReference} from './GeoDocumentReference';
-import {sanitizeSetOptions} from './utils';
+import {sanitizeSetOptions} from '../utils';
 
 /**
  * A write batch, used to perform multiple writes as a single atomic unit.

@@ -6,7 +6,7 @@ import {
 
 import {GeoDocumentReference} from './GeoDocumentReference';
 import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
-import {sanitizeSetOptions} from './utils';
+import {sanitizeSetOptions} from '../utils';
 
 /**
  * A reference to a transaction. The `GeoTransaction` object passed to a transaction's updateFunction provides the methods to read and

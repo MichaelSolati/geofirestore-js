@@ -4,7 +4,7 @@ import {
   encodeDocumentUpdate,
 } from 'geofirestore-core';
 
-import {sanitizeSetOptions} from './utils';
+import {sanitizeSetOptions} from '../utils';
 import {GeoCollectionReference} from './GeoCollectionReference';
 import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
 import {GeoFirestore} from './GeoFirestore';
