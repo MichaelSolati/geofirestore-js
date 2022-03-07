@@ -19,8 +19,8 @@ export class GeoTransaction {
    */
   constructor(
     private _transaction:
-      | GeoFirestoreTypes.cloud.Transaction
-      | GeoFirestoreTypes.web.Transaction,
+      | GeoFirestoreTypes.admin.Transaction
+      | GeoFirestoreTypes.compat.Transaction,
     private _customKey?: string
   ) {
     if (Object.prototype.toString.call(_transaction) !== '[object Object]') {
@@ -32,8 +32,8 @@ export class GeoTransaction {
 
   /** The native `Transaction` instance. */
   get native():
-    | GeoFirestoreTypes.cloud.Transaction
-    | GeoFirestoreTypes.web.Transaction {
+    | GeoFirestoreTypes.admin.Transaction
+    | GeoFirestoreTypes.compat.Transaction {
     return this._transaction;
   }
 
@@ -46,8 +46,8 @@ export class GeoTransaction {
   delete(
     documentRef:
       | GeoDocumentReference
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference
   ): GeoTransaction {
     const ref: any =
       documentRef instanceof GeoDocumentReference
@@ -66,14 +66,14 @@ export class GeoTransaction {
   get(
     documentRef:
       | GeoDocumentReference
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference
   ): Promise<GeoDocumentSnapshot> {
     const ref: any =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
-    return (this._transaction as GeoFirestoreTypes.cloud.Transaction)
+    return (this._transaction as GeoFirestoreTypes.admin.Transaction)
       .get(ref)
       .then((snpashot: any) => new GeoDocumentSnapshot(snpashot));
   }
@@ -91,8 +91,8 @@ export class GeoTransaction {
   set(
     documentRef:
       | GeoDocumentReference
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference,
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference,
     documentData: GeoFirestoreTypes.DocumentData,
     options: GeoFirestoreTypes.SetOptions = {}
   ): GeoTransaction {
@@ -101,7 +101,7 @@ export class GeoTransaction {
         ? documentRef['_document']
         : documentRef;
     options.customKey = options.customKey || this._customKey;
-    (this._transaction as GeoFirestoreTypes.cloud.Transaction).set(
+    (this._transaction as GeoFirestoreTypes.admin.Transaction).set(
       ref,
       encodeDocumentSet(documentData, options),
       sanitizeSetOptions(options)
@@ -122,8 +122,8 @@ export class GeoTransaction {
   update(
     documentRef:
       | GeoDocumentReference
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference,
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
     customKey: string = this._customKey
   ): GeoTransaction {
@@ -131,7 +131,7 @@ export class GeoTransaction {
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
-    (this._transaction as GeoFirestoreTypes.cloud.Transaction).update(
+    (this._transaction as GeoFirestoreTypes.admin.Transaction).update(
       ref,
       encodeDocumentUpdate(data, customKey)
     );

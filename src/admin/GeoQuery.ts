@@ -15,8 +15,8 @@ import {GeoFirestore} from './GeoFirestore';
  */
 export class GeoQuery {
   private _center:
-    | GeoFirestoreTypes.cloud.GeoPoint
-    | GeoFirestoreTypes.web.GeoPoint;
+    | GeoFirestoreTypes.admin.GeoPoint
+    | GeoFirestoreTypes.compat.GeoPoint;
   private _limit: number;
   private _radius: number;
   private _isWeb: boolean;
@@ -26,7 +26,9 @@ export class GeoQuery {
    * @param queryCriteria The query criteria of geo based queries, includes field such as center, radius, and limit.
    */
   constructor(
-    private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query,
+    private _query:
+      | GeoFirestoreTypes.admin.Query
+      | GeoFirestoreTypes.compat.Query,
     queryCriteria?: GeoFirestoreTypes.QueryCriteria
   ) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
@@ -34,7 +36,7 @@ export class GeoQuery {
     }
     this._isWeb =
       Object.prototype.toString.call(
-        (_query as GeoFirestoreTypes.web.CollectionReference).firestore
+        (_query as GeoFirestoreTypes.compat.CollectionReference).firestore
           .enablePersistence
       ) === '[object Function]';
     if (queryCriteria) {
@@ -52,7 +54,7 @@ export class GeoQuery {
   }
 
   /** The native `Query` instance. */
-  get native(): GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query {
+  get native(): GeoFirestoreTypes.admin.Query | GeoFirestoreTypes.compat.Query {
     return this._query;
   }
 
@@ -89,7 +91,7 @@ export class GeoQuery {
    * @return A Promise that will be resolved with the results of the GeoQuery.
    */
   get(
-    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
+    options: GeoFirestoreTypes.compat.GetOptions = {source: 'default'}
   ): Promise<GeoQuerySnapshot> {
     return geoQueryGet(this._query, this._queryCriteria, options);
   }
@@ -143,8 +145,8 @@ export class GeoQuery {
   where(
     fieldPath:
       | string
-      | GeoFirestoreTypes.cloud.FieldPath
-      | GeoFirestoreTypes.web.FieldPath,
+      | GeoFirestoreTypes.admin.FieldPath
+      | GeoFirestoreTypes.compat.FieldPath,
     opStr: GeoFirestoreTypes.WhereFilterOp,
     value: any
   ): GeoQuery {

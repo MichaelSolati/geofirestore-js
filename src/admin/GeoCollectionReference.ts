@@ -14,8 +14,8 @@ export class GeoCollectionReference extends GeoQuery {
    */
   constructor(
     private _collection:
-      | GeoFirestoreTypes.cloud.CollectionReference
-      | GeoFirestoreTypes.web.CollectionReference,
+      | GeoFirestoreTypes.admin.CollectionReference
+      | GeoFirestoreTypes.compat.CollectionReference,
     private _customKey?: string
   ) {
     super(_collection);
@@ -23,8 +23,8 @@ export class GeoCollectionReference extends GeoQuery {
 
   /** The native `CollectionReference` instance. */
   get native():
-    | GeoFirestoreTypes.cloud.CollectionReference
-    | GeoFirestoreTypes.web.CollectionReference {
+    | GeoFirestoreTypes.admin.CollectionReference
+    | GeoFirestoreTypes.compat.CollectionReference {
     return this._collection;
   }
 
@@ -62,7 +62,7 @@ export class GeoCollectionReference extends GeoQuery {
     documentData: GeoFirestoreTypes.DocumentData,
     customKey: string = this._customKey
   ): Promise<GeoDocumentReference> {
-    return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
+    return (this._collection as GeoFirestoreTypes.admin.CollectionReference)
       .add(encodeDocumentAdd(documentData, customKey))
       .then(doc => new GeoDocumentReference(doc));
   }

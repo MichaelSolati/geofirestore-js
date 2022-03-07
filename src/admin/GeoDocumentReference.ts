@@ -22,8 +22,8 @@ export class GeoDocumentReference {
    */
   constructor(
     private _document:
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference
   ) {
     if (Object.prototype.toString.call(_document) !== '[object Object]') {
       throw new Error(
@@ -32,15 +32,15 @@ export class GeoDocumentReference {
     }
     this._isWeb =
       Object.prototype.toString.call(
-        (_document as GeoFirestoreTypes.web.DocumentReference).firestore
+        (_document as GeoFirestoreTypes.compat.DocumentReference).firestore
           .enablePersistence
       ) === '[object Function]';
   }
 
   /** The native `DocumentReference` instance. */
   get native():
-    | GeoFirestoreTypes.cloud.DocumentReference
-    | GeoFirestoreTypes.web.DocumentReference {
+    | GeoFirestoreTypes.admin.DocumentReference
+    | GeoFirestoreTypes.compat.DocumentReference {
     return this._document;
   }
 
@@ -72,7 +72,7 @@ export class GeoDocumentReference {
       onError: (error: Error) => void = () => {}
     ) => {
       const document = this
-        ._document as GeoFirestoreTypes.web.DocumentReference;
+        ._document as GeoFirestoreTypes.compat.DocumentReference;
       return document.onSnapshot(
         snapshot => onNext(new GeoDocumentSnapshot(snapshot)),
         error => onError(error)
@@ -113,7 +113,7 @@ export class GeoDocumentReference {
    * offline).
    */
   delete(): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+    return (this._document as GeoFirestoreTypes.compat.DocumentReference)
       .delete()
       .then(() => null);
   }
@@ -128,11 +128,13 @@ export class GeoDocumentReference {
    * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
    */
   get(
-    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
+    options: GeoFirestoreTypes.compat.GetOptions = {source: 'default'}
   ): Promise<GeoDocumentSnapshot> {
     const get = this._isWeb
-      ? (this._document as GeoFirestoreTypes.web.DocumentReference).get(options)
-      : (this._document as GeoFirestoreTypes.web.DocumentReference).get();
+      ? (this._document as GeoFirestoreTypes.compat.DocumentReference).get(
+          options
+        )
+      : (this._document as GeoFirestoreTypes.compat.DocumentReference).get();
     return get.then(snapshot => new GeoDocumentSnapshot(snapshot));
   }
 
@@ -145,8 +147,8 @@ export class GeoDocumentReference {
   isEqual(
     other:
       | GeoDocumentReference
-      | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.admin.DocumentReference
+      | GeoFirestoreTypes.compat.DocumentReference
   ): boolean {
     const ref: any =
       other instanceof GeoDocumentReference ? other['_document'] : other;
@@ -165,7 +167,7 @@ export class GeoDocumentReference {
     documentData: GeoFirestoreTypes.DocumentData,
     options?: GeoFirestoreTypes.SetOptions
   ): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+    return (this._document as GeoFirestoreTypes.compat.DocumentReference)
       .set(
         encodeDocumentSet(documentData, options),
         sanitizeSetOptions(options)
@@ -186,7 +188,7 @@ export class GeoDocumentReference {
     data: GeoFirestoreTypes.UpdateData,
     customKey?: string
   ): Promise<void> {
-    return (this._document as GeoFirestoreTypes.web.DocumentReference)
+    return (this._document as GeoFirestoreTypes.compat.DocumentReference)
       .update(encodeDocumentUpdate(data, customKey))
       .then(() => null);
   }

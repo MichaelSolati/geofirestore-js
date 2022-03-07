@@ -17,8 +17,8 @@ export class GeoDocumentSnapshot {
    */
   constructor(
     private _snapshot:
-      | GeoFirestoreTypes.cloud.DocumentSnapshot
-      | GeoFirestoreTypes.web.DocumentSnapshot
+      | GeoFirestoreTypes.admin.DocumentSnapshot
+      | GeoFirestoreTypes.compat.DocumentSnapshot
   ) {
     if (Object.prototype.toString.call(_snapshot) !== '[object Object]') {
       throw new Error(
@@ -27,15 +27,15 @@ export class GeoDocumentSnapshot {
     }
     this._isWeb =
       Object.prototype.toString.call(
-        (_snapshot as GeoFirestoreTypes.web.DocumentSnapshot).ref.firestore
+        (_snapshot as GeoFirestoreTypes.compat.DocumentSnapshot).ref.firestore
           .enablePersistence
       ) === '[object Function]';
   }
 
   /** The native `DocumentSnapshot` instance. */
   get native():
-    | GeoFirestoreTypes.cloud.DocumentSnapshot
-    | GeoFirestoreTypes.web.DocumentSnapshot {
+    | GeoFirestoreTypes.admin.DocumentSnapshot
+    | GeoFirestoreTypes.compat.DocumentSnapshot {
     return this._snapshot;
   }
 
@@ -71,7 +71,7 @@ export class GeoDocumentSnapshot {
   ): GeoFirestoreTypes.GeoDocumentData | undefined {
     const documentData =
       this._isWeb && options
-        ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).data(
+        ? (this._snapshot as GeoFirestoreTypes.compat.DocumentSnapshot).data(
             options
           )
         : this._snapshot.data();
@@ -92,12 +92,12 @@ export class GeoDocumentSnapshot {
   get(
     fieldPath:
       | string
-      | GeoFirestoreTypes.cloud.FieldPath
-      | GeoFirestoreTypes.web.FieldPath,
+      | GeoFirestoreTypes.admin.FieldPath
+      | GeoFirestoreTypes.compat.FieldPath,
     options?: GeoFirestoreTypes.SnapshotOptions
   ): any {
     return this._isWeb && options
-      ? (this._snapshot as GeoFirestoreTypes.web.DocumentSnapshot).get(
+      ? (this._snapshot as GeoFirestoreTypes.compat.DocumentSnapshot).get(
           fieldPath,
           options
         )
@@ -113,8 +113,8 @@ export class GeoDocumentSnapshot {
   isEqual(
     other:
       | GeoDocumentSnapshot
-      | GeoFirestoreTypes.cloud.DocumentSnapshot
-      | GeoFirestoreTypes.web.DocumentSnapshot
+      | GeoFirestoreTypes.admin.DocumentSnapshot
+      | GeoFirestoreTypes.compat.DocumentSnapshot
   ): boolean {
     const ref: any =
       other instanceof GeoDocumentSnapshot ? other['_snapshot'] : other;

@@ -14,8 +14,8 @@ export class GeoFirestore {
    */
   constructor(
     private _firestore:
-      | GeoFirestoreTypes.web.Firestore
-      | GeoFirestoreTypes.cloud.Firestore
+      | GeoFirestoreTypes.compat.Firestore
+      | GeoFirestoreTypes.admin.Firestore
   ) {
     if (Object.prototype.toString.call(_firestore) !== '[object Object]') {
       throw new Error('Firestore must be an instance of Firestore');
@@ -24,8 +24,8 @@ export class GeoFirestore {
 
   /** The native `Firestore` instance. */
   get native():
-    | GeoFirestoreTypes.cloud.Firestore
-    | GeoFirestoreTypes.web.Firestore {
+    | GeoFirestoreTypes.admin.Firestore
+    | GeoFirestoreTypes.compat.Firestore {
     return this._firestore;
   }
 
@@ -115,11 +115,11 @@ export class GeoFirestore {
   runTransaction(
     updateFunction: (
       transaction:
-        | GeoFirestoreTypes.cloud.Transaction
-        | GeoFirestoreTypes.web.Transaction
+        | GeoFirestoreTypes.admin.Transaction
+        | GeoFirestoreTypes.compat.Transaction
     ) => Promise<any>
   ): Promise<any> {
-    const firestore = this._firestore as GeoFirestoreTypes.cloud.Firestore;
+    const firestore = this._firestore as GeoFirestoreTypes.admin.Firestore;
     return firestore.runTransaction(updateFunction);
   }
 }

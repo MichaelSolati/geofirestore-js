@@ -10,7 +10,7 @@ export {GeoTransaction} from '../admin/GeoTransaction';
 export {GeoWriteBatch} from '../admin/GeoWriteBatch';
 
 export function geofirestore(
-  firestore: GeoFirestoreTypes.web.Firestore
+  firestore: GeoFirestoreTypes.compat.Firestore
 ): GeoFirestore {
   return new GeoFirestore(firestore);
 }
