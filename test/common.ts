@@ -1,11 +1,10 @@
 import * as chai from 'chai';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import {encodeDocumentAdd} from 'geofirestore-core';
+import {encodeDocumentAdd, GeoFirestoreTypes} from 'geofirestore-core';
 import {distance} from 'geokit';
 import axios from 'axios';
 
-import {GeoFirestoreTypes} from '../src';
 import {GeoCollectionReference, GeoFirestore} from '../src/admin';
 
 /*************/
@@ -158,13 +157,14 @@ export let firestore: firebase.firestore.Firestore;
 export let collection: firebase.firestore.CollectionReference;
 export let geofirestore: GeoFirestore;
 export let geocollection: GeoCollectionReference;
-
-// Initialize Firebase
-firebase.initializeApp({
+export const firebaseOptions = {
   apiKey: 'AIzaSyDFnedGL4qr_jenIpWYpbvot8s7Vuay_88',
   databaseURL: 'https://geofirestore.firebaseio.com',
   projectId,
-});
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseOptions);
 
 /**********************/
 /*  HELPER FUNCTIONS  */
@@ -251,8 +251,12 @@ export function stubDatabase(
  * @return The distance, in kilometers, between the inputted locations.
  */
 export function calculateDistance(
-  location1: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
-  location2: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint
+  location1:
+    | GeoFirestoreTypes.admin.GeoPoint
+    | GeoFirestoreTypes.compat.GeoPoint,
+  location2:
+    | GeoFirestoreTypes.admin.GeoPoint
+    | GeoFirestoreTypes.compat.GeoPoint
 ): number {
   return distance(
     {lat: location1.latitude, lng: location1.longitude},
