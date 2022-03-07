@@ -10,14 +10,30 @@ const onwarn = (warning, rollupWarn) => {
   }
 };
 
-const typescript = (removeComments = false) =>
-  typescriptPlugin({
-    module: 'ESNext',
-    removeComments,
-    sourceMap: false,
-  });
+const typescript = typescriptPlugin({
+  module: 'ESNext',
+  removeComments: true,
+  sourceMap: false,
+});
 
 export default [
+  // Default
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        file: pkg.exports['.'].node.require,
+        format: 'cjs',
+      },
+      {
+        file: pkg.exports['.'].default,
+        format: 'es',
+      },
+    ],
+    external: ['@types/node', 'geofirestore-core'],
+    plugins: [typescript],
+    onwarn,
+  },
   // /admin
   {
     input: 'src/admin/index.ts',
@@ -32,7 +48,7 @@ export default [
       },
     ],
     external: ['@types/node', 'geofirestore-core'],
-    plugins: [typescript()],
+    plugins: [typescript],
     onwarn,
   },
   // /compat
@@ -49,9 +65,11 @@ export default [
       },
     ],
     external: ['@types/node', 'geofirestore-core'],
-    plugins: [typescript()],
+    plugins: [typescript],
     onwarn,
   },
+
+  // Browser
   {
     input: 'src/compat/index.ts',
     output: {
@@ -61,7 +79,7 @@ export default [
       extend: true,
     },
     external: ['@types/node'],
-    plugins: [typescript(true), resolve(), terser()],
+    plugins: [typescript, resolve(), terser()],
     onwarn,
   },
 ];

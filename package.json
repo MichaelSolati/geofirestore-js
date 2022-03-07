@@ -21,7 +21,14 @@
     "postinstall": "node postinstall.js"
   },
   "exports": {
-    ".": {},
+    ".": {
+      "node": {
+        "require": "./dist/index.cjs.js",
+        "import": "./dist/index.esm.js"
+      },
+      "default": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
+    },
     "./admin": {
       "node": {
         "require": "./dist/admin/index.cjs.js",
