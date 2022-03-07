@@ -1,6 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
+import typescriptPlugin from '@rollup/plugin-typescript';
 import {terser} from 'rollup-plugin-terser';
-import typescriptPlugin from 'rollup-plugin-typescript2';
 
 import pkg from './package.json';
 
@@ -12,12 +12,9 @@ const onwarn = (warning, rollupWarn) => {
 
 const typescript = (removeComments = false) =>
   typescriptPlugin({
-    tsconfigOverride: {
-      compilerOptions: {
-        module: 'ESNext',
-        removeComments,
-      },
-    },
+    module: 'ESNext',
+    removeComments,
+    sourceMap: false,
   });
 
 export default [
@@ -26,7 +23,7 @@ export default [
     input: 'src/admin/index.ts',
     output: [
       {
-        file: pkg.exports['./admin'].require,
+        file: pkg.exports['./admin'].node.require,
         format: 'cjs',
       },
       {
@@ -43,7 +40,7 @@ export default [
     input: 'src/compat/index.ts',
     output: [
       {
-        file: pkg.exports['./compat'].require,
+        file: pkg.exports['./compat'].node.require,
         format: 'cjs',
       },
       {
