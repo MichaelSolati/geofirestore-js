@@ -5,7 +5,8 @@ import {encodeDocumentAdd} from 'geofirestore-core';
 import {distance} from 'geokit';
 import axios from 'axios';
 
-import {GeoCollectionReference, GeoFirestore, GeoFirestoreTypes} from '../src';
+import {GeoFirestoreTypes} from '../src';
+import {GeoCollectionReference, GeoFirestore} from '../src/admin';
 
 /*************/
 /*  GLOBALS  */

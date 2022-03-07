@@ -19,6 +19,7 @@
         "mocha": true
       },
       "rules": {
+        "@typescript-eslint/ban-ts-comment": "off",
         "node/no-extraneous-import": "off"
       }
     }

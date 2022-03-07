@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
-import {GeoDocumentSnapshot} from '../src/GeoDocumentSnapshot';
-import {GeoDocumentReference} from '../src/GeoDocumentReference';
+import {GeoDocumentSnapshot} from '../../src/admin/GeoDocumentSnapshot';
+import {GeoDocumentReference} from '../../src/admin/GeoDocumentReference';
 import {
   afterEachHelper,
   beforeEachHelper,
@@ -10,7 +10,7 @@ import {
   invalidFirestores,
   stubDatabase,
   geocollection,
-} from './common';
+} from '../common';
 
 const expect = chai.expect;
 

@@ -2,8 +2,8 @@ import * as chai from 'chai';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
-import {GeoCollectionReference} from '../src/GeoCollectionReference';
-import {GeoDocumentReference} from '../src/GeoDocumentReference';
+import {GeoCollectionReference} from '../../src/admin/GeoCollectionReference';
+import {GeoDocumentReference} from '../../src/admin/GeoDocumentReference';
 import {
   afterEachHelper,
   beforeEachHelper,
@@ -15,7 +15,7 @@ import {
   validDocumentData,
   wait,
   invalidGeoFirestoreDocuments,
-} from './common';
+} from '../common';
 
 const expect = chai.expect;
 

@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import firebase from 'firebase/compat/app';
 
-import {GeoFirestore} from '../src';
+import {GeoFirestore} from '../../src/admin/GeoFirestore';
 import {
   afterEachHelper,
   beforeEachHelper,
@@ -9,7 +9,7 @@ import {
   invalidFirestores,
   testCollectionName,
   geofirestore,
-} from './common';
+} from '../common';
 
 const expect = chai.expect;
 

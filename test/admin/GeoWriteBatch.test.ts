@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import firebase from 'firebase/compat/app';
 
-import {GeoWriteBatch} from '../src/GeoWriteBatch';
+import {GeoWriteBatch} from '../../src/admin/GeoWriteBatch';
 import {
   afterEachHelper,
   beforeEachHelper,
@@ -13,7 +13,7 @@ import {
   geocollection,
   geofirestore,
   invalidFirestores,
-} from './common';
+} from '../common';
 
 const expect = chai.expect;
 

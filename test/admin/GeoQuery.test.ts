@@ -3,8 +3,8 @@ import firebase from 'firebase/compat/app';
 import {encodeDocumentAdd} from 'geofirestore-core';
 import {hash} from 'geokit';
 
-import {GeoFirestore} from '../src/GeoFirestore';
-import {GeoQuery} from '../src/GeoQuery';
+import {GeoFirestore} from '../../src/admin/GeoFirestore';
+import {GeoQuery} from '../../src/admin/GeoQuery';
 import {
   afterEachHelper,
   beforeEachHelper,
@@ -17,7 +17,7 @@ import {
   geocollection,
   generateDocs,
   calculateDistance,
-} from './common';
+} from '../common';
 
 const expect = chai.expect;
 
