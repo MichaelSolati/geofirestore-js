@@ -1,33 +1,24 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
 import {GeoCollectionReference} from '../../src/admin/GeoCollectionReference';
 import {GeoDocumentReference} from '../../src/admin/GeoDocumentReference';
+
 import {
-  afterEachHelper,
-  beforeEachHelper,
   firestore,
   geocollection,
   invalidFirestores,
+  invalidGeoFirestoreDocuments,
   invalidObjects,
+  purge,
   testCollectionName,
   validDocumentData,
   wait,
-  invalidGeoFirestoreDocuments,
-} from '../common';
-
-const expect = chai.expect;
+} from './common';
 
 describe('GeoCollectionReference Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('Constructor:', () => {
     it('Constructor throws errors given invalid Firestore CollectionReference', () => {

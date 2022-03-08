@@ -1,31 +1,22 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 import firebase from 'firebase/compat/app';
 
 import {GeoWriteBatch} from '../../src/admin/GeoWriteBatch';
+
 import {
-  afterEachHelper,
-  beforeEachHelper,
   collection,
-  validDocumentData,
-  validGeoDocumentData,
   failTestOnCaughtError,
   firestore,
   geocollection,
   geofirestore,
   invalidFirestores,
-} from '../common';
-
-const expect = chai.expect;
+  purge,
+  validDocumentData,
+  validGeoDocumentData,
+} from './common';
 
 describe('GeoWriteBatch Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('Constructor:', () => {
     it('Constructor throws errors given invalid Firestore WriteBatch', () => {

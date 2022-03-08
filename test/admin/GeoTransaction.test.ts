@@ -1,31 +1,22 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 import firebase from 'firebase/compat/app';
 
 import {GeoTransaction} from '../../src/admin/GeoTransaction';
+
 import {
-  afterEachHelper,
-  beforeEachHelper,
   collection,
-  // validDocumentData,
-  validGeoDocumentData,
   geocollection,
   geofirestore,
   invalidFirestores,
+  purge,
   stubDatabase,
+  // validDocumentData,
+  validGeoDocumentData,
   wait,
-} from '../common';
-
-const expect = chai.expect;
+} from './common';
 
 describe('GeoTransaction Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('Constructor:', () => {
     it('Constructor throws errors given invalid Firestore Transaction references', () => {

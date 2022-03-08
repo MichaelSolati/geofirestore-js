@@ -1,20 +1,23 @@
-import {initializeApp} from 'firebase/app';
-import {getFirestore, collection, GeoPoint} from 'firebase/firestore';
+import {
+  collection,
+  connectFirestoreEmulator,
+  getFirestore,
+  GeoPoint,
+} from 'firebase/firestore';
 import {GeoFirestoreTypes} from 'geofirestore-core';
 
-import {firebaseOptions, testCollectionName} from '../common';
-export {
-  afterEachHelper,
-  beforeEachHelper,
-  invalidGeoFirestoreDocuments,
-  invalidObjects,
-  wait,
-} from '../common';
+import {firebaseApp, testCollectionName} from '../common';
 
-const firebaseApp = initializeApp(firebaseOptions);
+export * from '../common';
 
-export const firestore = getFirestore(firebaseApp);
-export const testCollection = collection(firestore, testCollectionName);
+const _firestore = getFirestore(firebaseApp);
+connectFirestoreEmulator(_firestore, 'localhost', 8080);
+
+/*************/
+/*  GLOBALS  */
+/*************/
+export const firestore = _firestore;
+export const testCollection = collection(_firestore, testCollectionName);
 export const validDocumentData: () => GeoFirestoreTypes.DocumentData[] = () => [
   {coordinates: new GeoPoint(2, 3), count: 0},
   {coordinates: new GeoPoint(50, -7), count: 1},

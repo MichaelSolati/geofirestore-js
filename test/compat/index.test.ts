@@ -1,9 +1,7 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 
 import {geofirestore, GeoFirestore} from '../../src/compat';
-import {firestore} from '../common';
-
-const expect = chai.expect;
+import {firestore} from '../admin/common';
 
 describe('Compat Tests:', () => {
   describe('geofirestore:', () => {

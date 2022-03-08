@@ -1,35 +1,26 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 import firebase from 'firebase/compat/app';
 import {encodeDocumentAdd} from 'geofirestore-core';
 import {hash} from 'geokit';
 
 import {GeoFirestore} from '../../src/admin/GeoFirestore';
 import {GeoQuery} from '../../src/admin/GeoQuery';
-import {
-  afterEachHelper,
-  beforeEachHelper,
-  collection,
-  validGeoDocumentData,
-  firestore,
-  invalidFirestores,
-  stubDatabase,
-  invalidLocations,
-  geocollection,
-  generateDocs,
-  calculateDistance,
-} from '../common';
 
-const expect = chai.expect;
+import {
+  calculateDistance,
+  collection,
+  firestore,
+  generateDocs,
+  geocollection,
+  invalidFirestores,
+  invalidLocations,
+  purge,
+  stubDatabase,
+  validGeoDocumentData,
+} from './common';
 
 describe('GeoQuery Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('Constructor:', () => {
     it('Constructor throws errors given invalid Firestore Query', () => {

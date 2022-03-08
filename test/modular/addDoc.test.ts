@@ -2,24 +2,17 @@ import {expect} from 'chai';
 import {GeoPoint, getDoc} from 'firebase/firestore';
 
 import {addDoc} from '../../src/modular/addDoc';
+
 import {
-  afterEachHelper,
-  beforeEachHelper,
   invalidGeoFirestoreDocuments,
   invalidObjects,
+  purge,
   testCollection,
   validDocumentData,
 } from './common';
 
 describe('addDoc Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('addDoc():', () => {
     it('addDoc() does not throw an error when given a valid object', () => {

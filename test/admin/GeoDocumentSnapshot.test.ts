@@ -1,28 +1,19 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
 
 import {GeoDocumentSnapshot} from '../../src/admin/GeoDocumentSnapshot';
 import {GeoDocumentReference} from '../../src/admin/GeoDocumentReference';
-import {
-  afterEachHelper,
-  beforeEachHelper,
-  collection,
-  validGeoDocumentData,
-  invalidFirestores,
-  stubDatabase,
-  geocollection,
-} from '../common';
 
-const expect = chai.expect;
+import {
+  collection,
+  geocollection,
+  invalidFirestores,
+  purge,
+  stubDatabase,
+  validGeoDocumentData,
+} from './common';
 
 describe('GeoDocumentSnapshot Tests:', () => {
-  // Reset the Firestore before each test
-  beforeEach(done => {
-    beforeEachHelper(done);
-  });
-
-  afterEach(done => {
-    afterEachHelper(done);
-  });
+  beforeEach(purge);
 
   describe('Constructor:', () => {
     it('Constructor does not throw errors given valid Firestore DocumentSnapshot', done => {

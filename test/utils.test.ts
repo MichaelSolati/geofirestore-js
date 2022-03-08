@@ -1,9 +1,14 @@
-import * as chai from 'chai';
+import {expect} from 'chai';
+import {GeoFirestoreTypes} from 'geofirestore-core';
 
 import {sanitizeSetOptions} from '../src/utils';
-import {dummySetOptions} from './common';
 
-const expect = chai.expect;
+// Define dummy setOptions to sanitize
+const dummySetOptions: GeoFirestoreTypes.SetOptions = {
+  merge: true,
+  customKey: 'foobar',
+  mergeFields: ['a', 'b'],
+};
 
 describe('Utils Tests:', () => {
   describe('Sanitize SetOptions:', () => {
