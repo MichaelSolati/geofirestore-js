@@ -32,7 +32,7 @@ describe('addDoc Tests:', () => {
         coordinates: new GeoPoint(0, 0),
       });
       const d2 = await getDoc(d1);
-      expect(d2.exists).to.be.true;
+      expect(d2.exists()).to.be.true;
     });
 
     it('addDoc() does throw an error when given a non object', () => {
@@ -48,17 +48,17 @@ describe('addDoc Tests:', () => {
         'geopoint'
       );
       const d2 = await getDoc(d1);
-      expect(d2.exists).to.be.true;
+      expect(d2.exists()).to.be.true;
     });
 
     it('addDoc() adds a new object with an embedded custom key', async () => {
       const d1 = await addDoc(
         testCollection,
-        {geopoint: new GeoPoint(0, 0)},
+        {geopoint: {coordinates: new GeoPoint(0, 0)}},
         'geopoint.coordinates'
       );
       const d2 = await getDoc(d1);
-      expect(d2.exists).to.be.true;
+      expect(d2.exists()).to.be.true;
     });
   });
 });
