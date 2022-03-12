@@ -1,10 +1,12 @@
 import {
   collection,
   connectFirestoreEmulator,
+  doc,
   getFirestore,
   GeoPoint,
+  writeBatch,
 } from 'firebase/firestore';
-import {GeoFirestoreTypes} from 'geofirestore-core';
+import {GeoFirestoreTypes, encodeGeoDocument} from 'geofirestore-core';
 
 import {firebaseApp, testCollectionName} from '../common';
 
@@ -26,3 +28,16 @@ export const validDocumentData: () => GeoFirestoreTypes.DocumentData[] = () => [
   {coordinates: new GeoPoint(67, 55), count: 4},
   {coordinates: new GeoPoint(8, 8), count: 5},
 ];
+
+/**********************/
+/*  HELPER FUNCTIONS  */
+/**********************/
+export function stubDatabase(): Promise<void> {
+  const docs = validDocumentData();
+  const batch = writeBatch(firestore);
+  docs.forEach((item, index) => {
+    const insert = doc(testCollection, `loc${index}`);
+    batch.set(insert, encodeGeoDocument(item.coordinates, item));
+  });
+  return batch.commit();
+}

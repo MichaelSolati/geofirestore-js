@@ -157,7 +157,7 @@ export function generateDocs(
 }
 
 export function stubDatabase(
-  docs: Array<{[key: string]: any}> = validDocumentData()
+  docs: {[key: string]: any}[] = validDocumentData()
 ): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
