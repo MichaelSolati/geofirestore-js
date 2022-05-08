@@ -19,10 +19,20 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm run test
-      - name: Coverage
-        run: npm run coverage
-        env:
-          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
+      # geofirestore
+      - name: Codecov geofirestore
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./packages/geofirestore/
+          flags: geofirestore
+      # geofirestore-core
+      - name: Codecov geofirestore-core
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./packages/geofirestore-core/
+          flags: geofirestore-core
   deploy:
     needs: lint_and_test
     if: startsWith(github.ref, 'refs/tags/v')

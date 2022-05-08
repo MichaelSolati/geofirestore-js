@@ -6,8 +6,7 @@
     "bootstrap": "lerna bootstrap --force-local --include-dependencies --hoist --nohoist=gts --nohoist=@types/*",
     "build": "lerna run build",
     "lint": "lerna run lint",
-    "test": "lerna run test",
-    "coverage": "lerna run coverage"
+    "test": "lerna run test"
   },
   "private": true,
   "repository": {
