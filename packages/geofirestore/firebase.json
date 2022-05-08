@@ -1,7 +1,6 @@
 {
   "hosting": {
-    "public": "docs",
-    "predeploy": "npm run docs && cp -a ./examples/ ./docs/"
+    "public": "docs"
   },
   "emulators": {
     "firestore": {

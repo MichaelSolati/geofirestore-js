@@ -1,0 +1,128 @@
+{
+  "name": "geofirestore",
+  "description": "Location-based querying and filtering using Firebase's Firestore",
+  "version": "5.0.0",
+  "scripts": {
+    "build": "npm-run-all rimraf build:rollup build:types build:docs",
+    "build:docs": "typedoc --out docs/ src/ && cp -a ./examples/ ./docs/",
+    "build:rollup": "rollup -c",
+    "build:types": "tsc --project tsconfig.json --declaration --emitDeclarationOnly",
+    "coverage": "codecov -c -F geofirestore",
+    "lint": "gts lint",
+    "test": "firebase emulators:exec 'npm run test:nyc'",
+    "test:nyc": "nyc --reporter=lcov --reporter=text mocha --package package.json --recursive --exit",
+    "rimraf": "rimraf ./dist",
+    "prepare": "npm run build"
+  },
+  "exports": {
+    ".": {
+      "node": {
+        "require": "./dist/index.cjs.js",
+        "import": "./dist/index.esm.js"
+      },
+      "default": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./admin": {
+      "node": {
+        "require": "./dist/admin/index.cjs.js",
+        "import": "./dist/admin/index.esm.js"
+      },
+      "default": "./dist/admin/index.esm.js",
+      "types": "./dist/admin/index.d.ts"
+    },
+    "./compat": {
+      "node": {
+        "require": "./dist/compat/index.cjs.js",
+        "import": "./dist/compat/index.esm.js"
+      },
+      "default": "./dist/compat/index.esm.js",
+      "types": "./dist/compat/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "browser": "./dist/geofirestore.js",
+  "author": "Michael Solati <mkslt04@gmail.com>",
+  "homepage": "https://geofirestore.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MichaelSolati/geofirestore-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MichaelSolati/geofirestore-js/issues"
+  },
+  "readme": "README.md",
+  "license": "MIT",
+  "keywords": [
+    "geoquery",
+    "location",
+    "firebase",
+    "firestore",
+    "realtime",
+    "geolocation",
+    "geofire",
+    "geohash",
+    "map"
+  ],
+  "files": [
+    "dist/**",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "package-lock.json",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "geofirestore-core": "x.x.x"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.16",
+    "axios": "^0.25.0",
+    "chai": "^4.3.6",
+    "codecov": "^3.8.3",
+    "firebase-tools": "^10.1.5",
+    "generate-changelog": "^1.8.0",
+    "geokit": "^1.1.0",
+    "gts": "^3.1.0",
+    "jsdom": "^19.0.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^9.2.0",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
+    "protobufjs": "^6.11.2",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.67.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-node": "^10.5.0",
+    "tslib": "^2.3.1",
+    "typedoc": "^0.22.11",
+    "typescript": "~4.3.5"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "reporter": "spec",
+    "require": [
+      "ts-node/register",
+      "jsdom-global/register"
+    ],
+    "timeout": 30000
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "target": "geofirestore-core",
+    "public": "docs"
+  },
+  "emulators": {
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    }
+  }
+}

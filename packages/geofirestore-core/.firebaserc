@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "geofirestore"
+  },
+  "targets": {
+    "geofirestore": {
+      "hosting": {
+        "geofirestore-core": [
+          "geofirestore-core"
+        ]
+      }
+    }
+  }
+}

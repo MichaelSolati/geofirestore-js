@@ -1,0 +1,22 @@
+## Folders
+.firebase/
+.nyc_output/
+.rpt2_cache/
+coverage/
+docs/
+examples/
+functions/
+src/
+test/
+
+
+## Files
+.firebase
+.firebaserc
+.gitignore
+firebase.json
+firestore.indexes.json
+firestore.rules
+tsconfig.json
+tslint.json
+*.log

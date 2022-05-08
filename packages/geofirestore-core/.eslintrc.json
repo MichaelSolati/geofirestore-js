@@ -1,0 +1,23 @@
+{
+  "extends": "./node_modules/gts/",
+  "rules": {
+    "ban-ts-ignore": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 140
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-namespace": "off"
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "env": {
+        "browser": true,
+        "mocha": true
+      }
+    }
+  ]
+}

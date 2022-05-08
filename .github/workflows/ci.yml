@@ -1,0 +1,74 @@
+name: CI
+on:
+  pull_request:
+  push:
+jobs:
+  lint_and_test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: NPM Install
+        run: npm ci
+      - name: Bootstrap
+        run: npm run bootstrap
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm run test
+      - name: Coverage
+        run: npm run coverage
+        env:
+          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
+  deploy:
+    needs: lint_and_test
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: NPM Install
+        run: npm ci
+      - name: Bootstrap
+        run: npm run bootstrap
+      - name: Build
+        run: npm run build
+      # geofirestore
+      - name: Firebase Deploy geofirestore
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GEOFIRESTORE }}
+          projectId: geofirestore
+          channelId: live
+          target: geofirestore
+          entryPoint: ./packages/geofirestore
+      - name: NPM Publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/geofirestore/package.json
+      # geofirestore-core
+      - name: Firebase Deploy geofirestore-core
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GEOFIRESTORE }}
+          projectId: geofirestore
+          channelId: live
+          target: geofirestore-core
+          entryPoint: ./packages/geofirestore-core
+      - name: NPM Publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/geofirestore-core/package.json
