@@ -49,8 +49,6 @@ jobs:
         run: npm ci
       - name: Bootstrap
         run: npm run bootstrap
-      - name: Build
-        run: npm run build
       # geofirestore
       - name: Firebase Deploy geofirestore
         uses: FirebaseExtended/action-hosting-deploy@v0
