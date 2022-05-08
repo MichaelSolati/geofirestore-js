@@ -3,7 +3,7 @@
   "description": "Monorepo for geofirestore",
   "version": "5.0.0",
   "scripts": {
-    "bootstrap": "lerna bootstrap --force-local",
+    "bootstrap": "lerna bootstrap --force-local --include-dependencies --hoist --nohoist=gts",
     "build": "lerna run build",
     "lint": "lerna run lint",
     "test": "lerna run test",
