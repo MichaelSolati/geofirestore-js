@@ -73,7 +73,7 @@
     "README.md"
   ],
   "dependencies": {
-    "geofirestore-core": "x.x.x"
+    "geofirestore-core": "5.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",
