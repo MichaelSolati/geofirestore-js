@@ -58,12 +58,12 @@ jobs:
           projectId: geofirestore
           channelId: live
           target: geofirestore
-          entryPoint: ./packages/geofirestore
-      - name: NPM Publish
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/geofirestore/package.json
+          entryPoint: "./packages/geofirestore"
+      # - name: NPM Publish
+      #   uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/geofirestore/package.json
       # geofirestore-core
       - name: Firebase Deploy geofirestore-core
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -73,9 +73,9 @@ jobs:
           projectId: geofirestore
           channelId: live
           target: geofirestore-core
-          entryPoint: ./packages/geofirestore-core
-      - name: NPM Publish
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/geofirestore-core/package.json
+          entryPoint: "./packages/geofirestore-core"
+      # - name: NPM Publish
+      #   uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/geofirestore-core/package.json
