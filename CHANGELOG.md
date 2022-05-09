@@ -1,3 +1,9 @@
+### 5.2.0 (2022-05-09)
+
+##### Build System / Dependencies
+
+* **deps:**  bump ajv from 5.5.2 to 6.12.6 ([#228](https://github.com/MichaelSolati/geofirestore-js/pull/228)) ([a46dc62d](https://github.com/MichaelSolati/geofirestore-js/commit/a46dc62de5d13d627559fb3e8b66dc7ce854f0b6))
+
 ## 5.0.0 (2022-02-09)
 
 ##### New Features
