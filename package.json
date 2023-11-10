@@ -60,7 +60,7 @@
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.16",
-    "axios": "^0.25.0",
+    "axios": "^1.6.0",
     "chai": "^4.3.6",
     "coveralls": "^3.1.1",
     "firebase-tools": "^10.1.5",
