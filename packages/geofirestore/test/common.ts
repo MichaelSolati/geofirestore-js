@@ -185,7 +185,7 @@ export function beforeEachHelper(done: any): void {
 export function afterEachHelper(done: any): void {
   axios
     .delete(
-      `http://${process.env.FIREBASE_FIRESTORE_EMULATOR_ADDRESS}/emulator/v1/projects/${projectId}/databases/(default)/documents`
+      `http://${process.env.FIREBASE_FIRESTORE_EMULATOR_ADDRESS}/emulator/v1/projects/${projectId}/databases/(default)/documents`,
     )
     .then(() => done());
 }
@@ -197,7 +197,7 @@ export function generateDocs(
   maxLat = 0.5,
   minLat = -0.5,
   maxLng = 0.5,
-  minLng = -0.5
+  minLng = -0.5,
 ): Array<{coordinates: firebase.firestore.GeoPoint; distance: number}> {
   return new Array(total).fill(0).map(() => {
     const lat = Math.random() * (maxLat - minLat + 1) + minLat;
@@ -230,7 +230,7 @@ export function wait(milliseconds = 100): Promise<void> {
 }
 
 export function stubDatabase(
-  docs: Array<{[key: string]: any}> = validDocumentData()
+  docs: Array<{[key: string]: any}> = validDocumentData(),
 ): Promise<any> {
   const geofirestore = new GeoFirestore(firestore);
   const batch = geofirestore.batch();
@@ -251,10 +251,10 @@ export function stubDatabase(
  */
 export function calculateDistance(
   location1: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
-  location2: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint
+  location2: GeoFirestoreTypes.cloud.GeoPoint | GeoFirestoreTypes.web.GeoPoint,
 ): number {
   return distance(
     {lat: location1.latitude, lng: location1.longitude},
-    {lat: location2.latitude, lng: location2.longitude}
+    {lat: location2.latitude, lng: location2.longitude},
   );
 }

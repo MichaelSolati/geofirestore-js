@@ -4,6 +4,7 @@ import {GeoCollectionReference} from './GeoCollectionReference';
 import {GeoDocumentReference} from './GeoDocumentReference';
 import {GeoQuery} from './GeoQuery';
 import {GeoWriteBatch} from './GeoWriteBatch';
+import {ANY} from './types';
 
 /**
  * `GeoFirestore` represents a Firestore Database and is the entry point for all GeoFirestore operations.
@@ -15,7 +16,7 @@ export class GeoFirestore {
   constructor(
     private _firestore:
       | GeoFirestoreTypes.web.Firestore
-      | GeoFirestoreTypes.cloud.Firestore
+      | GeoFirestoreTypes.cloud.Firestore,
   ) {
     if (Object.prototype.toString.call(_firestore) !== '[object Object]') {
       throw new Error('Firestore must be an instance of Firestore');
@@ -48,11 +49,11 @@ export class GeoFirestore {
    */
   collection(
     collectionPath: string,
-    customKey?: string
+    customKey?: string,
   ): GeoCollectionReference {
     return new GeoCollectionReference(
       this._firestore.collection(collectionPath),
-      customKey
+      customKey,
     );
   }
 
@@ -116,9 +117,9 @@ export class GeoFirestore {
     updateFunction: (
       transaction:
         | GeoFirestoreTypes.cloud.Transaction
-        | GeoFirestoreTypes.web.Transaction
-    ) => Promise<any>
-  ): Promise<any> {
+        | GeoFirestoreTypes.web.Transaction,
+    ) => Promise<ANY>,
+  ): Promise<ANY> {
     const firestore = this._firestore as GeoFirestoreTypes.cloud.Firestore;
     return firestore.runTransaction(updateFunction);
   }

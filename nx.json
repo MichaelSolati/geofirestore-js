@@ -1,0 +1,75 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default"
+    ],
+    "sharedGlobals": []
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "cache": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "cache": true
+    },
+    "docs": {
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "cache": true
+    }
+  },
+  "generators": {
+    "@nx/workspace:library": {
+      "js": true,
+      "publishable": true
+    }
+  },
+  "release": {
+    "projects": [
+      "geofirestore"
+    ]
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "lint",
+          "docs"
+        ]
+      }
+    }
+  }
+}

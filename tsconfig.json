@@ -1,7 +1,7 @@
 {
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "rootDir": ".",
     "esModuleInterop": true,
     "outDir": "./dist",
     "moduleResolution": "node",
@@ -10,8 +10,17 @@
     "declaration": true,
     "removeComments": false,
     "target": "es2017",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"]
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "packages/geofirestore/src/**/*",
+    "packages/geofirestore/test/**/*"
+  ]
 }

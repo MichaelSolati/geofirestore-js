@@ -7,7 +7,9 @@ import {GeoFirestore} from './GeoFirestore';
  * @return GeoFirestore instance.
  */
 export function initializeApp(
-  firestore: GeoFirestoreTypes.web.Firestore | GeoFirestoreTypes.cloud.Firestore
+  firestore:
+    | GeoFirestoreTypes.web.Firestore
+    | GeoFirestoreTypes.cloud.Firestore,
 ): GeoFirestore {
   return new GeoFirestore(firestore);
 }
@@ -19,7 +21,7 @@ export function initializeApp(
  * @return The same object but without custom key
  */
 export function sanitizeSetOptions(
-  options: GeoFirestoreTypes.SetOptions
+  options: GeoFirestoreTypes.SetOptions,
 ): GeoFirestoreTypes.SetOptions {
   const clone = {...options};
   delete clone.customKey;

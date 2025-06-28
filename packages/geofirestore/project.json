@@ -1,0 +1,74 @@
+{
+  "name": "geofirestore",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/geofirestore/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "packages/geofirestore/dist",
+        "configFile": "packages/geofirestore/vite.config.ts",
+        "tsConfig": "packages/geofirestore/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "firebase emulators:exec --only firestore 'nyc --reporter=html --reporter=text mocha --package package.json --exit'",
+        "cwd": "packages/geofirestore"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/geofirestore/src/**/*.ts"
+        ]
+      }
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "typedoc",
+        "cwd": "packages/geofirestore"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rimraf ./dist ./coverage ./docs ./.nyc_output",
+        "cwd": "packages/geofirestore"
+      }
+    },
+    "coverage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nyc report --reporter=text-lcov | coveralls",
+        "cwd": "packages/geofirestore"
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "preset": "conventional",
+        "trackDeps": true,
+        "push": true,
+        "postTargets": [
+          "geofirestore:publish"
+        ]
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm publish",
+        "cwd": "packages/geofirestore"
+      }
+    }
+  },
+  "tags": []
+}

@@ -16,7 +16,7 @@ export class GeoCollectionReference extends GeoQuery {
     private _collection:
       | GeoFirestoreTypes.cloud.CollectionReference
       | GeoFirestoreTypes.web.CollectionReference,
-    private _customKey?: string
+    private _customKey?: string,
   ) {
     super(_collection);
   }
@@ -60,7 +60,7 @@ export class GeoCollectionReference extends GeoQuery {
    */
   add(
     documentData: GeoFirestoreTypes.DocumentData,
-    customKey: string = this._customKey
+    customKey: string = this._customKey,
   ): Promise<GeoDocumentReference> {
     return (this._collection as GeoFirestoreTypes.cloud.CollectionReference)
       .add(encodeDocumentAdd(documentData, customKey))

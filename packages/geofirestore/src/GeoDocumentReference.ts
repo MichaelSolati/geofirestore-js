@@ -8,6 +8,7 @@ import {sanitizeSetOptions} from './utils';
 import {GeoCollectionReference} from './GeoCollectionReference';
 import {GeoDocumentSnapshot} from './GeoDocumentSnapshot';
 import {GeoFirestore} from './GeoFirestore';
+import {ANY} from './types';
 
 /**
  * A `GeoDocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen to the
@@ -23,17 +24,17 @@ export class GeoDocumentReference {
   constructor(
     private _document:
       | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference,
   ) {
     if (Object.prototype.toString.call(_document) !== '[object Object]') {
       throw new Error(
-        'DocumentReference must be an instance of a Firestore DocumentReference'
+        'DocumentReference must be an instance of a Firestore DocumentReference',
       );
     }
     this._isWeb =
       Object.prototype.toString.call(
         (_document as GeoFirestoreTypes.web.DocumentReference).firestore
-          .enablePersistence
+          .enablePersistence,
       ) === '[object Function]';
   }
 
@@ -65,17 +66,17 @@ export class GeoDocumentReference {
    */
   get onSnapshot(): (
     onNext: (snapshot: GeoDocumentSnapshot) => void,
-    onError?: (error: Error) => void
+    onError?: (error: Error) => void,
   ) => () => void {
     return (
       onNext: (snapshot: GeoDocumentSnapshot) => void,
-      onError: (error: Error) => void = () => {}
+      onError: (error: Error) => void = () => {},
     ) => {
       const document = this
         ._document as GeoFirestoreTypes.web.DocumentReference;
       return document.onSnapshot(
         snapshot => onNext(new GeoDocumentSnapshot(snapshot)),
-        error => onError(error)
+        error => onError(error),
       );
     };
   }
@@ -102,7 +103,7 @@ export class GeoDocumentReference {
    */
   collection(collectionPath: string): GeoCollectionReference {
     return new GeoCollectionReference(
-      this._document.collection(collectionPath)
+      this._document.collection(collectionPath),
     );
   }
 
@@ -115,7 +116,7 @@ export class GeoDocumentReference {
   delete(): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
       .delete()
-      .then(() => null);
+      .then(() => {});
   }
 
   /**
@@ -128,7 +129,7 @@ export class GeoDocumentReference {
    * @return A Promise resolved with a GeoDocumentSnapshot containing the current document contents.
    */
   get(
-    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
+    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'},
   ): Promise<GeoDocumentSnapshot> {
     const get = this._isWeb
       ? (this._document as GeoFirestoreTypes.web.DocumentReference).get(options)
@@ -146,9 +147,9 @@ export class GeoDocumentReference {
     other:
       | GeoDocumentReference
       | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference,
   ): boolean {
-    const ref: any =
+    const ref: ANY =
       other instanceof GeoDocumentReference ? other['_document'] : other;
     return this._document.isEqual(ref);
   }
@@ -163,14 +164,14 @@ export class GeoDocumentReference {
    */
   set(
     documentData: GeoFirestoreTypes.DocumentData,
-    options?: GeoFirestoreTypes.SetOptions
+    options?: GeoFirestoreTypes.SetOptions,
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
       .set(
         encodeDocumentSet(documentData, options),
-        sanitizeSetOptions(options)
+        sanitizeSetOptions(options),
       )
-      .then(() => null);
+      .then(() => {});
   }
 
   /**
@@ -184,10 +185,10 @@ export class GeoDocumentReference {
    */
   update(
     data: GeoFirestoreTypes.UpdateData,
-    customKey?: string
+    customKey?: string,
   ): Promise<void> {
     return (this._document as GeoFirestoreTypes.web.DocumentReference)
       .update(encodeDocumentUpdate(data, customKey))
-      .then(() => null);
+      .then(() => {});
   }
 }

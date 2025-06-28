@@ -132,7 +132,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
           expect(snapshot.data({serverTimestamps: 'estimate'})).to.deep.equal(
-            validGeoDocumentData()[0]
+            validGeoDocumentData()[0],
           );
         })
         .then(done);
@@ -143,7 +143,7 @@ describe('GeoDocumentSnapshot Tests:', () => {
         .then(() => geocollection.doc('loc0').get())
         .then(snapshot => {
           expect(() =>
-            snapshot.data({serverTimestamps: 'estimate'})
+            snapshot.data({serverTimestamps: 'estimate'}),
           ).to.not.throw();
         })
         .then(done);
@@ -158,9 +158,9 @@ describe('GeoDocumentSnapshot Tests:', () => {
           Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(snapshot.get(property)).to.deep.equal(
-                validGeoDocumentData()[0][property]
+                validGeoDocumentData()[0][property],
               );
-            }
+            },
           );
         })
         .then(done);
@@ -173,9 +173,9 @@ describe('GeoDocumentSnapshot Tests:', () => {
           Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(
-                snapshot.get(property, {serverTimestamps: 'estimate'})
+                snapshot.get(property, {serverTimestamps: 'estimate'}),
               ).to.deep.equal(validGeoDocumentData()[0][property]);
-            }
+            },
           );
         })
         .then(done);
@@ -188,9 +188,9 @@ describe('GeoDocumentSnapshot Tests:', () => {
           Object.getOwnPropertyNames(validGeoDocumentData()[0]).forEach(
             property => {
               expect(() =>
-                snapshot.get(property, {serverTimestamps: 'estimate'})
+                snapshot.get(property, {serverTimestamps: 'estimate'}),
               ).to.not.throw();
-            }
+            },
           );
         })
         .then(done);

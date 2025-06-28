@@ -31,8 +31,8 @@ describe('GeoWriteBatch Tests:', () => {
     it('Constructor throws errors given invalid Firestore WriteBatch', () => {
       invalidFirestores.forEach(invalidFirestore => {
         expect(() => new GeoWriteBatch(invalidFirestore)).to.throw(
-          null,
-          'WriteBatch must be an instance of a Firestore WriteBatch'
+          Error,
+          'WriteBatch must be an instance of a Firestore WriteBatch',
         );
       });
     });
@@ -43,7 +43,7 @@ describe('GeoWriteBatch Tests:', () => {
 
     it('Constructor does not throw errors given valid Firestore WriteBatch and custom key', () => {
       expect(
-        () => new GeoWriteBatch(firestore.batch(), 'geopoint')
+        () => new GeoWriteBatch(firestore.batch(), 'geopoint'),
       ).not.to.throw();
     });
   });
@@ -61,14 +61,14 @@ describe('GeoWriteBatch Tests:', () => {
       const geowritebatch = geofirestore.batch();
       const set = geowritebatch.set(
         geocollection.doc(),
-        validDocumentData()[0]
+        validDocumentData()[0],
       );
       expect(set).to.deep.equal(geowritebatch);
     });
 
     it('set() without a GeoDocumentReference or DocumentReference, throws an error', () => {
       const geowritebatch = geofirestore.batch();
-      failTestOnCaughtError(() => geowritebatch.set(null, {}));
+      failTestOnCaughtError(() => geowritebatch.set(null as any, {}));
     });
 
     it('set() successfully adds a document to a collection', () => {
@@ -183,7 +183,7 @@ describe('GeoWriteBatch Tests:', () => {
 
     it('update() without a GeoDocumentReference or DocumentReference, throws an error', () => {
       const geowritebatch = geofirestore.batch();
-      failTestOnCaughtError(() => geowritebatch.update(null, {}));
+      failTestOnCaughtError(() => geowritebatch.update(null as any, {}));
     });
 
     it('update() successfully updates a document in a collection', () => {
@@ -191,7 +191,7 @@ describe('GeoWriteBatch Tests:', () => {
       return doc
         .set(validDocumentData()[0])
         .then(() =>
-          doc.firestore.batch().update(doc, validDocumentData()[1]).commit()
+          doc.firestore.batch().update(doc, validDocumentData()[1]).commit(),
         )
         .then(() => doc.get())
         .then(snapshot => {
@@ -212,18 +212,21 @@ describe('GeoWriteBatch Tests:', () => {
           docRef.firestore
             .batch()
             .update(docRef, updateData, 'geopoint')
-            .commit()
+            .commit(),
         )
         .then(() => docRef.get())
         .then(snapshot => {
           const snapshotData = snapshot.data();
+          if (!snapshotData) {
+            throw new Error('Snapshot data is undefined');
+          }
           const g = snapshotData.g;
-          delete snapshotData.g;
-          delete dummyDoc.g;
+          delete (snapshotData as any).g;
+          delete (dummyDoc as any).g;
 
           expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
-          expect(g.geopoint).to.deep.equal(geopoint);
+          expect(g?.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
         });
     });
@@ -237,18 +240,24 @@ describe('GeoWriteBatch Tests:', () => {
       return docRef
         .set(dummyDoc)
         .then(() =>
-          docRef.firestore.batch('geopoint').update(docRef, updateData).commit()
+          docRef.firestore
+            .batch('geopoint')
+            .update(docRef, updateData)
+            .commit(),
         )
         .then(() => docRef.get())
         .then(snapshot => {
           const snapshotData = snapshot.data();
+          if (!snapshotData) {
+            throw new Error('Snapshot data is undefined');
+          }
           const g = snapshotData.g;
-          delete snapshotData.g;
-          delete dummyDoc.g;
+          delete (snapshotData as any).g;
+          delete (dummyDoc as any).g;
 
           expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
-          expect(g.geopoint).to.deep.equal(geopoint);
+          expect(g?.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
         });
     });
@@ -265,18 +274,21 @@ describe('GeoWriteBatch Tests:', () => {
           docRef.firestore
             .batch('location')
             .update(docRef, updateData, 'geopoint')
-            .commit()
+            .commit(),
         )
         .then(() => docRef.get())
         .then(snapshot => {
           const snapshotData = snapshot.data();
+          if (!snapshotData) {
+            throw new Error('Snapshot data is undefined');
+          }
           const g = snapshotData.g;
-          delete snapshotData.g;
-          delete dummyDoc.g;
+          delete (snapshotData as any).g;
+          delete (dummyDoc as any).g;
 
           expect(snapshot.exists).to.be.true;
           expect(snapshotData).to.deep.equal({...dummyDoc, geopoint});
-          expect(g.geopoint).to.deep.equal(geopoint);
+          expect(g?.geopoint).to.deep.equal(geopoint);
           return Promise.resolve(true);
         });
     });
@@ -291,7 +303,7 @@ describe('GeoWriteBatch Tests:', () => {
 
     it('delete() without a GeoDocumentReference or DocumentReference, throws an error', () => {
       const geowritebatch = geofirestore.batch();
-      failTestOnCaughtError(() => geowritebatch.delete(null));
+      failTestOnCaughtError(() => geowritebatch.delete(null as any));
     });
 
     it('delete() successfully deletes a document from a collection', () => {

@@ -27,8 +27,8 @@ describe('GeoFirestore Tests:', () => {
     it('Constructor throws errors given invalid Firestore references', () => {
       invalidFirestores.forEach(invalidFirestore => {
         expect(() => new GeoFirestore(invalidFirestore)).to.throw(
-          null,
-          'Firestore must be an instance of Firestore'
+          Error,
+          'Firestore must be an instance of Firestore',
         );
       });
     });
@@ -49,7 +49,7 @@ describe('GeoFirestore Tests:', () => {
     it('batch() returns a new GeoWriteBatch based on a Firestore WriteBatch', () => {
       expect(
         new GeoFirestore(firestore).batch().native instanceof
-          firebase.firestore.WriteBatch
+          firebase.firestore.WriteBatch,
       ).to.be.true;
     });
   });
@@ -57,7 +57,7 @@ describe('GeoFirestore Tests:', () => {
   describe('collection():', () => {
     it('collection() returns a new GeoCollectionReference based on a Firestore CollectionReference', () => {
       expect(
-        new GeoFirestore(firestore).collection(testCollectionName).native
+        new GeoFirestore(firestore).collection(testCollectionName).native,
       ).to.deep.equal(firestore.collection(testCollectionName));
     });
   });
@@ -65,7 +65,7 @@ describe('GeoFirestore Tests:', () => {
   describe('collectionGroup():', () => {
     it('collectionGroup() returns a new GeoQuery based on a Firestore Query', () => {
       expect(
-        new GeoFirestore(firestore).collectionGroup(testCollectionName).native
+        new GeoFirestore(firestore).collectionGroup(testCollectionName).native,
       ).to.deep.equal(firestore.collectionGroup(testCollectionName));
     });
   });
@@ -73,7 +73,7 @@ describe('GeoFirestore Tests:', () => {
   describe('doc():', () => {
     it('doc() returns a new GeoDocumentReference based on a Firestore DocumentReference', () => {
       expect(
-        new GeoFirestore(firestore).doc(testCollectionName + '/id1').native
+        new GeoFirestore(firestore).doc(testCollectionName + '/id1').native,
       ).to.deep.equal(firestore.doc(testCollectionName + '/id1'));
     });
   });
@@ -81,7 +81,7 @@ describe('GeoFirestore Tests:', () => {
   describe('runTransaction():', () => {
     it("runTransaction() doesn't throw an error when a valid `updateFunction` is passed in", () => {
       expect(() =>
-        geofirestore.runTransaction(() => Promise.resolve(true))
+        geofirestore.runTransaction(() => Promise.resolve(true)),
       ).to.not.throw();
     });
 

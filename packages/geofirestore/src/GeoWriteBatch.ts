@@ -6,6 +6,7 @@ import {
 
 import {GeoDocumentReference} from './GeoDocumentReference';
 import {sanitizeSetOptions} from './utils';
+import {ANY} from './types';
 
 /**
  * A write batch, used to perform multiple writes as a single atomic unit.
@@ -25,11 +26,11 @@ export class GeoWriteBatch {
     private _writeBatch:
       | GeoFirestoreTypes.cloud.WriteBatch
       | GeoFirestoreTypes.web.WriteBatch,
-    private _customKey?: string
+    private _customKey?: string,
   ) {
     if (Object.prototype.toString.call(_writeBatch) !== '[object Object]') {
       throw new Error(
-        'WriteBatch must be an instance of a Firestore WriteBatch'
+        'WriteBatch must be an instance of a Firestore WriteBatch',
       );
     }
   }
@@ -56,9 +57,9 @@ export class GeoWriteBatch {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     documentData: GeoFirestoreTypes.DocumentData,
-    options: GeoFirestoreTypes.SetOptions = {}
+    options: GeoFirestoreTypes.SetOptions = {},
   ): GeoWriteBatch {
-    const ref: any =
+    const ref: ANY =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
@@ -66,7 +67,7 @@ export class GeoWriteBatch {
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).set(
       ref,
       encodeDocumentSet(documentData, options),
-      sanitizeSetOptions(options)
+      sanitizeSetOptions(options),
     );
     return this;
   }
@@ -87,15 +88,15 @@ export class GeoWriteBatch {
       | GeoFirestoreTypes.cloud.DocumentReference
       | GeoFirestoreTypes.web.DocumentReference,
     data: GeoFirestoreTypes.UpdateData,
-    customKey: string = this._customKey
+    customKey: string = this._customKey,
   ): GeoWriteBatch {
-    const ref: any =
+    const ref: ANY =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
     (this._writeBatch as GeoFirestoreTypes.cloud.WriteBatch).update(
       ref,
-      encodeDocumentUpdate(data, customKey)
+      encodeDocumentUpdate(data, customKey),
     );
     return this;
   }
@@ -110,9 +111,9 @@ export class GeoWriteBatch {
     documentRef:
       | GeoDocumentReference
       | GeoFirestoreTypes.cloud.DocumentReference
-      | GeoFirestoreTypes.web.DocumentReference
+      | GeoFirestoreTypes.web.DocumentReference,
   ): GeoWriteBatch {
-    const ref: any =
+    const ref: ANY =
       documentRef instanceof GeoDocumentReference
         ? documentRef['_document']
         : documentRef;
@@ -126,7 +127,7 @@ export class GeoWriteBatch {
    * @return A Promise resolved once all of the writes in the batch have been successfully written to the backend as an atomic unit. Note
    * that it won't resolve while you're offline.
    */
-  commit(): Promise<any> {
-    return this._writeBatch.commit();
+  async commit(): Promise<void> {
+    await this._writeBatch.commit();
   }
 }

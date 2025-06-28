@@ -1,0 +1,16 @@
+# Folders
+.firebase/
+.nyc_output/
+.rpt2_cache/
+coverage/
+dist/
+docs/
+functions/etc/
+functions/lib/
+node_modules/
+
+# Files
+.DS_Store
+
+.firebase
+*.log

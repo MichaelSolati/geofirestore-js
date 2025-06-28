@@ -1,21 +1,20 @@
 ## Folders
-.firebase/
 .nyc_output/
-.rpt2_cache/
 coverage/
 docs/
 examples/
-functions/
 src/
 test/
 
 
 ## Files
-.firebase
+.eslintrc.json
 .firebaserc
 .gitignore
 firebase.json
 firestore.indexes.json
 firestore.rules
 tsconfig.json
-tslint.json
+tsconfig.typedoc.json
+typedoc.json
+vite.config.ts

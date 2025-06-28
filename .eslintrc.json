@@ -13,7 +13,9 @@
   },
   "overrides": [
     {
-      "files": ["test/**/*.ts"],
+      "files": [
+        "test/**/*.ts"
+      ],
       "env": {
         "browser": true,
         "mocha": true

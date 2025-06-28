@@ -36,7 +36,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(snapshot => {
           snapshot.forEach(doc => {
             expect(
-              () => new GeoDocumentReference(collection.doc(doc.id))
+              () => new GeoDocumentReference(collection.doc(doc.id)),
             ).to.not.throw();
           });
         })
@@ -57,7 +57,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(snapshot => {
           snapshot.forEach(doc => {
             expect(
-              new GeoDocumentReference(collection.doc(doc.id)).id
+              new GeoDocumentReference(collection.doc(doc.id)).id,
             ).to.be.equal(doc.id);
           });
         })
@@ -84,7 +84,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(snapshot => {
           snapshot.forEach(doc => {
             expect(
-              new GeoDocumentReference(collection.doc(doc.id)).firestore
+              new GeoDocumentReference(collection.doc(doc.id)).firestore,
             ).to.deep.equal(geofirestore);
           });
         })
@@ -167,10 +167,10 @@ describe('GeoDocumentReference Tests:', () => {
         .add({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(doc => {
           expect(doc.collection(geocollection.path)).to.be.instanceOf(
-            GeoCollectionReference
+            GeoCollectionReference,
           );
           expect(doc.collection(geocollection.path).id).to.be.equal(
-            geocollection.id
+            geocollection.id,
           );
         })
         .then(done);
@@ -214,13 +214,15 @@ describe('GeoDocumentReference Tests:', () => {
 
     it('set() does throw an error when given an invalid object', () => {
       validDocumentData().forEach((_, index) => {
-        expect(() => geocollection.doc(`loc${index}`).set(null)).to.throw();
         expect(() =>
-          geocollection.doc(`loc${index}`).set({key: 'key'})
+          geocollection.doc(`loc${index}`).set(null as any),
+        ).to.throw(Error);
+        expect(() =>
+          geocollection.doc(`loc${index}`).set({key: 'key'}),
         ).to.throw();
         expect(() => geocollection.doc(`loc${index}`).set(1 as any)).to.throw();
         expect(() =>
-          geocollection.doc(`loc${index}`).set(false as any)
+          geocollection.doc(`loc${index}`).set(false as any),
         ).to.throw();
       });
     });
@@ -239,7 +241,7 @@ describe('GeoDocumentReference Tests:', () => {
     it('set() does throw an error when given a non object', () => {
       invalidObjects.forEach((invalidObject, index) => {
         expect(() =>
-          geocollection.doc(`loc${index}`).set(invalidObject)
+          geocollection.doc(`loc${index}`).set(invalidObject),
         ).to.throw();
       });
     });
@@ -249,7 +251,7 @@ describe('GeoDocumentReference Tests:', () => {
       return documentReference
         .set(
           {geopoint: new firebase.firestore.GeoPoint(0, 0)},
-          {customKey: 'geopoint'}
+          {customKey: 'geopoint'},
         )
         .then(() => wait(100))
         .then(() => documentReference.get())
@@ -268,7 +270,7 @@ describe('GeoDocumentReference Tests:', () => {
       return documentReference
         .set(
           {geopoint: {coordinates: new firebase.firestore.GeoPoint(0, 0)}},
-          {customKey: 'geopoint.coordinates'}
+          {customKey: 'geopoint.coordinates'},
         )
         .then(() => wait(100))
         .then(() => documentReference.get())
@@ -289,7 +291,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => geocollection.get())
         .then(snapshot => {
           const docs = snapshot.docs.map(
-            d => new GeoDocumentReference(collection.doc(d.id))
+            d => new GeoDocumentReference(collection.doc(d.id)),
           );
           docs.forEach((d, index) => {
             expect(() => d.update({index})).to.not.throw();
@@ -303,10 +305,10 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => geocollection.get())
         .then(snapshot => {
           const docs = snapshot.docs.map(
-            d => new GeoDocumentReference(collection.doc(d.id))
+            d => new GeoDocumentReference(collection.doc(d.id)),
           );
           docs.forEach((d, index) => {
-            expect(() => d.update(null)).to.throw();
+            expect(() => d.update(null as any)).to.throw(Error);
             expect(() => d.update(index as any)).to.throw();
             expect(() => d.update(false as any)).to.throw();
           });
@@ -341,7 +343,7 @@ describe('GeoDocumentReference Tests:', () => {
         .then(() => geocollection.get())
         .then(snapshot => {
           const docs = snapshot.docs.map(
-            d => new GeoDocumentReference(collection.doc(d.id))
+            d => new GeoDocumentReference(collection.doc(d.id)),
           );
           docs.forEach(d => {
             expect(() => d.delete()).to.not.throw();

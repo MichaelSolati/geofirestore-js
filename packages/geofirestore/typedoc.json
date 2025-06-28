@@ -1,0 +1,20 @@
+{
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "out": "docs",
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "skipErrorChecking": true,
+  "tsconfig": "tsconfig.typedoc.json",
+  "theme": "default",
+  "name": "GeoFirestore Documentation",
+  "exclude": [
+    "**/node_modules/**",
+    "**/test/**",
+    "**/dist/**",
+    "**/coverage/**"
+  ]
+}

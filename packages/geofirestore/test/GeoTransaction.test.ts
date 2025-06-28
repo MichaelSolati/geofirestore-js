@@ -31,8 +31,8 @@ describe('GeoTransaction Tests:', () => {
     it('Constructor throws errors given invalid Firestore Transaction references', () => {
       invalidFirestores.forEach(invalid => {
         expect(() => new GeoTransaction(invalid)).to.throw(
-          null,
-          'Transaction must be an instance of a Firestore Transaction'
+          Error,
+          'Transaction must be an instance of a Firestore Transaction',
         );
       });
     });
@@ -42,7 +42,7 @@ describe('GeoTransaction Tests:', () => {
         geofirestore.runTransaction(transaction => {
           new GeoTransaction(transaction);
           return Promise.resolve(true);
-        })
+        }),
       ).not.to.throw();
     });
 
@@ -51,7 +51,7 @@ describe('GeoTransaction Tests:', () => {
         geofirestore.runTransaction(transaction => {
           new GeoTransaction(transaction, 'geopoint');
           return Promise.resolve(true);
-        })
+        }),
       ).not.to.throw();
     });
   });
@@ -380,13 +380,16 @@ describe('GeoTransaction Tests:', () => {
           .then(() => docRef.get())
           .then(doc => {
             const docData = doc.data();
+            if (!docData) {
+              throw new Error('Document data is undefined');
+            }
             const g = docData.g;
-            delete docData.g;
-            delete dummyDoc.g;
+            delete (docData as any).g;
+            delete (dummyDoc as any).g;
 
             expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
-            expect(g.geopoint).to.deep.equal(geopoint);
+            expect(g?.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);
           });
       });
@@ -412,13 +415,16 @@ describe('GeoTransaction Tests:', () => {
           .then(() => docRef.get())
           .then(doc => {
             const docData = doc.data();
+            if (!docData) {
+              throw new Error('Document data is undefined');
+            }
             const g = docData.g;
-            delete docData.g;
-            delete dummyDoc.g;
+            delete (docData as any).g;
+            delete (dummyDoc as any).g;
 
             expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
-            expect(g.geopoint).to.deep.equal(geopoint);
+            expect(g?.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);
           });
       });
@@ -444,13 +450,16 @@ describe('GeoTransaction Tests:', () => {
           .then(() => docRef.get())
           .then(doc => {
             const docData = doc.data();
+            if (!docData) {
+              throw new Error('Document data is undefined');
+            }
             const g = docData.g;
-            delete docData.g;
-            delete dummyDoc.g;
+            delete (docData as any).g;
+            delete (dummyDoc as any).g;
 
             expect(doc.exists).to.be.true;
             expect(docData).to.deep.equal({...dummyDoc, geopoint});
-            expect(g.geopoint).to.deep.equal(geopoint);
+            expect(g?.geopoint).to.deep.equal(geopoint);
             return Promise.resolve(true);
           });
       });

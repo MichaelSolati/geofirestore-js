@@ -8,6 +8,7 @@ import {
 } from 'geofirestore-core';
 
 import {GeoFirestore} from './GeoFirestore';
+import {ANY} from './types';
 
 /**
  * A `GeoQuery` refers to a Query which you can read or listen to. You can also construct refined `GeoQuery` objects by adding filters and
@@ -27,7 +28,7 @@ export class GeoQuery {
    */
   constructor(
     private _query: GeoFirestoreTypes.cloud.Query | GeoFirestoreTypes.web.Query,
-    queryCriteria?: GeoFirestoreTypes.QueryCriteria
+    queryCriteria?: GeoFirestoreTypes.QueryCriteria,
   ) {
     if (Object.prototype.toString.call(_query) !== '[object Object]') {
       throw new Error('Query must be an instance of a Firestore Query');
@@ -35,7 +36,7 @@ export class GeoQuery {
     this._isWeb =
       Object.prototype.toString.call(
         (_query as GeoFirestoreTypes.web.CollectionReference).firestore
-          .enablePersistence
+          .enablePersistence,
       ) === '[object Function]';
     if (queryCriteria) {
       if (typeof queryCriteria.limit === 'number') {
@@ -73,7 +74,7 @@ export class GeoQuery {
    */
   get onSnapshot(): (
     onNext: (snapshot: GeoQuerySnapshot) => void,
-    onError?: (error: Error) => void
+    onError?: (error: Error) => void,
   ) => () => void {
     return geoQueryOnSnapshot(this._query, this._queryCriteria);
   }
@@ -89,7 +90,7 @@ export class GeoQuery {
    * @return A Promise that will be resolved with the results of the GeoQuery.
    */
   get(
-    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'}
+    options: GeoFirestoreTypes.web.GetOptions = {source: 'default'},
   ): Promise<GeoQuerySnapshot> {
     return geoQueryGet(this._query, this._queryCriteria, options);
   }
@@ -146,11 +147,11 @@ export class GeoQuery {
       | GeoFirestoreTypes.cloud.FieldPath
       | GeoFirestoreTypes.web.FieldPath,
     opStr: GeoFirestoreTypes.WhereFilterOp,
-    value: any
+    value: ANY,
   ): GeoQuery {
     return new GeoQuery(
       this._query.where(fieldPath, opStr, value),
-      this._queryCriteria
+      this._queryCriteria,
     );
   }
 

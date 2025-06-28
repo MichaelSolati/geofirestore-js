@@ -33,8 +33,8 @@ describe('GeoCollectionReference Tests:', () => {
     it('Constructor throws errors given invalid Firestore CollectionReference', () => {
       invalidFirestores.forEach(invalidFirestore => {
         expect(() => new GeoCollectionReference(invalidFirestore)).to.throw(
-          null,
-          'Query must be an instance of a Firestore Query'
+          Error,
+          'Query must be an instance of a Firestore Query',
         );
       });
     });
@@ -42,7 +42,7 @@ describe('GeoCollectionReference Tests:', () => {
     it('Constructor does not throw errors given valid Firestore CollectionReference', () => {
       expect(
         () =>
-          new GeoCollectionReference(firestore.collection(testCollectionName))
+          new GeoCollectionReference(firestore.collection(testCollectionName)),
       ).not.to.throw();
     });
 
@@ -51,8 +51,8 @@ describe('GeoCollectionReference Tests:', () => {
         () =>
           new GeoCollectionReference(
             firestore.collection(testCollectionName),
-            'geopoint'
-          )
+            'geopoint',
+          ),
       ).not.to.throw();
     });
   });
@@ -86,7 +86,7 @@ describe('GeoCollectionReference Tests:', () => {
         .then(doc => {
           const subCollection = doc.collection('subcollection');
           expect(subCollection.parent).to.be.instanceOf(GeoDocumentReference);
-          expect(subCollection.parent.isEqual(doc)).to.be.true;
+          expect(subCollection.parent?.isEqual(doc)).to.be.true;
         });
     });
   });
@@ -134,7 +134,7 @@ describe('GeoCollectionReference Tests:', () => {
     it('add() adds a new object with a custom key defined by the collection', () => {
       const geocollectionWithKey = new GeoCollectionReference(
         geocollection.native,
-        'geopoint'
+        'geopoint',
       );
       return geocollectionWithKey
         .add({geopoint: new firebase.firestore.GeoPoint(0, 0)})
@@ -153,7 +153,7 @@ describe('GeoCollectionReference Tests:', () => {
     it('add() adds a new object using the custom key used during add with a custom key defined by the collection', () => {
       const geocollectionWithKey = new GeoCollectionReference(
         geocollection.native,
-        'geopoint'
+        'geopoint',
       );
       return geocollectionWithKey
         .add({location: new firebase.firestore.GeoPoint(0, 0)}, 'location')
@@ -188,7 +188,7 @@ describe('GeoCollectionReference Tests:', () => {
       return geocollection
         .add(
           {geopoint: {coordinates: new firebase.firestore.GeoPoint(0, 0)}},
-          'geopoint.coordinates'
+          'geopoint.coordinates',
         )
         .then(d1 => {
           return wait(100).then(() => {
@@ -215,7 +215,7 @@ describe('GeoCollectionReference Tests:', () => {
         .add({coordinates: new firebase.firestore.GeoPoint(0, 0)})
         .then(doc => {
           expect(geocollection.doc(doc.id)).to.be.instanceOf(
-            GeoDocumentReference
+            GeoDocumentReference,
           );
           expect(geocollection.doc(doc.id).isEqual(doc)).to.be.true;
         });

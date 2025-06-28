@@ -35,8 +35,8 @@ describe('GeoQuery Tests:', () => {
     it('Constructor throws errors given invalid Firestore Query', () => {
       invalidFirestores.forEach(invalidFirestore => {
         expect(() => new GeoQuery(invalidFirestore)).to.throw(
-          null,
-          'Query must be an instance of a Firestore Query'
+          Error,
+          'Query must be an instance of a Firestore Query',
         );
       });
     });
@@ -57,7 +57,7 @@ describe('GeoQuery Tests:', () => {
   describe('firestore:', () => {
     it('firestore returns a new GeoFirestore based on a Firestore of GeoQuery', () => {
       expect(new GeoQuery(collection).firestore).to.deep.equal(
-        new GeoFirestore(firestore)
+        new GeoFirestore(firestore),
       );
     });
   });
@@ -86,7 +86,7 @@ describe('GeoQuery Tests:', () => {
             subscription();
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData().filter(e => e.count > 2)
+              validGeoDocumentData().filter(e => e.count > 2),
             );
             done();
           });
@@ -104,8 +104,8 @@ describe('GeoQuery Tests:', () => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
               validGeoDocumentData().filter(
-                e => calculateDistance(center, e.g.geopoint) <= 1000
-              )
+                e => calculateDistance(center, e.g.geopoint) <= 1000,
+              ),
             );
             done();
           });
@@ -236,7 +236,7 @@ describe('GeoQuery Tests:', () => {
       const radius = 100;
       const generatedData = generateDocs();
       const generatedDataFiltered = generatedData.filter(
-        doc => doc.distance <= radius
+        doc => doc.distance <= radius,
       );
       stubDatabase(generatedData).then(() => {
         const subscription = query
@@ -311,7 +311,7 @@ describe('GeoQuery Tests:', () => {
           .then(snapshot => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
-              validGeoDocumentData().filter(e => e.count > 2)
+              validGeoDocumentData().filter(e => e.count > 2),
             );
           })
           .then(done);
@@ -329,8 +329,8 @@ describe('GeoQuery Tests:', () => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
               validGeoDocumentData().filter(
-                e => calculateDistance(center, e.g.geopoint) <= 1000
-              )
+                e => calculateDistance(center, e.g.geopoint) <= 1000,
+              ),
             );
           })
           .then(done);
@@ -374,7 +374,7 @@ describe('GeoQuery Tests:', () => {
             const docChanges = snapshot.docChanges();
             const docs = docChanges.map(doc => doc.doc.data());
             expect(docChanges.length).to.be.equal(
-              validGeoDocumentData().length
+              validGeoDocumentData().length,
             );
             expect(docs).to.have.deep.members(validGeoDocumentData());
             docChanges.forEach((doc, index) => {
@@ -392,7 +392,7 @@ describe('GeoQuery Tests:', () => {
       const radius = 100;
       const generatedData = generateDocs();
       const generatedDataFiltered = generatedData.filter(
-        doc => doc.distance <= radius
+        doc => doc.distance <= radius,
       );
       stubDatabase(generatedData).then(() => {
         query
@@ -436,8 +436,8 @@ describe('GeoQuery Tests:', () => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
               validGeoDocumentData().filter(
-                e => calculateDistance(center, e.g.geopoint) <= 1000
-              )
+                e => calculateDistance(center, e.g.geopoint) <= 1000,
+              ),
             );
           })
           .then(done);
@@ -468,8 +468,8 @@ describe('GeoQuery Tests:', () => {
             const result = snapshot.docs.map(d => d.data());
             expect(result).to.have.deep.members(
               validGeoDocumentData().filter(
-                e => calculateDistance(center, e.g.geopoint) <= 1000
-              )
+                e => calculateDistance(center, e.g.geopoint) <= 1000,
+              ),
             );
           })
           .then(done);
@@ -518,14 +518,17 @@ describe('GeoQuery Tests:', () => {
     it('near() does not throw an error with valid arguments', () => {
       const query = new GeoQuery(collection);
       expect(() =>
-        query.near({center: new firebase.firestore.GeoPoint(0, 0), radius: 100})
+        query.near({
+          center: new firebase.firestore.GeoPoint(0, 0),
+          radius: 100,
+        }),
       ).not.to.throw();
     });
 
     it('near() throws error with missing argument', () => {
       const query = new GeoQuery(collection);
       expect(() =>
-        query.near({center: new firebase.firestore.GeoPoint(1, 1)})
+        query.near({center: new firebase.firestore.GeoPoint(1, 1)}),
       ).to.throw();
       expect(() => query.near({radius: 500})).to.throw();
     });
@@ -598,7 +601,7 @@ describe('GeoQuery Tests:', () => {
       expect(() =>
         query
           .near({center: new firebase.firestore.GeoPoint(0, 0), radius: 100})
-          .where('count', '==', 0)
+          .where('count', '==', 0),
       ).not.to.throw();
     });
 
@@ -607,13 +610,13 @@ describe('GeoQuery Tests:', () => {
       expect(() =>
         query
           .near({center: new firebase.firestore.GeoPoint(1, 1)})
-          .where('count', '>', 0)
+          .where('count', '>', 0),
       ).to.throw();
       expect(() =>
-        query.near({radius: 500}).where('count', '<=', 0)
+        query.near({radius: 500}).where('count', '<=', 0),
       ).to.throw();
       expect(() =>
-        query.near({radius: 500}).where('array', 'array-contains', 'one')
+        query.near({radius: 500}).where('array', 'array-contains', 'one'),
       ).to.throw();
     });
   });

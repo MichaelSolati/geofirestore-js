@@ -1,0 +1,16 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false,
+      "decorators": true
+    },
+    "target": "es2017",
+    "loose": false
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "minify": false,
+  "isModule": false
+}
