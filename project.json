@@ -1,6 +1,8 @@
 {
   "name": "geofirestore-monorepo",
   "$schema": "node_modules/nx/schemas/project-schema.json",
+  "root": ".",
+  "projectType": "library",
   "targets": {
     "local-registry": {
       "executor": "@nx/js:verdaccio",

@@ -52,17 +52,6 @@
         "cwd": "packages/geofirestore"
       }
     },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "preset": "conventional",
-        "trackDeps": true,
-        "push": true,
-        "postTargets": [
-          "geofirestore:publish"
-        ]
-      }
-    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"

@@ -1,5 +1,19 @@
 # Contributing
 
+## Commit Message Guidelines (Conventional Commits)
+
+We use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard for all commit messages. This ensures readable project history and enables automatic changelog generation.
+
+**Example:**
+
+```text
+feat(geofirestore-monorepo): add support for custom query filters
+```
+
+> **Note:** When your commit affects a specific package, use the package name as the scope (e.g., `geofirestore`, `geofirestore-core`, or `geofirestore-monorepo`). This helps changelogs and release automation associate your change with the correct package.
+
+See below for full details and allowed types.
+
 ## Commit Message Guidelines
 
 We have very precise rules over how our git commit messages can be formatted.  This leads to **more
@@ -12,14 +26,14 @@ Each commit message consists of a **header**, a **body** and a **footer**.  The 
 format that includes a **type**, a **scope** and a **subject**:
 
 ```text
-<type>(<scope>): <subject>
+<type>(<package>): <subject>
 <BLANK LINE>
 <body>
 <BLANK LINE>
 <footer>
 ```
 
-The **header** is mandatory and the **scope** of the header is optional.
+The **header** and the **package** of the header are mandatory.
 
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
 to read on GitHub as well as in various git tools.

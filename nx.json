@@ -63,10 +63,150 @@
   "release": {
     "projects": [
       "geofirestore",
-      "geofirestore-core"
+      "geofirestore-core",
+      "geofirestore-monorepo"
     ],
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "npx nx run-many -t build",
+      "versionActionsOptions": {
+        "skipLockFileUpdate": true
+      }
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "geofirestore": {
+          "file": "packages/geofirestore/CHANGELOG.md",
+          "preset": "conventionalcommits",
+          "presetOptions": {
+            "types": [
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Bug Fixes"
+              },
+              {
+                "type": "docs",
+                "section": "Documentation"
+              },
+              {
+                "type": "style",
+                "section": "Styles"
+              },
+              {
+                "type": "refactor",
+                "section": "Code Refactoring"
+              },
+              {
+                "type": "perf",
+                "section": "Performance Improvements"
+              },
+              {
+                "type": "test",
+                "section": "Tests"
+              },
+              {
+                "type": "build",
+                "section": "Build System"
+              },
+              {
+                "type": "chore",
+                "section": "Chores"
+              }
+            ]
+          }
+        },
+        "geofirestore-core": {
+          "file": "packages/geofirestore-core/CHANGELOG.md",
+          "preset": "conventionalcommits",
+          "presetOptions": {
+            "types": [
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Bug Fixes"
+              },
+              {
+                "type": "docs",
+                "section": "Documentation"
+              },
+              {
+                "type": "style",
+                "section": "Styles"
+              },
+              {
+                "type": "refactor",
+                "section": "Code Refactoring"
+              },
+              {
+                "type": "perf",
+                "section": "Performance Improvements"
+              },
+              {
+                "type": "test",
+                "section": "Tests"
+              },
+              {
+                "type": "build",
+                "section": "Build System"
+              },
+              {
+                "type": "chore",
+                "section": "Chores"
+              }
+            ]
+          }
+        }
+      },
+      "workspaceChangelog": {
+        "file": "CHANGELOG.md",
+        "preset": "conventionalcommits",
+        "presetOptions": {
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "style",
+              "section": "Styles"
+            },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring"
+            },
+            {
+              "type": "perf",
+              "section": "Performance Improvements"
+            },
+            {
+              "type": "test",
+              "section": "Tests"
+            },
+            {
+              "type": "build",
+              "section": "Build System"
+            },
+            {
+              "type": "chore",
+              "section": "Chores"
+            }
+          ]
+        }
+      }
     }
   },
   "tasksRunnerOptions": {

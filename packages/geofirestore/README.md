@@ -206,7 +206,21 @@ The `limit()` method works with geoqueries but has performance implications:
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](../../CONTRIBUTING.md) for details.
+We welcome contributions! Please follow our [CONTRIBUTING.md](../../CONTRIBUTING.md) guidelines.
+
+### Commit Messages (Conventional Commits)
+
+We use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard for commit messages. This helps us generate changelogs automatically and keep project history clear.
+
+**Example:**
+
+```
+feat(geofirestore): add support for custom query filters
+```
+
+> **Note:** When your commit affects a specific package, use the package name as the scope (e.g., `geofirestore` or `geofirestore-core`).
+
+See the root CONTRIBUTING.md for full details and allowed types.
 
 ### Development Workflow
 
