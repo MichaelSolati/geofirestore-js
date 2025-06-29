@@ -1,14 +1,14 @@
 {
-  "name": "geofirestore",
-  "description": "Location-based querying and filtering using Firebase's Firestore",
-  "version": "5.2.0",
+  "name": "geofirestore-core",
+  "description": "Lightweight location-based querying and encoding of Firebase Firestore Documents for geofirestore.",
+  "version": "5.0.0",
   "scripts": {
-    "build": "nx build geofirestore",
-    "clean": "nx clean geofirestore",
-    "coverage": "nx coverage geofirestore",
-    "docs": "nx docs geofirestore",
-    "lint": "nx lint geofirestore",
-    "test": "nx test geofirestore"
+    "build": "nx build geofirestore-core",
+    "clean": "nx clean geofirestore-core",
+    "coverage": "nx coverage geofirestore-core",
+    "docs": "nx docs geofirestore-core",
+    "lint": "nx lint geofirestore-core",
+    "test": "nx test geofirestore-core"
   },
   "exports": {
     ".": {
@@ -18,7 +18,7 @@
     }
   },
   "author": "Michael Solati <mkslt04@gmail.com>",
-  "homepage": "https://geofirestore.com/",
+  "homepage": "https://core.geofirestore.com/",
   "repository": {
     "type": "git",
     "url": "https://github.com/MichaelSolati/geofirestore-js.git"
@@ -40,18 +40,20 @@
     "map"
   ],
   "dependencies": {
-    "geofirestore-core": "^5.0.0"
+    "geokit": "^1.1.0"
+  },
+  "optionalDependencies": {
+    "@google-cloud/firestore": ">= 5.0.0 < 6.0.0",
+    "firebase": ">= 9.0.0 < 10.0.0"
   },
   "devDependencies": {
     "@types/chai": "^5.2.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.7.5",
-    "axios": "^1.10.0",
     "chai": "^5.2.0",
     "coveralls": "^3.1.1",
     "firebase-tools": "^14.9.0",
     "generate-changelog": "^1.8.0",
-    "geokit": "^1.1.0",
     "gts": "^6.0.2",
     "jsdom": "^26.1.0",
     "jsdom-global": "^3.0.2",

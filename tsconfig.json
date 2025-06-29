@@ -16,11 +16,21 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "geofirestore": [
+        "./dist/packages/geofirestore/index.d.ts"
+      ],
+      "geofirestore-core": [
+        "./dist/packages/geofirestore-core/index.d.ts"
+      ]
+    }
   },
   "include": [
     "src/**/*",
     "packages/geofirestore/src/**/*",
-    "packages/geofirestore/test/**/*"
+    "packages/geofirestore/test/**/*",
+    "packages/geofirestore-core/src/**/*",
+    "packages/geofirestore-core/test/**/*"
   ]
 }

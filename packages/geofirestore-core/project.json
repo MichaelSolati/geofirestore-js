@@ -1,8 +1,17 @@
 {
-  "name": "geofirestore",
+  "name": "geofirestore-core",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/geofirestore/src",
+  "sourceRoot": "packages/geofirestore-core/src",
   "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": [
+        "dist/{projectRoot}"
+      ],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
   "tags": [],
   "targets": {
     "build": {
@@ -11,37 +20,37 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/geofirestore",
-        "configFile": "packages/geofirestore/vite.config.ts",
-        "tsConfig": "packages/geofirestore/tsconfig.json"
+        "outputPath": "dist/packages/geofirestore-core",
+        "configFile": "packages/geofirestore-core/vite.config.ts",
+        "tsConfig": "packages/geofirestore-core/tsconfig.json"
       }
     },
     "clean": {
       "executor": "nx:run-commands",
       "options": {
         "command": "rimraf ./dist ./coverage ./docs ./.nyc_output",
-        "cwd": "packages/geofirestore"
+        "cwd": "packages/geofirestore-core"
       }
     },
     "coverage": {
       "executor": "nx:run-commands",
       "options": {
         "command": "nyc report --reporter=text-lcov | coveralls",
-        "cwd": "packages/geofirestore"
+        "cwd": "packages/geofirestore-core"
       }
     },
     "docs": {
       "executor": "nx:run-commands",
       "options": {
         "command": "typedoc",
-        "cwd": "packages/geofirestore"
+        "cwd": "packages/geofirestore-core"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": [
-          "packages/geofirestore/src/**/*.ts"
+          "packages/geofirestore-core/src/**/*.ts"
         ]
       }
     },
@@ -49,18 +58,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "firebase emulators:exec --only firestore 'nyc --reporter=html --reporter=text mocha --package package.json --exit'",
-        "cwd": "packages/geofirestore"
-      }
-    },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "preset": "conventional",
-        "trackDeps": true,
-        "push": true,
-        "postTargets": [
-          "geofirestore:publish"
-        ]
+        "cwd": "packages/geofirestore-core"
       }
     },
     "nx-release-publish": {
