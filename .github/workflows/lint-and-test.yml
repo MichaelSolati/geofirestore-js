@@ -1,5 +1,5 @@
-name: Pull Request CI
-on: pull_request
+name: Lint and Test CI
+on: [push, pull_request]
 jobs:
   lint_and_test:
     name: Lint and Test
@@ -17,3 +17,9 @@ jobs:
         run: npm run coverage
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      - name: Trigger Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          gh workflow run release.yml --ref ${{ github.ref }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
