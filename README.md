@@ -11,6 +11,7 @@ A monorepo containing the GeoFirestore JavaScript library for location-based que
 This monorepo contains the following packages:
 
 - **`geofirestore`** - The main GeoFirestore library for location-based querying with Firestore
+- **`geofirestore-core`** - The core library for location-based querying with Firestore
 
 ## 🚀 Quick Start
 
@@ -91,14 +92,16 @@ const snapshot = await query.get();
 ```text
 geofirestore-js/
 ├── packages/
-│   └── geofirestore/          # Main GeoFirestore library
+│   ├── geofirestore/          # Main GeoFirestore library
+│   │   ├── src/               # Source code
+│   │   ├── test/              # Tests
+│   │   └── examples/          # Example usage
+│   └── geofirestore-core/     # Core geolocation utilities
 │       ├── src/               # Source code
-│       ├── test/              # Tests
-│       ├── examples/          # Example usage
-│       └── dist/              # Built output
+│       └── test/              # Tests
 ├── .github/                   # GitHub workflows
 ├── nx.json                    # Nx workspace configuration
-└── tsconfig.json             # TypeScript configuration
+└── tsconfig.json              # TypeScript configuration
 ```
 
 ## 🧪 Testing
@@ -115,6 +118,7 @@ npm run test
 Tests use Firebase Firestore emulator to avoid requiring a live Firebase project. The test suite includes:
 
 - Unit tests for all GeoFirestore classes
+- Unit tests for all GeoFirestore Core classes
 - Integration tests with Firestore emulator
 - Performance benchmarks
 - Edge case testing
@@ -149,8 +153,10 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## 🔗 Links
 
-- [Docs](https://geofirestore.com/)
-- [npm Package](https://www.npmjs.com/package/geofirestore)
+- [General Docs](https://geofirestore.com/)
+- [Core Docs](https://core.geofirestore.com/)
+- [General npm Package](https://www.npmjs.com/package/geofirestore)
+- [Core npm Package](https://www.npmjs.com/package/geofirestore-core)
 - [Issues](https://github.com/MichaelSolati/geofirestore-js/issues)
 
 ## 🙏 Acknowledgments
