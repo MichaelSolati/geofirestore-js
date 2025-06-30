@@ -1,5 +1,5 @@
 import {validateHash} from 'geokit';
-import {GeoFirestoreTypes} from '../definitions';
+import {GeoFirestoreTypes} from '../types';
 
 /**
  * Validates the inputted GeoDocument object and throws an error, or returns boolean, if it is invalid.

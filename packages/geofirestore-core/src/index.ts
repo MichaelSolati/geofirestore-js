@@ -13,4 +13,4 @@ export {
   validateLocation,
   validateQueryCriteria,
 } from './api/validate';
-export * from './definitions';
+export * from './types';

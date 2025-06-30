@@ -1,6 +1,6 @@
 import {GeoQuerySnapshot} from './snapshot';
 import {validateQueryCriteria} from './validate';
-import {GeoFirestoreTypes} from '../definitions';
+import {GeoFirestoreTypes} from '../types';
 import {calculateDistance, generateQuery} from '../utils';
 
 /**

@@ -1,5 +1,5 @@
 import {validateLocation} from './validate';
-import {GeoFirestoreTypes} from '../definitions';
+import {GeoFirestoreTypes} from '../types';
 import {generateGeoQueryDocumentSnapshot} from '../utils';
 
 /**

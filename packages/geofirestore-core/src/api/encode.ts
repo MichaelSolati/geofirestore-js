@@ -1,6 +1,6 @@
 import {hash} from 'geokit';
 import {validateLocation} from './validate';
-import {GeoFirestoreTypes} from '../definitions';
+import {GeoFirestoreTypes} from '../types';
 import {findGeoPoint} from '../utils';
 
 /**

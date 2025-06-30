@@ -1,7 +1,7 @@
 import {distance as calcDistance, hash, validateHash} from 'geokit';
 
 import {validateLocation, validateGeoDocument} from './api/validate';
-import {GeoFirestoreTypes} from './definitions';
+import {GeoFirestoreTypes} from './types';
 
 // Characters used in location geohashes
 export const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';

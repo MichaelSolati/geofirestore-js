@@ -40,6 +40,11 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ['@types/node', 'geokit'],
+      output: {
+        globals: {
+          geokit: 'geokit',
+        },
+      },
     },
   },
 });

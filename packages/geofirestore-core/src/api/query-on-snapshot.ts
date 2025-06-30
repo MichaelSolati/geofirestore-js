@@ -1,6 +1,6 @@
 import {GeoQuerySnapshot} from './snapshot';
 import {validateGeoDocument, validateQueryCriteria} from './validate';
-import {GeoFirestoreTypes} from '../definitions';
+import {GeoFirestoreTypes} from '../types';
 import {calculateDistance, generateQuery} from '../utils';
 
 interface DocMap {

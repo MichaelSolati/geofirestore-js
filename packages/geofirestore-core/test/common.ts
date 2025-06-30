@@ -1,6 +1,6 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import {GeoFirestoreTypes} from '../src/definitions';
+import {GeoFirestoreTypes} from '../src/types';
 import {encodeDocumentAdd} from '../src/api/encode';
 
 /*************/
